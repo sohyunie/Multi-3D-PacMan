@@ -747,6 +747,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 }
 
 void InGameManager::PlayingBgm(const char* name) {
+	return;
 	mciSendCommand(this->dwID, MCI_CLOSE, 0, NULL); //dwID À½¾Ç Á¾·á
 	wchar_t text[30];
 
@@ -759,6 +760,7 @@ void InGameManager::PlayingBgm(const char* name) {
 }
 
 void InGameManager::PlayingFxSound(const char* name) {
+	return;
 	//mciSendCommand(this->dwID, MCI_CLOSE, 0, NULL); //dwID À½¾Ç Á¾·á
 	mciSendCommand(this->fxDwID, MCI_CLOSE, 0, NULL); //dwID À½¾Ç Á¾·á
 

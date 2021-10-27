@@ -20,6 +20,8 @@
 #include <glm/ext.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "Dependencies/glew.h"
+#include "Dependencies/freeglut.h"
 
 #pragma comment (lib, "winmm.lib")
 

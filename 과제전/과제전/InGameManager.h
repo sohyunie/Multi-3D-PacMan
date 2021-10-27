@@ -77,7 +77,6 @@ private:
     unsigned int flaglocation;
     int dwID; // channel
     int fxDwID;
-
 public:
     static InGameManager& GetInstance() {
         if (instance == NULL) {
