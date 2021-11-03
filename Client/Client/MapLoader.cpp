@@ -56,7 +56,7 @@ GLvoid MapLoader::Loadfile(int map)
                     InGameManager::GetInstance().CountBeadAmount();
                     //InGameManager::GetInstance().CalculatePointLight(*boardShape[i][j], 10);
                     break;
-                case BOARD_TYPE::POWERBEAD_ITEM:
+                case BOARD_TYPE::KEY_ITEM:
                     boardShape[i][j] = new PowerBead(position);
                     break;
                 case BOARD_TYPE::WALL_0:
@@ -65,13 +65,15 @@ GLvoid MapLoader::Loadfile(int map)
                 case BOARD_TYPE::NONE:
                     boardShape[i][j] = new StaticObject(position);
                     break;
-                case BOARD_TYPE::INIT_PLAYER_POS:
+                case BOARD_TYPE::INIT_PLAYER_1:
                     InGameManager::GetInstance().GetPlayer()->InitPlayerPos(i, j, position);
                     boardShape[i][j] = new StaticObject(position);
                     break;
+                case BOARD_TYPE::INIT_PLAYER_2:
+                    InGameManager::GetInstance().CreateGhost(i, j, position);
+                    boardShape[i][j] = new StaticObject(position);
+                    break;
                 case BOARD_TYPE::INIT_GHOST_POS:
-                    InGameManager::GetInstance().CreateGhost(i, j, position);
-                    InGameManager::GetInstance().CreateGhost(i, j, position);
                     InGameManager::GetInstance().CreateGhost(i, j, position);
                     boardShape[i][j] = new StaticObject(position);
                     //InGameManager::GetInstance().GetPlayer()->InitPlayerPos(i, j, position);

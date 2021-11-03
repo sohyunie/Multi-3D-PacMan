@@ -45,7 +45,7 @@ static MCI_PLAY_PARMS playFxSound;
 
 #define FILE_NAME		"ghost.obj"
 #define BEAD_FILE_NAME	"bead.obj"
-#define POWERBEAD_FILE_NAME	"bead.obj"
+#define KEY_ITEM_FILE_NAME	"key.obj"
 #define CUBE_FILE_NAME	"block.obj"
 
 #define SOUND_FILE_NAME_INGAME	"bgm_InGame.wav"  // 배경음악
@@ -163,10 +163,11 @@ enum class TextureType {
 // Map 타입
 enum BOARD_TYPE {
 	BEAD_ITEM,
-	POWERBEAD_ITEM,
+	KEY_ITEM,
 	WALL_0,
 	NONE,
-	INIT_PLAYER_POS,
+	INIT_PLAYER_1,
+	INIT_PLAYER_2,
 	INIT_GHOST_POS
 };
 

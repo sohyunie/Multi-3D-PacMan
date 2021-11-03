@@ -21,12 +21,12 @@ Ghost::Ghost(int i, int j, Vector3 pos, int id) {
 	this->scale = Vector3(0.5,0.5,0.5);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
 	this->color = glm::vec3(uidColor(dreColor), uidColor(dreColor), uidColor(dreColor));
-	this->newDirection = (DIRECTION)uidDirection(dreColor);
+	this->newDirection = DIRECTION::DIR_NONE;
 	this->boundingOffset = 1.5;
 }
 
 void Ghost::SetRandomDirection() {
-	this->newDirection = (DIRECTION)uidDirection(dreColor);
+	//this->newDirection = (DIRECTION)uidDirection(dreColor);
 }
 
 void Ghost::DrawObject(GLuint s_program) {
@@ -37,7 +37,7 @@ void Ghost::DrawObject(GLuint s_program) {
 	glm::mat4 T = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 S = glm::mat4(1.0f); //--- rotation matrix
 	T = glm::translate(T, this->position.GetGlmVec3(-2)); //--- x축으로 translation
-	R = glm::rotate(R, glm::radians(rotateAngle+=10), this->rotate.GetGlmVec3()); //--- z축에대하여 회전
+	R = glm::rotate(R, 0.0f, glm::vec3(0.0, 1.0, 0.0)); //--- z축에대하여 회전
 	S = glm::scale(glm::mat4(1.0f), this->scale.GetGlmVec3());
 	STR = T * S * R; //--- 합성 변환 행렬: translate -> rotate
 
