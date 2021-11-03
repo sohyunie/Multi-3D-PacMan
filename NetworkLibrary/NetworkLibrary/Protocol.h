@@ -3,6 +3,7 @@
 #include<thread>
 #include<mutex>
 #include<vector>
+#include <array>
 
 #include <WinSock2.h>
 #include <WS2tcpip.h>
@@ -13,7 +14,7 @@
 using namespace std;
 
 const short SERVER_PORT = 7777;			// 서버 포트 번호
-const char* SERVER_IP = "127.0.0.1";		// 서버 IP 주소
+const char* const SERVER_IP = "127.0.0.1";		// 서버 IP 주소
 
 enum class MsgType : char		// 메시지를 식별할 수 있는 메시지 형식
 {	
@@ -56,6 +57,14 @@ enum class WinStatus : char		// 승리 상태
 	NONE,									// 게임 진행
 	RUNNER_WIN,						// 러너 승리
 	TAGGER_WIN							// 태거 승리
+};
+
+enum class Direction : char
+{
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
 };
 
 struct Vector4				// 객체의 바운딩 박스 표현하기 위해 사용하는 vector4 구조체 
@@ -108,7 +117,7 @@ struct update_status			//맵에 존재하는 오브젝트들의 변화되어 사라졌는지, 그 상태
 	MsgType type;
 	WinStatus win;
 	char hp;
-	ObjectType type;
+	ObjectType objType;
 	char id;
 	bool active;
 };
@@ -131,38 +140,4 @@ struct MapInfo							// 맵에 존재하는 모든 오브젝트를 담고 있는 구조체
 	vector<ObjectInfo> keys;			// 키를 담고 있는 배열
 	vector<ObjectInfo> walls;			// 벽 오브젝트를 담는 배열
 	ObjectInfo door;						// 탈출구 오브젝트
-};
-
-class Message {								// 여러 메시지를 하나의 버퍼로 구성하고 여러 메시지로 다시 분리하는 함수
-private:
-	static const int MaxBufferSize = 1024;			// 최대 버퍼 사이즈
-	char MsgBuffer[MaxBufferSize];					// 메시지 버퍼
-	int BeginOffset;											// 버퍼에서 메시지가 시작하는 곳의 인덱스
-	int EndOffset;												// 버퍼에서 메시지가 끝나는 곳의 인덱스
-public:
-	void CopyData(void* msg, int size);				// 메시지를 size만큼 MsgBuffer로 복사하는 함수, EndOffset이 증가함
-	void ReleaseData(void* msg);						// 버퍼에 있는 데이터를 하나의 메시지에 복사하는 함수, BeginOffset이 증가함
-};
-
-class Socket {
-private:
-	SOCKET s_socket;					// 소켓 핸들
-	SOCKET c_socket;
-	Message recvMessage;		// Recv에 사용되는 메시지 버퍼
-public:
-	void Bind(short ServerPort);														// 포트 번호로 소켓 바인딩
-	void Listen();																			// 접근하는 호스트 받기
-	void Connect(const char* ServerAddress, short ServerPort);		// 서버 주소로 연결 시도
-	SOCKET Accept();																	// 클라이언트 연결후 소켓 반환
-	void Send(Message& msg);														// 메시지를 상대 호스트에게 전송한다
-	void Recv();																			// 상대 호스트가 보낸 메시지를 recvMessage에 저장한다.
-};
-
-class Exception : exception {		// 네트워크 함수에서 에러가 발생할 시 오류를 출력해주는 클래스
-private:
-	const char* ErrorString;			// 오류 정보를 담는 문자열
-public:
-	Exception();
-	Exception(int error_code);		// 에러코드를 받아 에러 정보를 반환하는 생성자
-	virtual const char* what();		// exception 클래스 오버라이드 함수로써 오류메시지를 반환
 };

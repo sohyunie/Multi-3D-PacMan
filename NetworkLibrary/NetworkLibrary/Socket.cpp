@@ -1,4 +1,5 @@
-#include "Protocol.h"
+#include "Exception.h"
+#include "Socket.h"
 
 int recvn(SOCKET s, char* buf, int len, int flags)
 {
@@ -19,6 +20,17 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 	return (len - left);
 }
 
+
+Socket::Socket()
+{
+}
+
+Socket::~Socket()
+{
+	if (m_socket)
+		closesocket(m_socket);
+}
+
 void Socket::Bind(short ServerPort)
 {
 	SOCKADDR_IN serveraddr;
@@ -26,16 +38,16 @@ void Socket::Bind(short ServerPort)
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serveraddr.sin_port = htons(SERVER_PORT);
-	int retval = bind(s_socket, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
+	int retval = bind(m_socket, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR)
-		Exception(retval);
+		throw Exception(WSAGetLastError());
 }
 
 void Socket::Listen() 
 {
-	s_socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (s_socket == INVALID_SOCKET)
-		Exception(s_socket);
+	m_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if (m_socket == INVALID_SOCKET)
+		throw Exception(WSAGetLastError());
 }
 
 void Socket::Connect(const char* ServerAddress, short ServerPort)
@@ -43,47 +55,43 @@ void Socket::Connect(const char* ServerAddress, short ServerPort)
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = inet_addr(SERVER_IP);
+	inet_pton(AF_INET, ServerAddress, &serveraddr.sin_addr);
 	serveraddr.sin_port = htons(SERVER_PORT);
-	int retval = connect(s_socket, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
+	int retval = connect(m_socket, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR)
-		Exception(s_socket);
+		throw Exception(WSAGetLastError());
 }
 
 SOCKET Socket::Accept()
 {
 	SOCKADDR_IN clientaddr;
 	int addrlen = sizeof(clientaddr);
-	c_socket = accept(s_socket, (SOCKADDR*)&clientaddr, &addrlen);
-	if (c_socket == INVALID_SOCKET)
-		Exception(c_socket);
+	SOCKET accept_socket = accept(m_socket, (SOCKADDR*)&clientaddr, &addrlen);
+	if (accept_socket == INVALID_SOCKET)
+		throw Exception(WSAGetLastError());
+	return accept_socket;
 }
 
 void Socket::Send(Message& msg) 
 {
 	int size = sizeof(msg);
-	int retval = send(c_socket, (char*)&size, sizeof(size), 0);
+	int retval = send(m_socket, (char*)&size, sizeof(size), 0);
 	if (retval == SOCKET_ERROR)
-		Exception(retval);
+		throw Exception(WSAGetLastError());
 
-	retval = send(c_socket, (char*)&msg, sizeof(msg), 0);
+	retval = send(m_socket, (char*)&msg, sizeof(msg), 0);
 	if (retval == SOCKET_ERROR)
-		Exception(retval);
+		throw Exception(WSAGetLastError());
 }
 
 void Socket::Recv()
 {
 	int len;
-	int retval = recvn(c_socket, (char*)&len, sizeof(int), 0);
+	int retval = recvn(m_socket, (char*)&len, sizeof(int), 0);
 	if (retval == SOCKET_ERROR)
-		Exception(retval);
+		throw Exception(WSAGetLastError());
 
-	retval = recvn(c_socket, (char*)&recvMessage, sizeof(recvMessage), 0);
+	retval = recvn(m_socket, m_recvMessage.MsgBuffer, sizeof(m_recvMessage.MsgBuffer), 0);
 	if (retval == SOCKET_ERROR)
-		Exception(retval);
-}
-
-int main()
-{
-	
+		throw Exception(WSAGetLastError());
 }
