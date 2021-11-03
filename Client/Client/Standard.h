@@ -25,7 +25,6 @@
 
 #pragma comment (lib, "winmm.lib")
 
-
 class Ghost;
 
 using namespace std;
