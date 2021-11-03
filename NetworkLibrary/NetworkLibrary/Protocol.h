@@ -1,9 +1,15 @@
 #pragma once
 #include<iostream>
-#include<WS2tcpip.h>
 #include<thread>
 #include<mutex>
 #include<vector>
+
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#include <MSWSock.h>
+
+#pragma comment(lib, "ws2_32.lib")
+
 using namespace std;
 
 const short SERVER_PORT = 7777;			// 서버 포트 번호
