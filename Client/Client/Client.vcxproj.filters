@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="소스 파일\01.Manager">
+      <UniqueIdentifier>{781bb171-b7b5-4ef0-b61c-72bc2d65802d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\02.View">
+      <UniqueIdentifier>{861afdbe-8d89-4dcd-a963-a62b2c4abd84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\03.Object">
+      <UniqueIdentifier>{807a2881-42a4-42bd-aef5-094b1ea376fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\99.Etc">
+      <UniqueIdentifier>{c2fe2c2c-6996-43db-9328-4387d36d99ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StartSceneUI.h">
@@ -69,63 +81,69 @@
     <ClInclude Include="stb_image.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="StartSceneUI.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="InGameManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="InGameUI.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="MapLoader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="DynamicObject.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Ghost.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticObject.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="Block.cpp">
+      <Filter>소스 파일\03.Object</Filter>
     </ClCompile>
     <ClCompile Include="Bead.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\03.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicObject.cpp">
+      <Filter>소스 파일\03.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Ghost.cpp">
+      <Filter>소스 파일\03.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>소스 파일\03.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>소스 파일\03.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticObject.cpp">
+      <Filter>소스 파일\03.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>소스 파일\01.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="InGameManager.cpp">
+      <Filter>소스 파일\01.Manager</Filter>
     </ClCompile>
     <ClCompile Include="PowerBead.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\03.Object</Filter>
     </ClCompile>
-    <ClCompile Include="Block.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="StartSceneUI.cpp">
+      <Filter>소스 파일\02.View</Filter>
+    </ClCompile>
+    <ClCompile Include="InGameUI.cpp">
+      <Filter>소스 파일\02.View</Filter>
     </ClCompile>
     <ClCompile Include="EndingScene.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Standard.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\02.View</Filter>
     </ClCompile>
     <ClCompile Include="Bottom.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\03.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="MapLoader.cpp">
+      <Filter>소스 파일\01.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Standard.cpp">
+      <Filter>소스 파일\01.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkManager.cpp">
+      <Filter>소스 파일\01.Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vertex.glsl">
-      <Filter>소스 파일</Filter>
-    </None>
     <None Include="fragment.glsl">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\99.Etc</Filter>
+    </None>
+    <None Include="vertex.glsl">
+      <Filter>소스 파일\99.Etc</Filter>
     </None>
   </ItemGroup>
 </Project>

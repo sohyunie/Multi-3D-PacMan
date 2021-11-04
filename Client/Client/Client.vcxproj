@@ -28,6 +28,7 @@
     <ClInclude Include="InGameManager.h" />
     <ClInclude Include="InGameUI.h" />
     <ClInclude Include="MapLoader.h" />
+    <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PowerBead.h" />
@@ -49,6 +50,7 @@
     <ClCompile Include="InGameManager.cpp" />
     <ClCompile Include="InGameUI.cpp" />
     <ClCompile Include="MapLoader.cpp" />
+    <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PowerBead.cpp" />
