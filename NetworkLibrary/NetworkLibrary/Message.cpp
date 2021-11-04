@@ -1,6 +1,9 @@
 #include "Message.h"
 
 Message::Message()
+	: MsgBuffer{},
+	  BeginOffset(0),
+	  EndOffset(0)
 {
 }
 
