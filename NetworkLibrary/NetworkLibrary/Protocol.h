@@ -1,9 +1,10 @@
 #pragma once
-#include<iostream>
-#include<thread>
-#include<mutex>
-#include<vector>
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <vector>
 #include <array>
+#include <string>
 
 #include <WinSock2.h>
 #include <WS2tcpip.h>
