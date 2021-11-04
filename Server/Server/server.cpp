@@ -5,7 +5,7 @@ mutex Server::g_countOfKeyLock;
 MapInfo Server::map;
 int Server::countOfKeyAccquired;
 
-array<ClientInfo, 3> Server::m_clients;
+vector<ClientInfo> Server::m_clients;
 
 Server::Server()
 {
@@ -34,7 +34,7 @@ void Server::Update()
 	int i = 0;
 	while(true)
 	{
-		if (i < m_clients.size())
+		if (i < MaxClients)
 			AcceptNewPlayer(i++);
 		else {
 			// send game start msg to all clients 
@@ -51,11 +51,9 @@ void Server::LoadMap(const char* filename)
 void Server::AcceptNewPlayer(int id)
 {
 	SOCKET new_client = m_listenSock.Accept();
-	m_clients[id] = ClientInfo(new_client, id);
-	//m_threads[id] = thread{ RecvAndSend, id };
+	m_clients.emplace_back(new_client, id);
+	m_threads.emplace_back(RecvAndSend, id);
 	cout << "Accepted new client [" << id << "]\n";
-	
-	m_clients[id].Recv();
 	// TODO: Send join msg to all clients.
 	//		 Assign id and role
 
