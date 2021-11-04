@@ -5,7 +5,7 @@
 
 class Socket 
 {
-private:
+protected:
 	SOCKET m_socket;					// 소켓 핸들
 	Message m_recvMessage;		// Recv에 사용되는 메시지 버퍼
 
@@ -13,6 +13,7 @@ public:
 	Socket();
 	virtual ~Socket();
 
+	void Init();
 	void Bind(short ServerPort);														// 포트 번호로 소켓 바인딩
 	void Listen();																			// 접근하는 호스트 받기
 	void Connect(const char* ServerAddress, short ServerPort);		// 서버 주소로 연결 시도
