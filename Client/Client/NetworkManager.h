@@ -6,15 +6,37 @@
 #define BUFSIZE 2048
 #define BUFSIZE2 128
 
-extern SOCKET sock; // 소켓
-extern char buf[BUFSIZE2 + 1]; // 데이터 송수신 버퍼
-extern HANDLE hWrite_Event, hRead_Event, Update_Event;
+class NetworkManager
+{
+private:
+    static NetworkManager* instance;
+    char buf[BUFSIZE2 + 1]; // 데이터 송수신 버퍼
 
+    char address[128];
+    SOCKET s_socket;
+    const short SERVER_PORT = 4000;
 
-// 대화상자 프로시저
-void CALLBACK recv_callback(DWORD err, DWORD num_byte, LPWSAOVERLAPPED send_over, DWORD flag);
-void CALLBACK send_callback(DWORD err, DWORD num_byte, LPWSAOVERLAPPED send_over, DWORD flag);
-int recvn(SOCKET s, char* buf, int len, int flags);
+    char g_recv_buf[BUFSIZE];
+    WSABUF mybuf_r;
+    WSABUF mybuf;
+    bool isConnected = false;
+public:
+    static NetworkManager& GetInstance() {
+        if (instance == NULL) {
+            instance = new NetworkManager();
+        }
+        return *instance;
+    }
+    // 대화상자 프로시저
+    void CALLBACK recv_callback(DWORD err, DWORD num_byte, LPWSAOVERLAPPED send_over, DWORD flag);
+    void CALLBACK send_callback(DWORD err, DWORD num_byte, LPWSAOVERLAPPED send_over, DWORD flag);
+    int recvn(SOCKET s, char* buf, int len, int flags);
+    void Network();
+    void error_display(int err_no);
+    void do_recv();
+    void do_send(int input);
+    bool GetIsConnected();
+};
 
 enum class MsgType
 {

@@ -22,6 +22,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <tchar.h>
+#include <thread>
 #include "Dependencies/glew.h"
 #include "Dependencies/freeglut.h"
 
@@ -292,3 +293,7 @@ const float Background[] = {
 };
 
 static Vector3 lightPos = Vector3(0, 20, 0);
+
+typedef void(*CALLBACK_FUNC)(bool isOn); // 함수 포인터 정의
+
+CALLBACK_FUNC cbf = NULL; // 실제 콜백함수를 다루기 위한 전역 변수

@@ -1,6 +1,7 @@
 #include "Standard.h"
 #include "InGameManager.h"
 #include "Player.h"
+#include "NetworkManager.h"
 
 void drawScene();
 void drawSceneSubWindow();
@@ -198,6 +199,9 @@ void TimerFunction(int value) {
 
 int main(int argc, char** argv)
 {
+	// Network Thread
+	thread networkTherad(&NetworkManager::Network, &NetworkManager::GetInstance());	// 우리가 쓸 함수, 우리가 쓸 함수가 어떤 애의 건지 객체를 보여줌. 
+
 	//PlaySound(TEXT(SOUND_FILE_NAME_LOBBY), NULL, SND_ASYNC | SND_LOOP);
 	InGameManager::GetInstance().PlayingBgm(SOUND_FILE_NAME_LOBBY);
 	glutInit(&argc, argv);
