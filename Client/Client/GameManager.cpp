@@ -194,6 +194,16 @@ void processSpecialKeys(int key, int x, int y)
 void TimerFunction(int value) {
 	InGameManager::GetInstance().TimerFunction();
 
+	switch (InGameManager::GetInstance().GetState())
+	{
+	case GAMESTATE::NONE:
+		if (NetworkManager::GetInstance().GetIsConnected())
+		{
+			InGameManager::GetInstance().SetState(GAMESTATE::LOBBY);
+		}
+		break;
+	}
+
 	glutTimerFunc(10, TimerFunction, 1);
 }
 
@@ -219,7 +229,6 @@ int main(int argc, char** argv)
 	else
 		std::cout << "GLEW Initialized\n";
 
-	//ReadObj(FILE_NAME, InGameManager::GetInstance().gobj->vPosData, InGameManager::GetInstance().gobj->vNormalData, InGameManager::GetInstance().gobj->vTextureCoordinateData, InGameManager::GetInstance().gobj->indexData, InGameManager::GetInstance().gobj->vertexCount, InGameManager::GetInstance().gobj->indexCount);
 	InGameManager::GetInstance().InitObject();
 	InitShader();
 	InitBuffer();
@@ -227,7 +236,6 @@ int main(int argc, char** argv)
 
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
-	//glutIdleFunc(DrawScene);
 
 	glutKeyboardFunc(Keyboard);
 	glutSpecialUpFunc(releaseKey);

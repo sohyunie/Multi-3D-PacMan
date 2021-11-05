@@ -183,6 +183,7 @@ enum class DIRECTION {
 };
 
 enum class GAMESTATE {
+	NONE,
 	LOBBY,
 	INGAME,
 	GAMEOVER,
@@ -293,7 +294,3 @@ const float Background[] = {
 };
 
 static Vector3 lightPos = Vector3(0, 20, 0);
-
-typedef void(*CALLBACK_FUNC)(bool isOn); // 함수 포인터 정의
-
-CALLBACK_FUNC cbf = NULL; // 실제 콜백함수를 다루기 위한 전역 변수

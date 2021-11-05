@@ -970,7 +970,7 @@ GLvoid InGameManager::InitShader() {
 // + Obj 파일 정보 담아두는 코드
 GLvoid InGameManager::InitObject() 
 {
-	this->SetState(GAMESTATE::LOBBY);
+	this->SetState(GAMESTATE::NONE);
 
 	this->startUI = new StartSceneUI();
 	this->endingUI = new EndingScene();
