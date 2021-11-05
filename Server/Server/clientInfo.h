@@ -6,16 +6,19 @@ class ClientInfo : public Socket
 {
 public:
 	ClientInfo();
+	ClientInfo(SOCKET sck, int id);
 	virtual ~ClientInfo();
 
 public:
-	Vector4 GetBoundingBox();
-	void ProcessPacket(char* packets);
+	void Send();
+	
+	void ProcessMessage();
 	void CheckObjectsStatus();
 	void IsCollided(Vector4& a, Vector4& b);
-	pair<float, float> GetNewPosition();
 	void CreateLoginOkAndMapInfoMsg();
 
+	pair<float, float> GetNewPosition();
+	Vector4 GetBoundingBox();
 private:
 	int m_id;
 	PlayerType m_type;
