@@ -12,6 +12,8 @@ Server::Server()
 	if (WSAStartup(MAKEWORD(2, 2), &m_wsaData) != 0)
 		throw Exception("WSAStartup failed");
 
+	LoadMap("map.txt");
+
 	m_listenSock.Init();
 	m_listenSock.Bind(SERVER_PORT);
 	m_listenSock.Listen();
@@ -29,74 +31,21 @@ Server::~Server()
 
 void Server::Update()
 {
-	int i = 0, j = 0;
-
+	int i = 0;
 	while(true)
 	{
 		if (i < MaxClients)
 			AcceptNewPlayer(i++);
-		else if (i == MaxClients && j == 0) {
-			LoadMap("map.txt");
-			j++;
-		}
 		else {
 			// send game start msg to all clients 
-
 		}
 			
+		
 	}
 }
 
 void Server::LoadMap(const char* filename)
 {
-	ifstream in(filename);
-	ObjectInfo object;
-
-	int bead_id = 0, key_id = 0, player_id = 0;
-	float mapn;
-	for (int i = 0; i < 30; ++i) {
-		for (int j = 0; j < 30; ++j) {
-			in >> mapn;
-			if (mapn == 0) {					// BEAD
-				object.active = true;
-				object.x = j;
-				object.z = i;
-				object.id = bead_id++;
-				object.type = ObjectType::BEAD;
-				object.boundingOffset = 1.0;	// 바운딩박스 크기
-				map.beads.push_back(object);
-			}
-			else if (mapn == 1) {			// KEY
-				object.active = true;
-				object.x = j;
-				object.z = i;
-				object.id = key_id++;
-				object.type = ObjectType::KEY;
-				object.boundingOffset = 1.0;	
-				map.keys.push_back(object);
-			}
-			else if (mapn == 2) {			// WALL
-				object.active = true;
-				object.x = j;
-				object.z = i;
-				object.id = 0;
-				object.type = ObjectType::WALL;
-				object.boundingOffset = 1.0;	
-				map.walls.push_back(object);
-			}
-			else if (mapn == 3) {			// PLAYER_POS
-				m_clients[player_id++].SetPosition(i, j);
-			}
-			else if (mapn == 4) {			// DOOR
-				map.door.active = true;
-				map.door.x = j;
-				map.door.z = i;
-				map.door.id = 0;
-				map.door.type = ObjectType::DOOR;
-				map.door.boundingOffset = 1.0;
-			}
-		}
-	}
 }
 
 void Server::AcceptNewPlayer(int id)
@@ -135,7 +84,6 @@ void Server::CreatePlayerJoinMsg()
 
 void Server::CreateStartGameMsg()
 {
-	
 }
 
 void Server::CreateUpdateMapInfoMsg()
