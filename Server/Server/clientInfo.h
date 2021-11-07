@@ -16,7 +16,8 @@ public:
 	void CheckObjectsStatus();
 	void IsCollided(Vector4& a, Vector4& b);
 	void CreateLoginOkAndMapInfoMsg();
-
+	void SetPosition(float x, float z);
+	
 	pair<float, float> GetNewPosition();
 	Vector4 GetBoundingBox();
 private:
