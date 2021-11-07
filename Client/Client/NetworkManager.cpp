@@ -5,83 +5,101 @@
 
 NetworkManager* NetworkManager::instance = nullptr;
 
-void CALLBACK NetworkManager::send_callback(DWORD err, DWORD num_byte, LPWSAOVERLAPPED send_over, DWORD flag)
-{
-    cout << "send_callback" << endl;
-    delete send_over;
-    //do_send();
-}
-
-void CALLBACK NetworkManager::recv_callback(DWORD err, DWORD num_bytes, LPWSAOVERLAPPED recv_over, DWORD flag)
-{
-    cout << "recv_callback" << endl;
-    delete recv_over;
-
-    char* p = g_recv_buf;
-
-    while (p < g_recv_buf + num_bytes)
-    {
-        char packet_size = *p;
-        int c_id = *(p + 1);
-        cout << "Client [" << c_id << "] Sent[" << packet_size - 2 << "bytes]: " << "i : " << *(p + 2) << "j : " << *(p + 1) << endl;
-
-        p = p + packet_size;
-    }
-    do_recv();
-}
-
 // 소켓 함수 오류 출력
-void NetworkManager::error_display(int err_no)
+void NetworkManager::error_display(const char* msg)
 {
-    WCHAR* lpMsgBuf;
+    LPVOID lpMsgBuf;
     FormatMessage(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        NULL, err_no,
+        NULL, WSAGetLastError(),
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR)&lpMsgBuf, 0, 0);
-    wcout << lpMsgBuf << endl;
-    while (true);
+        (LPTSTR)&lpMsgBuf, 0, NULL);
+
+    std::printf("[%s] %s", msg, (char*)lpMsgBuf);
     LocalFree(lpMsgBuf);
 }
 
-void NetworkManager::do_recv()
+bool NetworkManager::Recv()
 {
-    cout << "do_recv()" << endl;
-    mybuf_r.buf = g_recv_buf;
-    mybuf_r.len = BUFSIZE;
-    DWORD recv_flag = 0;
-    WSAOVERLAPPED* recv_over = new WSAOVERLAPPED;
-    ZeroMemory(recv_over, sizeof(recv_over));
-    //int ret = WSARecv(s_socket, &mybuf_r, 1, 0, &recv_flag, recv_over, recv_callback);
-    //if (SOCKET_ERROR == ret) {
-    //    int err_num = WSAGetLastError();
-    //    if (WSA_IO_PENDING != err_num) {
-    //        cout << "Send Error";
-    //        error_display(err_num);
-    //    }
-    //}
+	int len = 0;
+	int retval = recvn(s_socket, (char*)&len, sizeof(int), 0);
+    if (retval == SOCKET_ERROR)
+    {
+        error_display("Recv Error length");
+        return false;
+    }
+
+	retval = recvn(s_socket, m_recvMessage.MsgBuffer, len, 0);
+    if (retval == SOCKET_ERROR)
+    {
+        error_display("Recv Error buffer");
+        return false;
+    }
+    return true;
 }
 
-void NetworkManager::do_send(int input)
+bool NetworkManager::Send(Message& msg)
 {
-    cout << "do_send()" << endl;
-    buf[0] = (char)input;
+    int size = sizeof(msg);
+    int retval = send(s_socket, (char*)&size, sizeof(size), 0);
+    if (retval == SOCKET_ERROR)
+    {
+        error_display("Send Error length");
+        return false;
+    }
 
-    //cout << input << endl;
-    DWORD sent_byte;
-    mybuf.buf = buf;
-    mybuf.len = static_cast<ULONG>(strlen(buf)) + 1;	// 문자열 길이
+    retval = send(s_socket, (char*)&msg, sizeof(msg), 0);
+    if (retval == SOCKET_ERROR)
+    {
+        error_display("Send Error buffer");
+        return false;
+    }
 
-    WSAOVERLAPPED* send_over = new WSAOVERLAPPED;
-    ZeroMemory(send_over, sizeof(*send_over));
+    return true;
+}
 
-    //int ret = WSASend(s_socket, &mybuf, 1, 0, 0, send_over, send_callback);	// &mybuf 는 구조체 배열을 위함
-    //// send_callback 콜백 등록, 등록되면 계속 호출되나 봄.
-    //if (SOCKET_ERROR == ret) {
-    //    cout << "Send Error";
-    //    int err_num = WSAGetLastError();
-    //    error_display(err_num);
-    //}
+void NetworkManager::Update()
+{
+    if(Recv())
+    {
+        MsgType msgType = MsgType::NONE;
+        // Packet Check
+        // 패킷 분석 후 msgType 결정
+        //char* p = m_recvMessage.MsgBuffer;
+
+        //while (p < g_recv_buf + len)
+        //{
+        //    char packet_size = *p;
+        //    int c_id = *(p + 1);
+        //    cout << "Client [" << c_id << "] Sent[" << packet_size - 2 << "bytes]: " << "i : " << *(p + 2) << "j : " << *(p + 1) << endl;
+
+        //    p = p + packet_size;
+        //}
+
+        switch (msgType)
+        {
+        case MsgType::LOGIN_REQUEST:
+            break;
+        case MsgType::LOGIN_OK:
+            break;
+        case MsgType::PLAYER_JOIN:
+            break;
+        case MsgType::START_GAME:
+            break;
+        case MsgType::PLAYTER_INPUT:
+            break;
+        case MsgType::UPDATE_PLAYER_POS:
+            break;
+        case MsgType::UPDATE_PLAYER_INFO:
+            break;
+        case MsgType::UPDATE_BEAD:
+            break;
+        case MsgType::UPDATE_KEY:
+            break;
+        case MsgType::DOOR_OPEN:
+            break;
+        }
+    }
 }
 
 bool NetworkManager::GetIsConnected()
@@ -128,11 +146,9 @@ void NetworkManager::Network()
     int ret = connect(s_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));		// reinterret_cast : type casting
     cout << "ret : " << ret << endl;
     if (SOCKET_ERROR == ret) {
-        int err_num = WSAGetLastError();
-        if (WSA_IO_PENDING != err_num) {
-            cout << "Send Error";
-            error_display(err_num);
-        }
+        isConnected = true;
+        error_display("Connect error");
+        error_display("임시로 클라 실행되도록");
     }
     else
     {
@@ -141,5 +157,21 @@ void NetworkManager::Network()
 
     int tcp_option = 1;
     setsockopt(s_socket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&tcp_option), sizeof(tcp_option));
-    do_recv(); // 리시브 콜백 설정
+
+    while (true)
+    {
+        Update();
+    }
+}
+
+Message::Message()
+    : m_writeIndex(0),
+    m_readIndex(0),
+    m_remainSize(MaxBufferSize)
+{
+    std::memset(m_buffer, 0, MaxBufferSize);
+}
+
+Message::~Message()
+{
 }

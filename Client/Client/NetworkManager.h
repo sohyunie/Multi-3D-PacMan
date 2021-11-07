@@ -6,6 +6,22 @@
 #define BUFSIZE 2048
 #define BUFSIZE2 128
 
+class Message
+{
+public:
+    Message();
+    ~Message();
+
+    static const int MaxBufferSize = 1024;
+
+    char* MsgBuffer = m_buffer;	// 임시로 만들어논 것
+private:
+    char m_buffer[MaxBufferSize];
+    int m_readIndex;
+    int m_writeIndex;
+    int m_remainSize;
+};
+
 class NetworkManager
 {
 private:
@@ -20,6 +36,8 @@ private:
     WSABUF mybuf_r;
     WSABUF mybuf;
     bool isConnected = false;
+    Message m_recvMessage;		// Recv에 사용되는 메시지 버퍼
+    Message m_sendMessage;		// Send에 사용되는 메시지 버퍼
 public:
     static NetworkManager& GetInstance() {
         if (instance == NULL) {
@@ -28,18 +46,20 @@ public:
         return *instance;
     }
     // 대화상자 프로시저
-    void CALLBACK recv_callback(DWORD err, DWORD num_byte, LPWSAOVERLAPPED send_over, DWORD flag);
-    void CALLBACK send_callback(DWORD err, DWORD num_byte, LPWSAOVERLAPPED send_over, DWORD flag);
     int recvn(SOCKET s, char* buf, int len, int flags);
+    bool Recv();
+    bool Send(Message& msg);
     void Network();
-    void error_display(int err_no);
+    void error_display(const char* msg);
     void do_recv();
     void do_send(int input);
+    void Update();
     bool GetIsConnected();
 };
 
 enum class MsgType
 {
+    NONE,
     LOGIN_REQUEST,
     LOGIN_OK,
     PLAYER_JOIN,
@@ -49,7 +69,7 @@ enum class MsgType
     UPDATE_PLAYER_INFO,
     UPDATE_BEAD,
     UPDATE_KEY,
-    DOOR_OPEN
+    DOOR_OPEN,
 };
 
 enum class WinStatus : char
