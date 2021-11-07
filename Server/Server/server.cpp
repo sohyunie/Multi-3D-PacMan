@@ -12,8 +12,6 @@ Server::Server()
 	if (WSAStartup(MAKEWORD(2, 2), &m_wsaData) != 0)
 		throw Exception("WSAStartup failed");
 
-	LoadMap("map.txt");
-
 	m_listenSock.Init();
 	m_listenSock.Bind(SERVER_PORT);
 	m_listenSock.Listen();
@@ -31,16 +29,21 @@ Server::~Server()
 
 void Server::Update()
 {
-	int i = 0;
+	int i = 0, j = 0;
+
 	while(true)
 	{
 		if (i < MaxClients)
 			AcceptNewPlayer(i++);
+		else if (i == MaxClients && j == 0) {
+			LoadMap("map.txt");
+			j++;
+		}
 		else {
 			// send game start msg to all clients 
+
 		}
 			
-		
 	}
 }
 
@@ -82,7 +85,7 @@ void Server::LoadMap(const char* filename)
 				map.walls.push_back(object);
 			}
 			else if (mapn == 3) {			// PLAYER_POS
-				m_clients[player_id++].GetNewPosition(i, j);
+				m_clients[player_id++].SetPosition(i, j);
 			}
 			else if (mapn == 4) {			// DOOR
 				map.door.active = true;

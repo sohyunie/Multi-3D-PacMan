@@ -14,6 +14,7 @@ public:
 
 	static const int MaxBufferSize = 1024;
 
+	char* MsgBuffer = m_buffer;	// 임시로 만들어논 것
 private:
 	char m_buffer[MaxBufferSize];
 	int m_readIndex;
