@@ -46,8 +46,15 @@ void ClientInfo::IsCollided(Vector4& a, Vector4& b)
 {
 }
 
+void ClientInfo::SetPosition(float x, float z)
+{
+	m_pos_x = x;
+	m_pos_z = z;
+}
+
 pair<float, float> ClientInfo::GetNewPosition()
 {
+
 	return pair<float, float>();
 }
 
