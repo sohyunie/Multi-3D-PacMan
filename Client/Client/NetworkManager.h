@@ -28,9 +28,9 @@ private:
     static NetworkManager* instance;
     char buf[BUFSIZE2 + 1]; // 데이터 송수신 버퍼
 
-    char address[128];
+    char address[128] = "127.0.0.1";
     SOCKET s_socket;
-    const short SERVER_PORT = 4000;
+    const short SERVER_PORT = 7777;
 
     char g_recv_buf[BUFSIZE];
     WSABUF mybuf_r;

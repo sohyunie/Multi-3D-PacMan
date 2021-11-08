@@ -35,6 +35,28 @@ bool NetworkManager::Recv()
         error_display("Recv Error buffer");
         return false;
     }
+
+
+    // Packet Check
+    // 패킷 분석 후 msgType 결정
+    //char* p = m_recvMessage.MsgBuffer;
+
+    ////RecvStartGame recvStartGame = m_recvMessage;
+    //std::string msg(m_recvMessage.MsgBuffer);
+    //cout << msg << endl;
+
+    //while (p < m_recvMessage.MsgBuffer)^
+    //{
+
+    //    char packet_size = *p;
+    //    int c_id = *(p + 1);
+    //    //cout << "Client [" << c_id << "] Sent[" << packet_size - 2 << "bytes]: " << "i : " << *(p + 2) << "j : " << *(p + 1) << endl;
+
+    //    cout << (char)*(p) << endl;
+
+    //    p = p + packet_size;
+    //}
+
     return true;
 }
 
@@ -63,18 +85,6 @@ void NetworkManager::Update()
     if(Recv())
     {
         MsgType msgType = MsgType::NONE;
-        // Packet Check
-        // 패킷 분석 후 msgType 결정
-        //char* p = m_recvMessage.MsgBuffer;
-
-        //while (p < g_recv_buf + len)
-        //{
-        //    char packet_size = *p;
-        //    int c_id = *(p + 1);
-        //    cout << "Client [" << c_id << "] Sent[" << packet_size - 2 << "bytes]: " << "i : " << *(p + 2) << "j : " << *(p + 1) << endl;
-
-        //    p = p + packet_size;
-        //}
 
         switch (msgType)
         {
@@ -129,9 +139,9 @@ int NetworkManager::recvn(SOCKET s, char* buf, int len, int flags)
 
 void NetworkManager::Network()
 {
-    cout << "ip 주소를 입력해주세요." << endl;
-    cin.getline(address, sizeof(address));
-    cout << address << "와 연결되었습니다" << endl;
+    //cout << "ip 주소를 입력해주세요." << endl;
+    //cin.getline(address, sizeof(address));
+    //cout << address << "와 연결되었습니다" << endl;
 
     // 서버 connect
     wcout.imbue(locale("korean"));
@@ -146,9 +156,7 @@ void NetworkManager::Network()
     int ret = connect(s_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));		// reinterret_cast : type casting
     cout << "ret : " << ret << endl;
     if (SOCKET_ERROR == ret) {
-        isConnected = true;
         error_display("Connect error");
-        error_display("임시로 클라 실행되도록");
     }
     else
     {
