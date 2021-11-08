@@ -33,15 +33,19 @@ void Server::Update()
 
 	while(true)
 	{
-		if (i < MaxClients)
+		if (i < MaxClients) {
 			AcceptNewPlayer(i++);
+			startGameData.id[i] = i;
+		}
 		else if (i == MaxClients && j == 0) {
 			LoadMap("map.txt");
+			CreateStartGameMsg();
 			j++;
 		}
 		else {
 			// send game start msg to all clients 
-
+			for (int id = 0; id < MaxClients; ++id)
+				RecvAndSend(id);
 		}
 			
 	}
@@ -57,6 +61,9 @@ void Server::LoadMap(const char* filename)
 	for (int i = 0; i < 30; ++i) {
 		for (int j = 0; j < 30; ++j) {
 			in >> mapn;
+
+			startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
+
 			if (mapn == 0) {					// BEAD
 				object.active = true;
 				object.x = j;
@@ -85,7 +92,8 @@ void Server::LoadMap(const char* filename)
 				map.walls.push_back(object);
 			}
 			else if (mapn == 3) {			// PLAYER_POS
-				m_clients[player_id++].SetPosition(i, j);
+				startGameData.x[player_id] = i;
+				startGameData.z[player_id++] = j;
 			}
 			else if (mapn == 4) {			// DOOR
 				map.door.active = true;
@@ -135,9 +143,17 @@ void Server::CreatePlayerJoinMsg()
 
 void Server::CreateStartGameMsg()
 {
-	
+	startGameData.type = MsgType::START_GAME;
+	startGameData.size = sizeof(startGameData);
+	startGameData.playertype[0] = PlayerType::RUNNER;
+	startGameData.playertype[1] = PlayerType::TAGGER;
+	startGameData.playertype[2] = PlayerType::RUNNER;
+
+	for(int i = 0; i < MaxClients; ++i)
+		m_clients[i].CreateLoginOkAndMapInfoMsg(startGameData);
 }
 
 void Server::CreateUpdateMapInfoMsg()
 {
+
 }
