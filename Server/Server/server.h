@@ -31,4 +31,6 @@ private:
 	WSAData m_wsaData;
 	Socket m_listenSock;
 	vector<std::thread> m_threads;
+
+	start_game startGameData;
 };

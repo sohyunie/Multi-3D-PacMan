@@ -30,6 +30,7 @@ Vector4 ClientInfo::GetBoundingBox()
 
 void ClientInfo::Send()
 {
+	Socket::Send(m_sendMsg);
 }
 
 void ClientInfo::ProcessMessage()
@@ -46,18 +47,13 @@ void ClientInfo::IsCollided(Vector4& a, Vector4& b)
 {
 }
 
-void ClientInfo::SetPosition(float x, float z)
-{
-	m_pos_x = x;
-	m_pos_z = z;
-}
-
 pair<float, float> ClientInfo::GetNewPosition()
 {
 
 	return pair<float, float>();
 }
 
-void ClientInfo::CreateLoginOkAndMapInfoMsg()
+void ClientInfo::CreateLoginOkAndMapInfoMsg(start_game s_game)
 {
+	m_sendMsg.Push((char*)&s_game, sizeof(s_game));
 }

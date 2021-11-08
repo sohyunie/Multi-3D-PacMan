@@ -84,7 +84,7 @@ void Socket::Send(Message& msg)
 	if (retval == SOCKET_ERROR)
 		throw Exception("send failed");
 
-	retval = send(m_socket, (char*)&msg, sizeof(msg), 0);
+	retval = send(m_socket, (char*)&msg.MsgBuffer, sizeof(msg), 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("send failed");
 }
