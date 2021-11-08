@@ -33,5 +33,4 @@ private:
 	vector<std::thread> m_threads;
 
 	start_game startGameData;
-	int p_id = 0;
 };

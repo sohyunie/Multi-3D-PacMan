@@ -30,6 +30,7 @@ Server::~Server()
 void Server::Update()
 {
 	bool maxclient = false;
+	int p_id = 0;
 
 	while(true)
 	{
@@ -148,8 +149,10 @@ void Server::CreateStartGameMsg()
 	startGameData.playertype[1] = PlayerType::TAGGER;
 	startGameData.playertype[2] = PlayerType::RUNNER;
 
-	for(int i = 0; i < MaxClients; ++i)
+	for (int i = 0; i < MaxClients; ++i) {
+		startGameData.my_id = i;
 		m_clients[i].CreateLoginOkAndMapInfoMsg(startGameData);
+	}
 }
 
 void Server::CreateUpdateMapInfoMsg()

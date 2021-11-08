@@ -106,6 +106,7 @@ struct RecvPlayerJoin : Base
 
 struct RecvStartGame : Base
 {
+    char my_id;
     char id[3];
     PlayerType playertype[3];
     float x[3];
