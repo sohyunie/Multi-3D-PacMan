@@ -29,18 +29,18 @@ Server::~Server()
 
 void Server::Update()
 {
-	int i = 0, j = 0;
+	bool maxclient = false;
 
 	while(true)
 	{
-		if (i < MaxClients) {
-			AcceptNewPlayer(i++);
-			startGameData.id[i] = i;
+		if (p_id < MaxClients) {
+			startGameData.id[p_id] = p_id;
+			AcceptNewPlayer(p_id++);
 		}
-		else if (i == MaxClients && j == 0) {
+		else if (p_id == MaxClients && maxclient == false) {
 			LoadMap("map.txt");
 			CreateStartGameMsg();
-			j++;
+			maxclient = true;
 		}
 		else {
 			// send game start msg to all clients 
@@ -61,7 +61,6 @@ void Server::LoadMap(const char* filename)
 	for (int i = 0; i < 30; ++i) {
 		for (int j = 0; j < 30; ++j) {
 			in >> mapn;
-
 			startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
 
 			if (mapn == 0) {					// BEAD
@@ -125,7 +124,7 @@ void Server::RecvAndSend(int id)
 	try {
 		while (loop)
 		{
-			m_clients[id].Recv();
+			//m_clients[id].Recv();
 			m_clients[id].ProcessMessage();
 			m_clients[id].Send();
 		}

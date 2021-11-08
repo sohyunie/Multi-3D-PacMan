@@ -40,7 +40,8 @@ bool NetworkManager::Recv()
 
 bool NetworkManager::Send(Message& msg)
 {
-    int size = sizeof(msg);
+    int size = sizeof(msg.MsgBuffer);
+
     int retval = send(s_socket, (char*)&size, sizeof(size), 0);
     if (retval == SOCKET_ERROR)
     {
@@ -48,7 +49,7 @@ bool NetworkManager::Send(Message& msg)
         return false;
     }
 
-    retval = send(s_socket, (char*)&msg, sizeof(msg), 0);
+    retval = send(s_socket, (char*)&msg.MsgBuffer, sizeof(msg.MsgBuffer), 0);
     if (retval == SOCKET_ERROR)
     {
         error_display("Send Error buffer");

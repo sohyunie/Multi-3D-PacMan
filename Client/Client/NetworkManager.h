@@ -2,7 +2,6 @@
 #include "Standard.h"
 
 #define SERVERIP   "127.0.0.1"
-#define SERVERPORT 9000
 #define BUFSIZE 2048
 #define BUFSIZE2 128
 
@@ -30,7 +29,7 @@ private:
 
     char address[128];
     SOCKET s_socket;
-    const short SERVER_PORT = 4000;
+    const short SERVER_PORT = 7777;
 
     char g_recv_buf[BUFSIZE];
     WSABUF mybuf_r;
