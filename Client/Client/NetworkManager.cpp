@@ -19,45 +19,26 @@ void NetworkManager::error_display(const char* msg)
     LocalFree(lpMsgBuf);
 }
 
-bool NetworkManager::Recv()
+MsgType NetworkManager::Recv()
 {
 	int len = 0;
 	int retval = recvn(s_socket, (char*)&len, sizeof(int), 0);
     if (retval == SOCKET_ERROR)
     {
         error_display("Recv Error length");
-        return false;
+        return MsgType::NONE;
     }
 
 	retval = recvn(s_socket, m_recvMessage.MsgBuffer, len, 0);
     if (retval == SOCKET_ERROR)
     {
         error_display("Recv Error buffer");
-        return false;
+        return MsgType::NONE;
     }
 
+    Base basePacket = (Base&)*(m_recvMessage.MsgBuffer + sizeof(double));
 
-    // Packet Check
-    // 패킷 분석 후 msgType 결정
-    //char* p = m_recvMessage.MsgBuffer;
-
-    ////RecvStartGame recvStartGame = m_recvMessage;
-    //std::string msg(m_recvMessage.MsgBuffer);
-    //cout << msg << endl;
-
-    //while (p < m_recvMessage.MsgBuffer)^
-    //{
-
-    //    char packet_size = *p;
-    //    int c_id = *(p + 1);
-    //    //cout << "Client [" << c_id << "] Sent[" << packet_size - 2 << "bytes]: " << "i : " << *(p + 2) << "j : " << *(p + 1) << endl;
-
-    //    cout << (char)*(p) << endl;
-
-    //    p = p + packet_size;
-    //}
-
-    return true;
+    return basePacket.type;
 }
 
 bool NetworkManager::Send(Message& msg)
@@ -82,33 +63,32 @@ bool NetworkManager::Send(Message& msg)
 
 void NetworkManager::Update()
 {
-    if(Recv())
+    MsgType msgType = Recv();
+    switch (msgType)
     {
-        MsgType msgType = MsgType::NONE;
-
-        switch (msgType)
-        {
-        case MsgType::LOGIN_REQUEST:
-            break;
-        case MsgType::LOGIN_OK:
-            break;
-        case MsgType::PLAYER_JOIN:
-            break;
-        case MsgType::START_GAME:
-            break;
-        case MsgType::PLAYTER_INPUT:
-            break;
-        case MsgType::UPDATE_PLAYER_POS:
-            break;
-        case MsgType::UPDATE_PLAYER_INFO:
-            break;
-        case MsgType::UPDATE_BEAD:
-            break;
-        case MsgType::UPDATE_KEY:
-            break;
-        case MsgType::DOOR_OPEN:
-            break;
-        }
+    case MsgType::LOGIN_REQUEST:
+        break;
+    case MsgType::LOGIN_OK:
+        break;
+    case MsgType::PLAYER_JOIN:
+        break;
+    case MsgType::START_GAME:
+    {
+        RecvStartGame startGame = (RecvStartGame&)*(m_recvMessage.MsgBuffer + sizeof(double));
+        break;
+    }
+    case MsgType::PLAYTER_INPUT:
+        break;
+    case MsgType::UPDATE_PLAYER_POS:
+        break;
+    case MsgType::UPDATE_PLAYER_INFO:
+        break;
+    case MsgType::UPDATE_BEAD:
+        break;
+    case MsgType::UPDATE_KEY:
+        break;
+    case MsgType::DOOR_OPEN:
+        break;
     }
 }
 

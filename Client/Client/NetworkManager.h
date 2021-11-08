@@ -6,6 +6,21 @@
 #define BUFSIZE 2048
 #define BUFSIZE2 128
 
+enum class MsgType : char
+{
+    LOGIN_REQUEST,
+    LOGIN_OK,
+    PLAYER_JOIN,
+    START_GAME,
+    PLAYTER_INPUT,
+    UPDATE_PLAYER_POS,
+    UPDATE_PLAYER_INFO,
+    UPDATE_BEAD,
+    UPDATE_KEY,
+    DOOR_OPEN,
+    NONE,
+};
+
 class Message
 {
 public:
@@ -47,7 +62,7 @@ public:
     }
     // 대화상자 프로시저
     int recvn(SOCKET s, char* buf, int len, int flags);
-    bool Recv();
+    MsgType Recv();
     bool Send(Message& msg);
     void Network();
     void error_display(const char* msg);
@@ -57,21 +72,6 @@ public:
     bool GetIsConnected();
 };
 
-enum class MsgType
-{
-    NONE,
-    LOGIN_REQUEST,
-    LOGIN_OK,
-    PLAYER_JOIN,
-    START_GAME,
-    PLAYTER_INPUT,
-    UPDATE_PLAYER_POS,
-    UPDATE_PLAYER_INFO,
-    UPDATE_BEAD,
-    UPDATE_KEY,
-    DOOR_OPEN,
-};
-
 enum class WinStatus : char
 {
     NONE,
@@ -79,34 +79,34 @@ enum class WinStatus : char
     TAGGER_WIN
 };
 
-enum class PlayerType
+enum class PlayerType : char
 {
-    RUNNER,
-    TAGGER
+    TAGGER,
+    RUNNER
 };
 
-// Send Struct
-struct SendPlayerInput
+struct Base
 {
     short size;
     MsgType type;
+};
+
+// Send Struct
+struct SendPlayerInput : Base
+{
     char input;
     float x;
     float z;
 };
 
 // Recv Struct
-struct RecvPlayerJoin
+struct RecvPlayerJoin : Base
 {
-    short size;
-    MsgType type;
     char totalPlayers;
 };
 
-struct RecvStartGame
+struct RecvStartGame : Base
 {
-    short size;
-    MsgType type;
     char id[3];
     PlayerType playertype[3];
     float x[3];
@@ -114,19 +114,15 @@ struct RecvStartGame
     char mapinfo[30][30];
 };
 
-struct RecvUpdatePlayerInfo
+struct RecvUpdatePlayerInfo : Base
 {
-    short size;
-    MsgType type;
     char id[3];
     float x[3];
     float z[3];
 };
 
-struct RecvUpdateStatus
+struct RecvUpdateStatus : Base
 {
-    short size;
-    MsgType type;
     WinStatus win;
     char hp;
     ObjectType objectType;
