@@ -36,7 +36,7 @@ void ClientInfo::Send()
 void ClientInfo::ProcessMessage()
 {
 	std::string msg(m_recvMessage.MsgBuffer);
-	cout << msg << endl;
+	//cout << msg << endl;
 }
 
 void ClientInfo::CheckObjectsStatus()

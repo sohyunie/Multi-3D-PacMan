@@ -25,7 +25,7 @@ public:
 	static int countOfKeyAccquired;
 
 	static vector<ClientInfo> m_clients;
-	static const int MaxClients = 3;
+	static const int MaxClients = 1;
 
 private:
 	WSAData m_wsaData;
@@ -33,4 +33,5 @@ private:
 	vector<std::thread> m_threads;
 
 	start_game startGameData;
+	int p_id = 0;
 };
