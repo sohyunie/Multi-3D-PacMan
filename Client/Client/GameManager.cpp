@@ -98,7 +98,8 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case ((char)13):	// enter key
-		if (InGameManager::GetInstance().GetState() == GAMESTATE::LOBBY) {
+		if (InGameManager::GetInstance().GetState() == GAMESTATE::LOBBY)
+		{
 			InGameManager::GetInstance().PlayingBgm(SOUND_FILE_NAME_INGAME);
 			InGameManager::GetInstance().SetState(GAMESTATE::INGAME);
 		}

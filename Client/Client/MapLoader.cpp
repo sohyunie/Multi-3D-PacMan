@@ -10,6 +10,49 @@ MapLoader::MapLoader(int map) {
     this->Loadfile(map);
 }
 
+MapLoader::MapLoader(char mapArray[][30])
+{
+    for (int i = 0; i < MAP_SIZE; i++)
+    {
+        for (int j = 0; j < MAP_SIZE; j++)
+        {
+            BOARD_TYPE type = (BOARD_TYPE)mapArray[i][j];
+
+            Vector3 position = Vector3((i * 7.5f - 35), 0, (j * 7.5f - 35));
+            switch (type) {
+            case BOARD_TYPE::BEAD_ITEM:
+                boardShape[i][j] = new Bead(position);
+                InGameManager::GetInstance().CountBeadAmount();
+                //InGameManager::GetInstance().CalculatePointLight(*boardShape[i][j], 10);
+                break;
+            case BOARD_TYPE::KEY_ITEM:
+                boardShape[i][j] = new PowerBead(position);
+                break;
+            case BOARD_TYPE::WALL_0:
+                boardShape[i][j] = new Block(position);
+                break;
+            case BOARD_TYPE::NONE:
+                boardShape[i][j] = new StaticObject(position);
+                break;
+            case BOARD_TYPE::INIT_PLAYER_1:
+                InGameManager::GetInstance().GetPlayer()->InitPlayerPos(i, j, position);
+                boardShape[i][j] = new StaticObject(position);
+                break;
+            case BOARD_TYPE::INIT_PLAYER_2:
+                InGameManager::GetInstance().CreateGhost(i, j, position);
+                boardShape[i][j] = new StaticObject(position);
+                break;
+            case BOARD_TYPE::INIT_GHOST_POS:
+                InGameManager::GetInstance().CreateGhost(i, j, position);
+                boardShape[i][j] = new StaticObject(position);
+                //InGameManager::GetInstance().GetPlayer()->InitPlayerPos(i, j, position);
+                //boardShape[i][j] = new StaticObject(position);
+                break;
+            }
+        }
+    }
+}
+
 GLvoid MapLoader::Loadfile(int map)
 {
     FILE* fp = new FILE();

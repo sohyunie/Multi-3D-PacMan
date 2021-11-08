@@ -7,6 +7,7 @@ private:
 
 public:
 	MapLoader();
+	MapLoader(char mapArray[][30]);
 	MapLoader(int map);
 	StaticObject* boardShape[MAP_SIZE][MAP_SIZE];
 	GLvoid Loadfile(int map);

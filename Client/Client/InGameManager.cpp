@@ -382,14 +382,14 @@ GLvoid InGameManager::DrawScene() {
 		this->startUI->DrawTextureImage(s_program);
 		break;
 	case GAMESTATE::INGAME:
-		it = vGhost.begin();
-		while (it != vGhost.end())
-		{
-			if ((*it)->GetIsActive()) {
-				(*it)->DrawObject(s_program);
-			}
-			it++;
-		}
+		//it = vGhost.begin();
+		//while (it != vGhost.end())
+		//{
+		//	if ((*it)->GetIsActive()) {
+		//		(*it)->DrawObject(s_program);
+		//	}
+		//	it++;
+		//}
 		this->player->DrawObject(s_program);
 		this->map->DrawMap(s_program);
 		this->bottom->DrawObject(s_program);
@@ -986,7 +986,6 @@ GLvoid InGameManager::InitObject()
 	this->objData[BOTTOM] = new ObjData();
 
 	this->player = new Player();
-	this->map = new MapLoader(0);
 	this->bead = new Bead();
 	this->powerBead = new PowerBead();
 	this->ingameUI = new InGameUI();
@@ -1003,4 +1002,14 @@ GLvoid InGameManager::InitObject()
 	cout << "test" << endl;
 	// vBlock.push_back(Block());
 	this->isInitComplete = true;
+}
+
+void InGameManager::GameStart(RecvStartGame recvStartGame)
+{
+	if (this->state == GAMESTATE::LOBBY)
+	{
+		this->map = new MapLoader(recvStartGame.mapinfo, 30);
+		this->PlayingBgm(SOUND_FILE_NAME_INGAME);
+		this->SetState(GAMESTATE::INGAME);
+	}
 }

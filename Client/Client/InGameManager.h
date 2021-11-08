@@ -92,6 +92,8 @@ public:
     GLvoid InitShader();
     GLvoid InitObject();
 
+    void GameStart(RecvStartGame recvStartGame);
+
     float GetDegreeCameraRotate() { return this->degreeCameraRotate; }
     float GetDegreeLightPos() { return this->degreeLightPos; }
     float GetDeltaTime() { return this->deltaTime; }

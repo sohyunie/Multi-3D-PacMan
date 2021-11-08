@@ -1,6 +1,7 @@
 #pragma comment(lib, "ws2_32")
 #pragma comment (lib, "WS2_32.LIB")
 #include "NetworkManager.h"
+#include "InGameManager.h"
 //#include <winsock2.h>
 
 NetworkManager* NetworkManager::instance = nullptr;
@@ -76,6 +77,8 @@ void NetworkManager::Update()
     case MsgType::START_GAME:
     {
         RecvStartGame startGame = (RecvStartGame&)*(m_recvMessage.MsgBuffer + sizeof(double));
+        myID = startGame.my_id;
+        InGameManager::GetInstance().GameStart(startGame);
         break;
     }
     case MsgType::PLAYTER_INPUT:
