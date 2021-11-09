@@ -35,7 +35,9 @@ private:
     Message m_recvMessage;		// Recv에 사용되는 메시지 버퍼
     Message m_sendMessage;		// Send에 사용되는 메시지 버퍼
 
-    int myID;
+    MsgType msgtype;
+
+    char myID;
 public:
     static NetworkManager& GetInstance() {
         if (instance == NULL) {

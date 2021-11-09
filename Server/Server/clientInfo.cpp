@@ -31,6 +31,7 @@ Vector4 ClientInfo::GetBoundingBox()
 void ClientInfo::Send()
 {
 	Socket::Send(m_sendMsg);
+	cout << "´Ù º¸³ÂÀ½ \n";
 }
 
 void ClientInfo::ProcessMessage()

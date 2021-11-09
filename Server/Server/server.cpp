@@ -12,6 +12,8 @@ Server::Server()
 	if (WSAStartup(MAKEWORD(2, 2), &m_wsaData) != 0)
 		throw Exception("WSAStartup failed");
 
+	LoadMap("map.txt");
+
 	m_listenSock.Init();
 	m_listenSock.Bind(SERVER_PORT);
 	m_listenSock.Listen();
@@ -29,24 +31,15 @@ Server::~Server()
 
 void Server::Update()
 {
-	bool maxclient = false;
 	int p_id = 0;
 
 	while(true)
 	{
 		if (p_id < MaxClients) {
-			startGameData.id[p_id] = p_id;
 			AcceptNewPlayer(p_id++);
 		}
-		else if (p_id == MaxClients && maxclient == false) {
-			LoadMap("map.txt");
+		else if (p_id == MaxClients) {
 			CreateStartGameMsg();
-			maxclient = true;
-		}
-		else {
-			// send game start msg to all clients 
-			for (int id = 0; id < MaxClients; ++id)
-				RecvAndSend(id);
 		}
 			
 	}
@@ -63,29 +56,23 @@ void Server::LoadMap(const char* filename)
 		for (int j = 0; j < 30; ++j) {
 			in >> mapn;
 			startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
+			object.active = true;
+			object.x = (float)j;
+			object.z = (float)i;
 
 			if (mapn == 0) {					// BEAD
-				object.active = true;
-				object.x = (float)j;
-				object.z = (float)i;
 				object.id = bead_id++;
 				object.type = ObjectType::BEAD;
 				object.boundingOffset = 1.0;	// 바운딩박스 크기
 				map.beads.push_back(object);
 			}
 			else if (mapn == 1) {			// KEY
-				object.active = true;
-				object.x = (float)j;
-				object.z = (float)i;
 				object.id = key_id++;
 				object.type = ObjectType::KEY;
 				object.boundingOffset = 1.0;	
 				map.keys.push_back(object);
 			}
 			else if (mapn == 2) {			// WALL
-				object.active = true;
-				object.x = (float)j;
-				object.z = (float)i;
 				object.id = 0;
 				object.type = ObjectType::WALL;
 				object.boundingOffset = 1.0;	
@@ -125,9 +112,8 @@ void Server::RecvAndSend(int id)
 	try {
 		while (loop)
 		{
-			//m_clients[id].Recv();
-			m_clients[id].ProcessMessage();
 			m_clients[id].Send();
+			m_clients[id].Recv();
 		}
 	}
 	catch (Exception& ex)
@@ -145,6 +131,8 @@ void Server::CreateStartGameMsg()
 {
 	startGameData.type = MsgType::START_GAME;
 	startGameData.size = sizeof(startGameData);
+	for (int i = 0; i < MaxClients; ++i)
+		startGameData.id[i] = i;
 	startGameData.playertype[0] = PlayerType::RUNNER;
 	startGameData.playertype[1] = PlayerType::TAGGER;
 	startGameData.playertype[2] = PlayerType::RUNNER;

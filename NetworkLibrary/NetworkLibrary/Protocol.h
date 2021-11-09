@@ -16,7 +16,7 @@
 using namespace std;
 
 const short SERVER_PORT = 7777;			// 서버 포트 번호
-const char* const SERVER_IP = "127.0.0.1";		// 서버 IP 주소
+const char* const SERVER_IP = "192.168.122.139";		// 서버 IP 주소
 
 enum class MsgType : char		// 메시지를 식별할 수 있는 메시지 형식
 {	
