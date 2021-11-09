@@ -20,26 +20,28 @@ void NetworkManager::error_display(const char* msg)
     LocalFree(lpMsgBuf);
 }
 
-MsgType NetworkManager::Recv()
+void NetworkManager::Recv()
 {
 	int len = 0;
 	int retval = recvn(s_socket, (char*)&len, sizeof(int), 0);
     if (retval == SOCKET_ERROR)
     {
-        error_display("Recv Error length");
-        return MsgType::NONE;
+        throw Exception("Recv Size Error");
+        //error_display("Recv Error length");
+       // return MsgType::NONE;
     }
 
 	retval = recvn(s_socket, m_recvMessage.m_buffer, len, 0);
     if (retval == SOCKET_ERROR)
     {
-        error_display("Recv Error buffer");
-        return MsgType::NONE;
+        throw Exception("Recv Buffer Error");
+       // error_display("Recv Error buffer");
+        //return MsgType::NONE;
     }
 
-    Base basePacket = (Base&)*(m_recvMessage.m_buffer + sizeof(double));
+    //Base basePacket = (Base&)*(m_recvMessage.m_buffer + sizeof(double));
 
-    return basePacket.type;
+    //return basePacket.type;
 }
 
 bool NetworkManager::Send(Message& msg)
@@ -49,15 +51,17 @@ bool NetworkManager::Send(Message& msg)
     int retval = send(s_socket, (char*)&size, sizeof(size), 0);
     if (retval == SOCKET_ERROR)
     {
-        error_display("Send Error length");
-        return false;
+        throw Exception("Send Size Error");
+       //error_display("Send Error length");
+       //return false;
     }
 
     retval = send(s_socket, (char*)&msg.m_buffer, sizeof(msg.m_buffer), 0);
     if (retval == SOCKET_ERROR)
     {
-        error_display("Send Error buffer");
-        return false;
+        throw Exception("Send Buffer Error");
+       // error_display("Send Error buffer");
+       // return false;
     }
 
     return true;

@@ -58,7 +58,7 @@ void Server::LoadMap(const char* filename)
 	ObjectInfo object;
 
 	int bead_id = 0, key_id = 0, player_id = 0;
-	float mapn;
+	char mapn;
 	for (int i = 0; i < 30; ++i) {
 		for (int j = 0; j < 30; ++j) {
 			in >> mapn;
@@ -66,8 +66,8 @@ void Server::LoadMap(const char* filename)
 
 			if (mapn == 0) {					// BEAD
 				object.active = true;
-				object.x = j;
-				object.z = i;
+				object.x = (float)j;
+				object.z = (float)i;
 				object.id = bead_id++;
 				object.type = ObjectType::BEAD;
 				object.boundingOffset = 1.0;	// 바운딩박스 크기
@@ -75,8 +75,8 @@ void Server::LoadMap(const char* filename)
 			}
 			else if (mapn == 1) {			// KEY
 				object.active = true;
-				object.x = j;
-				object.z = i;
+				object.x = (float)j;
+				object.z = (float)i;
 				object.id = key_id++;
 				object.type = ObjectType::KEY;
 				object.boundingOffset = 1.0;	
@@ -84,21 +84,21 @@ void Server::LoadMap(const char* filename)
 			}
 			else if (mapn == 2) {			// WALL
 				object.active = true;
-				object.x = j;
-				object.z = i;
+				object.x = (float)j;
+				object.z = (float)i;
 				object.id = 0;
 				object.type = ObjectType::WALL;
 				object.boundingOffset = 1.0;	
 				map.walls.push_back(object);
 			}
 			else if (mapn == 3) {			// PLAYER_POS
-				startGameData.x[player_id] = i;
-				startGameData.z[player_id++] = j;
+				startGameData.x[player_id] = (float)i;
+				startGameData.z[player_id++] = (float)j;
 			}
 			else if (mapn == 4) {			// DOOR
 				map.door.active = true;
-				map.door.x = j;
-				map.door.z = i;
+				map.door.x = (float)j;
+				map.door.z = (float)i;
 				map.door.id = 0;
 				map.door.type = ObjectType::DOOR;
 				map.door.boundingOffset = 1.0;

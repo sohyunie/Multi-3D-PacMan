@@ -45,7 +45,7 @@ public:
     }
     // 대화상자 프로시저
     int recvn(SOCKET s, char* buf, int len, int flags);
-    MsgType Recv();
+    void Recv();
     bool Send(Message& msg);
     void Network();
     void error_display(const char* msg);
