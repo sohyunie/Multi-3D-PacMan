@@ -1008,7 +1008,7 @@ void InGameManager::GameStart(RecvStartGame recvStartGame)
 {
 	if (this->state == GAMESTATE::LOBBY)
 	{
-		this->map = new MapLoader(recvStartGame.mapinfo, 30);
+		this->map = new MapLoader(recvStartGame.mapinfo);
 		this->PlayingBgm(SOUND_FILE_NAME_INGAME);
 		this->SetState(GAMESTATE::INGAME);
 	}

@@ -81,7 +81,7 @@ void NetworkManager::Update()
         InGameManager::GetInstance().GameStart(startGame);
         break;
     }
-    case MsgType::PLAYTER_INPUT:
+    case MsgType::PLAYER_INPUT:
         break;
     case MsgType::UPDATE_PLAYER_POS:
         break;
@@ -123,36 +123,42 @@ int NetworkManager::recvn(SOCKET s, char* buf, int len, int flags)
 
 void NetworkManager::Network()
 {
-    //cout << "ip 주소를 입력해주세요." << endl;
-    //cin.getline(address, sizeof(address));
-    //cout << address << "와 연결되었습니다" << endl;
+    try {
+        //cout << "ip 주소를 입력해주세요." << endl;
+        //cin.getline(address, sizeof(address));
+        //cout << address << "와 연결되었습니다" << endl;
 
-    // 서버 connect
-    wcout.imbue(locale("korean"));
-    WSADATA WSAData;
-    WSAStartup(MAKEWORD(2, 2), &WSAData);
-    s_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
-    SOCKADDR_IN server_addr;
-    ZeroMemory(&server_addr, sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(SERVER_PORT);
-    inet_pton(AF_INET, address, &server_addr.sin_addr);
-    int ret = connect(s_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));		// reinterret_cast : type casting
-    cout << "ret : " << ret << endl;
-    if (SOCKET_ERROR == ret) {
-        error_display("Connect error");
+        // 서버 connect
+        wcout.imbue(locale("korean"));
+        WSADATA WSAData;
+        WSAStartup(MAKEWORD(2, 2), &WSAData);
+        s_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
+        SOCKADDR_IN server_addr;
+        ZeroMemory(&server_addr, sizeof(server_addr));
+        server_addr.sin_family = AF_INET;
+        server_addr.sin_port = htons(SERVER_PORT);
+        inet_pton(AF_INET, address, &server_addr.sin_addr);
+        int ret = connect(s_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));		// reinterret_cast : type casting
+        cout << "ret : " << ret << endl;
+        if (SOCKET_ERROR == ret) {
+            error_display("Connect error");
+        }
+        else
+        {
+            isConnected = true;
+        }
+
+        int tcp_option = 1;
+        setsockopt(s_socket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&tcp_option), sizeof(tcp_option));
+
+        while (true)
+        {
+            Update();
+        }
     }
-    else
+    catch (std::exception& e)
     {
-        isConnected = true;
-    }
-
-    int tcp_option = 1;
-    setsockopt(s_socket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&tcp_option), sizeof(tcp_option));
-
-    while (true)
-    {
-        Update();
+        std::cout << e.what() << std::endl;
     }
 }
 

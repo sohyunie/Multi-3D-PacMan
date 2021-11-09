@@ -28,6 +28,12 @@
 
 #pragma comment (lib, "winmm.lib")
 
+// 네트워크 헤더
+#include "Socket.h"
+#include "Protocol.h"
+#include "Exception.h"
+#include "Message.h"
+
 class Ghost;
 
 using namespace std;
@@ -142,20 +148,6 @@ struct Vector4 {
     }
 };
 
-
-// Object 타입
-enum ObjectType {
-    PLAYER,
-	WALL,
-    BEAD,
-	GHOST,
-    POWERBEAD,
-	MAP,
-	ROAD,
-	BOTTOM,
-	TEXTURE,
-};
-
 enum class TextureType {
 	LOBBY,
 	GAMEOVER,
@@ -172,14 +164,6 @@ enum BOARD_TYPE {
 	INIT_PLAYER_1,
 	INIT_PLAYER_2,
 	INIT_GHOST_POS
-};
-
-enum class DIRECTION {
-	UP,
-	RIGHT,
-	DOWN,
-	LEFT,
-	DIR_NONE
 };
 
 enum class GAMESTATE {
@@ -294,77 +278,3 @@ const float Background[] = {
 };
 
 static Vector3 lightPos = Vector3(0, 20, 0);
-
-enum class MsgType : char
-{
-	LOGIN_REQUEST,
-	LOGIN_OK,
-	PLAYER_JOIN,
-	START_GAME,
-	PLAYTER_INPUT,
-	UPDATE_PLAYER_POS,
-	UPDATE_PLAYER_INFO,
-	UPDATE_BEAD,
-	UPDATE_KEY,
-	DOOR_OPEN,
-	NONE,
-};
-
-enum class WinStatus : char
-{
-	NONE,
-	RUNNER_WIN,
-	TAGGER_WIN
-};
-
-enum class PlayerType : char
-{
-	TAGGER,
-	RUNNER
-};
-
-struct Base
-{
-	short size;
-	MsgType type;
-};
-
-// Send Struct
-struct SendPlayerInput : Base
-{
-	char input;
-	float x;
-	float z;
-};
-
-// Recv Struct
-struct RecvPlayerJoin : Base
-{
-	char totalPlayers;
-};
-
-struct RecvStartGame : Base
-{
-	char my_id;
-	char id[3];
-	PlayerType playertype[3];
-	float x[3];
-	float z[3];
-	char mapinfo[30][30];
-};
-
-struct RecvUpdatePlayerInfo : Base
-{
-	char id[3];
-	float x[3];
-	float z[3];
-};
-
-struct RecvUpdateStatus : Base
-{
-	WinStatus win;
-	char hp;
-	ObjectType objectType;
-	char id;
-	bool active;
-};

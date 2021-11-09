@@ -47,14 +47,6 @@ enum class ObjectType : char	// 오브젝트 타입
 	NONE								// 아무것도 없음
 };
 
-enum class InputType : char		// 플레이어 현재 입력을 나타내는 타입
-{
-	UP,									// 우리는
-	DOWN,								// 좌우밖에없는데?
-	LEFT,								// 좌측 방향키
-	RIGHT								// 우측 방향키
-};
-
 enum class WinStatus : char		// 승리 상태
 {
 	NONE,									// 게임 진행
