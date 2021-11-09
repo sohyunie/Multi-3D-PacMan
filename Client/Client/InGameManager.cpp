@@ -85,7 +85,7 @@ void InGameManager::CalculateTime() {
 
 void InGameManager::CameraSetting(bool isFps) {
 	if (this->state == GAMESTATE::INGAME) {
-		if (this->isFPS == true) {
+		if (false) {
 			Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, -1, this->player->GetPosition().z + this->player->dir.z);
 
 			this->cameraDirection = dir.GetGlmVec3();
@@ -98,7 +98,7 @@ void InGameManager::CameraSetting(bool isFps) {
 			this->cameraDirection = dir.GetGlmVec3();
 			this->cameraDirection.y += 5;
 			this->cameraPos = this->player->GetPosition().GetGlmVec3();
-			this->cameraPos.y += 100;
+			this->cameraPos.y += 80;
 		}
 	}
 }
@@ -374,7 +374,7 @@ Ghost* InGameManager::FindGhostByID(int id) {
 GLvoid InGameManager::DrawScene() {
 	glUseProgram(s_program);
 	std::list<Ghost*>::iterator it;
-	this->CameraSetting(this->isFPS);
+	this->CameraSetting(false);
 
 	//this->state= GAMESTATE::INGAME;
 	switch (this->state) {
@@ -382,14 +382,14 @@ GLvoid InGameManager::DrawScene() {
 		this->startUI->DrawTextureImage(s_program);
 		break;
 	case GAMESTATE::INGAME:
-		it = vGhost.begin();
-		while (it != vGhost.end())
-		{
-			if ((*it)->GetIsActive()) {
-				(*it)->DrawObject(s_program);
-			}
-			it++;
-		}
+		//it = vGhost.begin();
+		//while (it != vGhost.end())
+		//{
+		//	if ((*it)->GetIsActive()) {
+		//		(*it)->DrawObject(s_program);
+		//	}
+		//	it++;
+		//}
 		this->player->DrawObject(s_program);
 		this->map->DrawMap(s_program);
 		this->bottom->DrawObject(s_program);
@@ -461,7 +461,7 @@ float InGameManager::GetTime() {
 
 float InGameManager::GetPlayerHP() {
 	if (this->DeleteHP) {
-		this->GetPlayer()->hp -= 5;
+		this->GetPlayer()->hp -= 25;
 		this->DeleteHP = false;
 	}
 	return this->GetPlayer()->hp;
@@ -792,27 +792,27 @@ void InGameManager::TimerFunction() {
 	//		}
 	//	}
 	//}
-	if (this->EatPowerBead == true) {
-		this->powerBeadTime += this->deltaTime;
-		cycleCounter++;
-		if (cycleCounter % 5 == 0) {
-			if (lightColor == lightColor_white) {
-				lightColor = lightColor_black;
-			}
-			else {
-				lightColor = lightColor_white;
-			}
-		}
-		/*lightColor.x = uidColor_light(dreColor_light);
-		lightColor.y = uidColor_light(dreColor_light);
-		lightColor.z = uidColor_light(dreColor_light);*/
-		if (this->powerBeadTime > POWER_BEAD_TIME) {
-			cout << this->powerBeadTime << endl;
-			lightColor = lightColor_white;
-			this->EatPowerBead = false;
-			this->ChangeSpeed(NORMAL_SPEED);
-		}
-	}
+	//if (this->EatPowerBead == true) {
+	//	this->powerBeadTime += this->deltaTime;
+	//	cycleCounter++;
+	//	if (cycleCounter % 5 == 0) {
+	//		if (lightColor == lightColor_white) {
+	//			lightColor = lightColor_black;
+	//		}
+	//		else {
+	//			lightColor = lightColor_white;
+	//		}
+	//	}
+	//	/*lightColor.x = uidColor_light(dreColor_light);
+	//	lightColor.y = uidColor_light(dreColor_light);
+	//	lightColor.z = uidColor_light(dreColor_light);*/
+	//	if (this->powerBeadTime > POWER_BEAD_TIME) {
+	//		cout << this->powerBeadTime << endl;
+	//		lightColor = lightColor_white;
+	//		this->EatPowerBead = false;
+	//		this->ChangeSpeed(NORMAL_SPEED);
+	//	}
+	//}
 
 	for (int i = 0; i < MAP_SIZE; ++i) {
 		for (int j = 0; j < MAP_SIZE; ++j) {
@@ -846,8 +846,9 @@ void InGameManager::TimerFunction() {
 					this->player->temp_i = i;
 					this->player->temp_j = j;
 					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
-					this->EatPowerBead = true;
-					this->ChangeSpeed(POWER_SPEED);
+					this->key++;
+					//this->EatPowerBead = true;
+					//this->ChangeSpeed(POWER_SPEED);
 					// n초 동안 무적 상태
 					break;
 				case ObjectType::ROAD:
@@ -969,7 +970,7 @@ GLvoid InGameManager::InitShader() {
 // + Obj 파일 정보 담아두는 코드
 GLvoid InGameManager::InitObject() 
 {
-	this->SetState(GAMESTATE::LOBBY);
+	this->SetState(GAMESTATE::NONE);
 
 	this->startUI = new StartSceneUI();
 	this->endingUI = new EndingScene();
@@ -985,21 +986,30 @@ GLvoid InGameManager::InitObject()
 	this->objData[BOTTOM] = new ObjData();
 
 	this->player = new Player();
-	this->map = new MapLoader(0);
 	this->bead = new Bead();
 	this->powerBead = new PowerBead();
 	this->ingameUI = new InGameUI();
 	this->bottom = new Bottom(Vector3(75,0,75));
 	//this->player->SetPlayerPos(this->map->boardShape[this->player->board_i][this->player->board_i]->GetPosition().GetGlmVec3());
 	this->SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
-	this->CameraSetting(this->isFPS);
+	this->CameraSetting(false);
 	ReadObj(FILE_NAME, this->objData[GHOST]->vPosData, this->objData[GHOST]->vNormalData, this->objData[GHOST]->vTextureCoordinateData, this->objData[GHOST]->indexData, this->objData[GHOST]->vertexCount, this->objData[GHOST]->indexCount);
 	ReadObj(BEAD_FILE_NAME, this->objData[BEAD]->vPosData, this->objData[BEAD]->vNormalData, this->objData[BEAD]->vTextureCoordinateData, this->objData[BEAD]->indexData, this->objData[BEAD]->vertexCount, this->objData[BEAD]->indexCount);
-	ReadObj(BEAD_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);
+	ReadObj(KEY_ITEM_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);
 	ReadObj(CUBE_FILE_NAME, this->objData[WALL]->vPosData, this->objData[WALL]->vNormalData, this->objData[WALL]->vTextureCoordinateData, this->objData[WALL]->indexData, this->objData[WALL]->vertexCount, this->objData[WALL]->indexCount);
 	ReadObj(CUBE_FILE_NAME, this->objData[PLAYER]->vPosData, this->objData[PLAYER]->vNormalData, this->objData[PLAYER]->vTextureCoordinateData, this->objData[PLAYER]->indexData, this->objData[PLAYER]->vertexCount, this->objData[PLAYER]->indexCount);
 	ReadObj(CUBE_FILE_NAME, this->objData[BOTTOM]->vPosData, this->objData[BOTTOM]->vNormalData, this->objData[BOTTOM]->vTextureCoordinateData, this->objData[BOTTOM]->indexData, this->objData[BOTTOM]->vertexCount, this->objData[BOTTOM]->indexCount);
 	cout << "test" << endl;
 	// vBlock.push_back(Block());
 	this->isInitComplete = true;
+}
+
+void InGameManager::GameStart(RecvStartGame recvStartGame)
+{
+	if (this->state == GAMESTATE::LOBBY)
+	{
+		this->map = new MapLoader(recvStartGame.mapinfo, 30);
+		this->PlayingBgm(SOUND_FILE_NAME_INGAME);
+		this->SetState(GAMESTATE::INGAME);
+	}
 }

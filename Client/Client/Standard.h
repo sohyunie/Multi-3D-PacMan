@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <random>
 #include <time.h>
+#include <WS2tcpip.h>
 #include <windows.h>
 #include <vector>
 #include <algorithm>
@@ -20,11 +21,12 @@
 #include <glm/ext.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <tchar.h>
+#include <thread>
 #include "Dependencies/glew.h"
 #include "Dependencies/freeglut.h"
 
 #pragma comment (lib, "winmm.lib")
-
 
 class Ghost;
 
@@ -46,7 +48,7 @@ static MCI_PLAY_PARMS playFxSound;
 
 #define FILE_NAME		"ghost.obj"
 #define BEAD_FILE_NAME	"bead.obj"
-#define POWERBEAD_FILE_NAME	"bead.obj"
+#define KEY_ITEM_FILE_NAME	"key.obj"
 #define CUBE_FILE_NAME	"block.obj"
 
 #define SOUND_FILE_NAME_INGAME	"bgm_InGame.wav"  // 배경음악
@@ -164,10 +166,11 @@ enum class TextureType {
 // Map 타입
 enum BOARD_TYPE {
 	BEAD_ITEM,
-	POWERBEAD_ITEM,
+	KEY_ITEM,
 	WALL_0,
 	NONE,
-	INIT_PLAYER_POS,
+	INIT_PLAYER_1,
+	INIT_PLAYER_2,
 	INIT_GHOST_POS
 };
 
@@ -180,6 +183,7 @@ enum class DIRECTION {
 };
 
 enum class GAMESTATE {
+	NONE,
 	LOBBY,
 	INGAME,
 	GAMEOVER,
@@ -290,3 +294,77 @@ const float Background[] = {
 };
 
 static Vector3 lightPos = Vector3(0, 20, 0);
+
+enum class MsgType : char
+{
+	LOGIN_REQUEST,
+	LOGIN_OK,
+	PLAYER_JOIN,
+	START_GAME,
+	PLAYTER_INPUT,
+	UPDATE_PLAYER_POS,
+	UPDATE_PLAYER_INFO,
+	UPDATE_BEAD,
+	UPDATE_KEY,
+	DOOR_OPEN,
+	NONE,
+};
+
+enum class WinStatus : char
+{
+	NONE,
+	RUNNER_WIN,
+	TAGGER_WIN
+};
+
+enum class PlayerType : char
+{
+	TAGGER,
+	RUNNER
+};
+
+struct Base
+{
+	short size;
+	MsgType type;
+};
+
+// Send Struct
+struct SendPlayerInput : Base
+{
+	char input;
+	float x;
+	float z;
+};
+
+// Recv Struct
+struct RecvPlayerJoin : Base
+{
+	char totalPlayers;
+};
+
+struct RecvStartGame : Base
+{
+	char my_id;
+	char id[3];
+	PlayerType playertype[3];
+	float x[3];
+	float z[3];
+	char mapinfo[30][30];
+};
+
+struct RecvUpdatePlayerInfo : Base
+{
+	char id[3];
+	float x[3];
+	float z[3];
+};
+
+struct RecvUpdateStatus : Base
+{
+	WinStatus win;
+	char hp;
+	ObjectType objectType;
+	char id;
+	bool active;
+};

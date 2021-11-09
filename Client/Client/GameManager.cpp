@@ -1,6 +1,7 @@
 #include "Standard.h"
 #include "InGameManager.h"
 #include "Player.h"
+#include "NetworkManager.h"
 
 void drawScene();
 void drawSceneSubWindow();
@@ -97,7 +98,8 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case ((char)13):	// enter key
-		if (InGameManager::GetInstance().GetState() == GAMESTATE::LOBBY) {
+		if (InGameManager::GetInstance().GetState() == GAMESTATE::LOBBY)
+		{
 			InGameManager::GetInstance().PlayingBgm(SOUND_FILE_NAME_INGAME);
 			InGameManager::GetInstance().SetState(GAMESTATE::INGAME);
 		}
@@ -193,11 +195,24 @@ void processSpecialKeys(int key, int x, int y)
 void TimerFunction(int value) {
 	InGameManager::GetInstance().TimerFunction();
 
+	switch (InGameManager::GetInstance().GetState())
+	{
+	case GAMESTATE::NONE:
+		if (NetworkManager::GetInstance().GetIsConnected())
+		{
+			InGameManager::GetInstance().SetState(GAMESTATE::LOBBY);
+		}
+		break;
+	}
+
 	glutTimerFunc(10, TimerFunction, 1);
 }
 
 int main(int argc, char** argv)
 {
+	// Network Thread
+	thread networkTherad(&NetworkManager::Network, &NetworkManager::GetInstance());	// 우리가 쓸 함수, 우리가 쓸 함수가 어떤 애의 건지 객체를 보여줌. 
+
 	//PlaySound(TEXT(SOUND_FILE_NAME_LOBBY), NULL, SND_ASYNC | SND_LOOP);
 	InGameManager::GetInstance().PlayingBgm(SOUND_FILE_NAME_LOBBY);
 	glutInit(&argc, argv);
@@ -215,7 +230,6 @@ int main(int argc, char** argv)
 	else
 		std::cout << "GLEW Initialized\n";
 
-	//ReadObj(FILE_NAME, InGameManager::GetInstance().gobj->vPosData, InGameManager::GetInstance().gobj->vNormalData, InGameManager::GetInstance().gobj->vTextureCoordinateData, InGameManager::GetInstance().gobj->indexData, InGameManager::GetInstance().gobj->vertexCount, InGameManager::GetInstance().gobj->indexCount);
 	InGameManager::GetInstance().InitObject();
 	InitShader();
 	InitBuffer();
@@ -223,7 +237,6 @@ int main(int argc, char** argv)
 
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
-	//glutIdleFunc(DrawScene);
 
 	glutKeyboardFunc(Keyboard);
 	glutSpecialUpFunc(releaseKey);

@@ -15,10 +15,12 @@ public:
 	void ProcessMessage();
 	void CheckObjectsStatus();
 	void IsCollided(Vector4& a, Vector4& b);
-	void CreateLoginOkAndMapInfoMsg();
-
+	void CreateLoginOkAndMapInfoMsg(start_game s_game);
+	
 	pair<float, float> GetNewPosition();
 	Vector4 GetBoundingBox();
+
+	
 private:
 	int m_id;
 	PlayerType m_type;

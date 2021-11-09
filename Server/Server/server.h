@@ -24,10 +24,13 @@ public:
 	static MapInfo map;
 	static int countOfKeyAccquired;
 
-	static array<ClientInfo, 3> m_clients;
+	static vector<ClientInfo> m_clients;
+	static const int MaxClients = 1;
 
 private:
 	WSAData m_wsaData;
 	Socket m_listenSock;
-	array<std::thread, 3> m_threads;
+	vector<std::thread> m_threads;
+
+	start_game startGameData;
 };
