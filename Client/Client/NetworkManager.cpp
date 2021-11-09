@@ -30,21 +30,21 @@ MsgType NetworkManager::Recv()
         return MsgType::NONE;
     }
 
-	retval = recvn(s_socket, m_recvMessage.MsgBuffer, len, 0);
+	retval = recvn(s_socket, m_recvMessage.m_buffer, len, 0);
     if (retval == SOCKET_ERROR)
     {
         error_display("Recv Error buffer");
         return MsgType::NONE;
     }
 
-    Base basePacket = (Base&)*(m_recvMessage.MsgBuffer + sizeof(double));
+    Base basePacket = (Base&)*(m_recvMessage.m_buffer + sizeof(double));
 
     return basePacket.type;
 }
 
 bool NetworkManager::Send(Message& msg)
 {
-    int size = sizeof(msg.MsgBuffer);
+    int size = sizeof(msg.m_buffer);
 
     int retval = send(s_socket, (char*)&size, sizeof(size), 0);
     if (retval == SOCKET_ERROR)
@@ -53,7 +53,7 @@ bool NetworkManager::Send(Message& msg)
         return false;
     }
 
-    retval = send(s_socket, (char*)&msg.MsgBuffer, sizeof(msg.MsgBuffer), 0);
+    retval = send(s_socket, (char*)&msg.m_buffer, sizeof(msg.m_buffer), 0);
     if (retval == SOCKET_ERROR)
     {
         error_display("Send Error buffer");
@@ -76,7 +76,7 @@ void NetworkManager::Update()
         break;
     case MsgType::START_GAME:
     {
-        RecvStartGame startGame = (RecvStartGame&)*(m_recvMessage.MsgBuffer + sizeof(double));
+        RecvStartGame startGame = (RecvStartGame&)*(m_recvMessage.m_buffer + sizeof(double));
         myID = startGame.my_id;
         InGameManager::GetInstance().GameStart(startGame);
         break;
