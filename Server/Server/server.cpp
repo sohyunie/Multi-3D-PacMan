@@ -113,9 +113,6 @@ void Server::AcceptNewPlayer(int id)
 	m_clients.emplace_back(new_client, id);
 	m_threads.emplace_back(RecvAndSend, id);
 	cout << "Accepted new client [" << id << "]\n";
-	// TODO: Send join msg to all clients.
-	//		 Assign id and role
-
 }
 
 void Server::RecvAndSend(int id)
