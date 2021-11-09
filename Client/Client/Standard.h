@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <random>
 #include <time.h>
+#include <WS2tcpip.h>
 #include <windows.h>
 #include <vector>
 #include <algorithm>
@@ -20,11 +21,18 @@
 #include <glm/ext.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <tchar.h>
+#include <thread>
 #include "Dependencies/glew.h"
 #include "Dependencies/freeglut.h"
 
 #pragma comment (lib, "winmm.lib")
 
+// 네트워크 헤더
+#include "Socket.h"
+#include "Protocol.h"
+#include "Exception.h"
+#include "Message.h"
 
 class Ghost;
 
@@ -46,7 +54,7 @@ static MCI_PLAY_PARMS playFxSound;
 
 #define FILE_NAME		"ghost.obj"
 #define BEAD_FILE_NAME	"bead.obj"
-#define POWERBEAD_FILE_NAME	"bead.obj"
+#define KEY_ITEM_FILE_NAME	"key.obj"
 #define CUBE_FILE_NAME	"block.obj"
 
 #define SOUND_FILE_NAME_INGAME	"bgm_InGame.wav"  // 배경음악
@@ -140,20 +148,6 @@ struct Vector4 {
     }
 };
 
-
-// Object 타입
-enum ObjectType {
-    PLAYER,
-	WALL,
-    BEAD,
-	GHOST,
-    POWERBEAD,
-	MAP,
-	ROAD,
-	BOTTOM,
-	TEXTURE,
-};
-
 enum class TextureType {
 	LOBBY,
 	GAMEOVER,
@@ -164,22 +158,16 @@ enum class TextureType {
 // Map 타입
 enum BOARD_TYPE {
 	BEAD_ITEM,
-	POWERBEAD_ITEM,
+	KEY_ITEM,
 	WALL_0,
 	NONE,
-	INIT_PLAYER_POS,
+	INIT_PLAYER_1,
+	INIT_PLAYER_2,
 	INIT_GHOST_POS
 };
 
-enum class DIRECTION {
-	UP,
-	RIGHT,
-	DOWN,
-	LEFT,
-	DIR_NONE
-};
-
 enum class GAMESTATE {
+	NONE,
 	LOBBY,
 	INGAME,
 	GAMEOVER,

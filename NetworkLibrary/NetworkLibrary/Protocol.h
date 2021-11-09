@@ -5,6 +5,7 @@
 #include <vector>
 #include <array>
 #include <string>
+#include <fstream>
 
 #include <WinSock2.h>
 #include <WS2tcpip.h>
@@ -42,15 +43,8 @@ enum class ObjectType : char	// 오브젝트 타입
 	BEAD,								// 비드
 	KEY,									// 키
 	DOOR,								// 탈출구
-	WALL									// 벽
-};
-
-enum class InputType : char		// 플레이어 현재 입력을 나타내는 타입
-{
-	UP,									// 우리는
-	DOWN,								// 좌우밖에없는데?
-	LEFT,								// 좌측 방향키
-	RIGHT								// 우측 방향키
+	WALL	,								// 벽
+	NONE								// 아무것도 없음
 };
 
 enum class WinStatus : char		// 승리 상태
@@ -88,6 +82,7 @@ struct start_game	// 게임을 시작하면, 클라이언트는 모든 플레이어의 위치정보와 타
 	short size;
 	MsgType type;
 	char id[3];
+	char my_id;
 	PlayerType playertype[3];
 	float x[3];
 	float z[3];
