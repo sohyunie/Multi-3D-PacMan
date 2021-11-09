@@ -92,7 +92,7 @@ public:
     GLvoid InitShader();
     GLvoid InitObject();
 
-    void GameStart(RecvStartGame recvStartGame);
+    void GameStart(start_game recvStartGame);
 
     float GetDegreeCameraRotate() { return this->degreeCameraRotate; }
     float GetDegreeLightPos() { return this->degreeLightPos; }
@@ -109,7 +109,7 @@ public:
     void CameraSetting(bool isFps);
     void TimerFunction();
     void CheckDirection(DynamicObject* dObject);
-    Vector3 DirToVec3(DIRECTION dir);
+    Vector3 DirToVec3(Direction dir);
     void CreateGhost(int i, int j, Vector3 position);
     void DeleteGhost(Ghost* g);
     Ghost* FindGhostByID(int id);
@@ -141,8 +141,8 @@ public:
     void ChangeSpeed(float speed);
     void InitGame();
 
-    GLint GetVAO(ObjectType type) { return this->VAO[type]; }
-    ObjData* GetObjData(ObjectType type) { return this->objData[type]; }
+    GLint GetVAO(ObjectType type) { return this->VAO[(int)type]; }
+    ObjData* GetObjData(ObjectType type) { return this->objData[(int)type]; }
     GAMESTATE GetState() { return this->state; }
     int GetBeadCount() { return this->beadNumber; }
     void SetState(GAMESTATE state);

@@ -5,21 +5,6 @@
 #define BUFSIZE 2048
 #define BUFSIZE2 128
 
-class Message
-{
-public:
-    Message();
-    ~Message();
-
-    static const int MaxBufferSize = 1024;
-
-    char m_buffer[MaxBufferSize];
-private:
-    int m_readIndex;
-    int m_writeIndex;
-    int m_remainSize;
-};
-
 class NetworkManager
 {
 private:

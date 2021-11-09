@@ -27,14 +27,12 @@ MsgType NetworkManager::Recv()
     if (retval == SOCKET_ERROR)
     {
         error_display("Recv Error length");
-        return MsgType::NONE;
     }
 
 	retval = recvn(s_socket, m_recvMessage.m_buffer, len, 0);
     if (retval == SOCKET_ERROR)
     {
         error_display("Recv Error buffer");
-        return MsgType::NONE;
     }
 
     Base basePacket = (Base&)*(m_recvMessage.m_buffer + sizeof(double));
@@ -76,7 +74,7 @@ void NetworkManager::Update()
         break;
     case MsgType::START_GAME:
     {
-        RecvStartGame startGame = (RecvStartGame&)*(m_recvMessage.m_buffer + sizeof(double));
+        start_game startGame = (start_game&)*(m_recvMessage.m_buffer + sizeof(double));
         myID = startGame.my_id;
         InGameManager::GetInstance().GameStart(startGame);
         break;
@@ -137,7 +135,7 @@ void NetworkManager::Network()
         ZeroMemory(&server_addr, sizeof(server_addr));
         server_addr.sin_family = AF_INET;
         server_addr.sin_port = htons(SERVER_PORT);
-        inet_pton(AF_INET, address, &server_addr.sin_addr);
+        inet_pton(AF_INET, SERVERIP, &server_addr.sin_addr);
         int ret = connect(s_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));		// reinterret_cast : type casting
         cout << "ret : " << ret << endl;
         if (SOCKET_ERROR == ret) {
@@ -160,16 +158,4 @@ void NetworkManager::Network()
     {
         std::cout << e.what() << std::endl;
     }
-}
-
-Message::Message()
-    : m_writeIndex(0),
-    m_readIndex(0),
-    m_remainSize(MaxBufferSize)
-{
-    std::memset(m_buffer, 0, MaxBufferSize);
-}
-
-Message::~Message()
-{
 }
