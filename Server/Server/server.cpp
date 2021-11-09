@@ -12,6 +12,8 @@ Server::Server()
 	if (WSAStartup(MAKEWORD(2, 2), &m_wsaData) != 0)
 		throw Exception("WSAStartup failed");
 
+	LoadMap("map.txt");
+
 	m_listenSock.Init();
 	m_listenSock.Bind(SERVER_PORT);
 	m_listenSock.Listen();
@@ -29,14 +31,19 @@ Server::~Server()
 
 void Server::Update()
 {
+<<<<<<< HEAD
 	bool maxclient = false;
 	int p_id = 0;
 
+=======
+	int i = 0;
+>>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 	while(true)
 	{
 <<<<<<< HEAD
 		if (i < MaxClients)
 			AcceptNewPlayer(i++);
+<<<<<<< HEAD
 =======
 		if (p_id < MaxClients) {
 			startGameData.id[p_id] = p_id;
@@ -52,13 +59,19 @@ void Server::Update()
 			// send game start msg to all clients 
 			for (int id = 0; id < MaxClients; ++id)
 				RecvAndSend(id);
+=======
+		else {
+			// send game start msg to all clients 
+>>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 		}
 			
+		
 	}
 }
 
 void Server::LoadMap(const char* filename)
 {
+<<<<<<< HEAD
 	ifstream in(filename);
 	ObjectInfo object;
 
@@ -110,6 +123,8 @@ void Server::LoadMap(const char* filename)
 			}
 		}
 	}
+=======
+>>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 }
 
 void Server::AcceptNewPlayer(int id)
@@ -148,6 +163,7 @@ void Server::CreatePlayerJoinMsg()
 
 void Server::CreateStartGameMsg()
 {
+<<<<<<< HEAD
 	startGameData.type = MsgType::START_GAME;
 	startGameData.size = sizeof(startGameData);
 	startGameData.playertype[0] = PlayerType::RUNNER;
@@ -158,6 +174,8 @@ void Server::CreateStartGameMsg()
 		startGameData.my_id = i;
 		m_clients[i].CreateLoginOkAndMapInfoMsg(startGameData);
 	}
+=======
+>>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 }
 
 void Server::CreateUpdateMapInfoMsg()

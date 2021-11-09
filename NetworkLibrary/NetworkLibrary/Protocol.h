@@ -5,7 +5,6 @@
 #include <vector>
 #include <array>
 #include <string>
-#include <fstream>
 
 #include <WinSock2.h>
 #include <WS2tcpip.h>
@@ -43,8 +42,7 @@ enum class ObjectType : char	// 오브젝트 타입
 	BEAD,								// 비드
 	KEY,									// 키
 	DOOR,								// 탈출구
-	WALL	,								// 벽
-	NONE								// 아무것도 없음
+	WALL									// 벽
 };
 
 enum class WinStatus : char		// 승리 상태
