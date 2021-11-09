@@ -79,12 +79,12 @@ SOCKET Socket::Accept()
 
 void Socket::Send(Message& msg) 
 {
-	int size = sizeof(msg.MsgBuffer);
+	int size = sizeof(msg.m_buffer);
 	int retval = send(m_socket, (char*)&size, sizeof(size), 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("send size failed");
 
-	retval = send(m_socket, (char*)&msg.MsgBuffer, sizeof(msg.MsgBuffer), 0);
+	retval = send(m_socket, (char*)&msg.m_buffer, sizeof(msg.m_buffer), 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("send buffer failed");
 }
@@ -96,7 +96,7 @@ void Socket::Recv()
 	if (retval == SOCKET_ERROR)
 		throw Exception("recv failed");
 
-	retval = recvn(m_socket, m_recvMessage.MsgBuffer, len, 0);
+	retval = recvn(m_socket, m_recvMessage.m_buffer, len, 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("recv failed");
 }

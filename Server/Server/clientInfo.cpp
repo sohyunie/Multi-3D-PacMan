@@ -35,7 +35,7 @@ void ClientInfo::Send()
 
 void ClientInfo::ProcessMessage()
 {
-	std::string msg(m_recvMessage.MsgBuffer);
+	std::string msg(m_recvMessage.m_buffer);
 	//cout << msg << endl;
 }
 
