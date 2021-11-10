@@ -15,7 +15,7 @@ public:
 	void ProcessMessage();
 	void CheckObjectsStatus();
 	void IsCollided(Vector4& a, Vector4& b);
-	void CreateLoginOkAndMapInfoMsg(start_game s_game);
+	void CreateLoginOkAndMapInfoMsg(start_game& s_game);
 	
 	pair<float, float> GetNewPosition();
 	Vector4 GetBoundingBox();
@@ -32,5 +32,6 @@ private:
 
 	float m_boundingOffset;
 	Message m_sendMsg;
+	char temp_buffer[1024]; // Test
 	Direction m_direction;
 };

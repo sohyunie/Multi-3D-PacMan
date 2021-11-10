@@ -79,8 +79,9 @@ SOCKET Socket::Accept()
 
 void Socket::Send(Message& msg) 
 {
-	int size = sizeof(msg.m_buffer);
-	int retval = send(m_socket, (char*)&size, sizeof(size), 0);
+	short size = msg.PeekSize();
+	cout << size << endl;
+	int retval = send(m_socket, (char*)&size, sizeof(short), 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("send size failed");
 

@@ -70,6 +70,7 @@ struct Vector4				// 객체의 바운딩 박스 표현하기 위해 사용하는 vector4 구조체
 	float MinZ;
 };
 
+#pragma pack(push, 1)
 struct player_join			// 플레이어가 추가되면 총 플레이어의 수를 보내어 대기 화면을 업데이트한다. 
 {
 	short size;
@@ -117,6 +118,7 @@ struct update_status			//맵에 존재하는 오브젝트들의 변화되어 사라졌는지, 그 상태
 	char id;
 	bool active;
 };
+#pragma pack(pop)
 
 struct ObjectInfo			// 오브젝트의 정보를 관리하는 구조체
 {

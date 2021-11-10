@@ -31,7 +31,6 @@ Vector4 ClientInfo::GetBoundingBox()
 void ClientInfo::Send()
 {
 	Socket::Send(m_sendMsg);
-	cout << "´Ù º¸³ÂÀ½ \n";
 }
 
 void ClientInfo::ProcessMessage()
@@ -54,7 +53,7 @@ pair<float, float> ClientInfo::GetNewPosition()
 	return pair<float, float>();
 }
 
-void ClientInfo::CreateLoginOkAndMapInfoMsg(start_game s_game)
+void ClientInfo::CreateLoginOkAndMapInfoMsg(start_game& s_game)
 {
-	m_sendMsg.Push((char*)&s_game, sizeof(s_game));
+	m_sendMsg.Push(reinterpret_cast<char*>(&s_game), sizeof(s_game));
 }
