@@ -12,11 +12,13 @@ public:
 	void LoadMap(const char* filename);
 	void AcceptNewPlayer(int id);
 	
-	static void RecvAndSend(int id);
+	static void SendAndRecv(int id);
 	
 	void CreatePlayerJoinMsg();
 	void CreateStartGameMsg();
 	void CreateUpdateMapInfoMsg();
+
+	void GameStart();
 
 public:
 	static mutex g_mapInfoLock;
@@ -24,8 +26,12 @@ public:
 	static MapInfo map;
 	static int countOfKeyAccquired;
 
-	static vector<ClientInfo> m_clients;
+	static vector<ClientInfo> g_clients;
 	static const int MaxClients = 3;
+	static bool g_loop;
+
+	static Timer g_timer;
+	static float g_accum_time;
 
 private:
 	WSAData m_wsaData;

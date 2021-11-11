@@ -3,9 +3,14 @@
 mutex Server::g_mapInfoLock;
 mutex Server::g_countOfKeyLock;
 MapInfo Server::map;
-int Server::countOfKeyAccquired;
 
-vector<ClientInfo> Server::m_clients;
+int Server::countOfKeyAccquired = 0;
+bool Server::g_loop = false;
+float Server::g_accum_time = 0.0f;
+
+vector<ClientInfo> Server::g_clients;
+Timer Server::g_timer;
+
 
 Server::Server()
 {
@@ -31,14 +36,21 @@ Server::~Server()
 
 void Server::Update()
 {
-	CreateStartGameMsg();
-
-	for (int i = 0; i < MaxClients; i++)
+	int max_clients = 1; // temporary variable
+	for (int i = 0; i < max_clients; i++)
 		AcceptNewPlayer(i);
 
-	while(true)
+	GameStart();
+	std::cout << "Game Start\n";
+	g_timer.Start();
+
+	while(g_loop)
 	{
-		Sleep(500);
+		g_timer.Tick();
+		g_accum_time += g_timer.GetElapsedTime();
+		if (g_accum_time >= 1.0f) {
+			g_accum_time = 0.0f;
+		}
 	}
 }
 
@@ -93,23 +105,21 @@ void Server::LoadMap(const char* filename)
 void Server::AcceptNewPlayer(int id)
 {
 	SOCKET new_client = m_listenSock.Accept();
-	m_clients.emplace_back(new_client, id);
-
-	startGameData.my_id = id;
-	m_clients.back().CreateLoginOkAndMapInfoMsg(startGameData);
-
-	m_threads.emplace_back(RecvAndSend, id);
+	g_clients.emplace_back(new_client, id);
+	m_threads.emplace_back(SendAndRecv, id);
+	std::cout << "Accepted New Client[" << id << "]\n";
 }
 
-void Server::RecvAndSend(int id)
+void Server::SendAndRecv(int id)
 {
-	bool loop = true;
+
+	while (!g_loop) this_thread::sleep_for(100ms);
 
 	try {
-		while (loop)
+		while (g_loop)
 		{
-			m_clients[id].Send();
-			m_clients[id].Recv();
+			/*g_clients[id].Send();
+			g_clients[id].Recv();*/
 		}
 	}
 	catch (Exception& ex)
@@ -137,4 +147,17 @@ void Server::CreateStartGameMsg()
 void Server::CreateUpdateMapInfoMsg()
 {
 
+}
+
+void Server::GameStart()
+{
+	CreateStartGameMsg();
+
+	for (int i = 0; i < g_clients.size(); i++)
+	{
+		startGameData.my_id = i;
+		g_clients[i].CreateLoginOkAndMapInfoMsg(startGameData);
+	}
+
+	g_loop = true;
 }
