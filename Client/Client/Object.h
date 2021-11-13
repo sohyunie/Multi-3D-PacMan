@@ -10,7 +10,7 @@ public:
 	Object() { }
 	virtual void DrawObject(GLuint s_program);
 	bool CollisionCheck(Object type);
-	BoundingBox GetBoundingBox();
+	Vector4 GetBoundingBox();
 	Vector3 GetPosition() { return position; }
 	ObjectType GetType() { return type; }
 	ObjectType SetType(ObjectType type) { this->type = type; }

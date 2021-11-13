@@ -108,154 +108,154 @@ GLuint s_program;
 GLvoid InGameManager::InitBuffer() {
 	cout << "InitBuffer InGameManager" << endl;
 	// PLAYER
-	glGenVertexArrays(1, &this->VAO[(int)ObjectType::PLAYER]);
-	glBindVertexArray(this->VAO[(int)ObjectType::PLAYER]);
-	glGenBuffers(3, this->VBO[(int)ObjectType::PLAYER]);
+	glGenVertexArrays(1, &this->VAO[PLAYER]);
+	glBindVertexArray(this->VAO[PLAYER]);
+	glGenBuffers(3, this->VBO[PLAYER]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::PLAYER][0]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::PLAYER]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::PLAYER]->vPosData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[PLAYER][0]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[PLAYER]->vertexCount * sizeof(float) * 3, this->objData[PLAYER]->vPosData, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::PLAYER][1]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::PLAYER]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::PLAYER]->vNormalData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[PLAYER][1]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[PLAYER]->vertexCount * sizeof(float) * 3, this->objData[PLAYER]->vNormalData, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::PLAYER][2]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::PLAYER]->vertexCount * sizeof(float) * 2, this->objData[(int)ObjectType::PLAYER]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[PLAYER][2]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[PLAYER]->vertexCount * sizeof(float) * 2, this->objData[PLAYER]->vTextureCoordinateData, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 	glEnableVertexAttribArray(2);
 
-	glGenBuffers(1, &this->EBO[(int)ObjectType::PLAYER]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[(int)ObjectType::PLAYER]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[(int)ObjectType::PLAYER]->indexCount * sizeof(int), this->objData[(int)ObjectType::PLAYER]->indexData, GL_STATIC_DRAW);
+	glGenBuffers(1, &this->EBO[PLAYER]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[PLAYER]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[PLAYER]->indexCount * sizeof(int), this->objData[PLAYER]->indexData, GL_STATIC_DRAW);
 
 
 	// GHOST
-	glGenVertexArrays(1, &this->VAO[(int)ObjectType::GHOST]);
-	glBindVertexArray(this->VAO[(int)ObjectType::GHOST]);
-	glGenBuffers(3, this->VBO[(int)ObjectType::GHOST]);
+	glGenVertexArrays(1, &this->VAO[GHOST]);
+	glBindVertexArray(this->VAO[GHOST]);
+	glGenBuffers(3, this->VBO[GHOST]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::GHOST][0]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::GHOST]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::GHOST]->vPosData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[GHOST][0]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[GHOST]->vertexCount * sizeof(float) * 3, this->objData[GHOST]->vPosData, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::GHOST][1]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::GHOST]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::GHOST]->vNormalData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[GHOST][1]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[GHOST]->vertexCount * sizeof(float) * 3, this->objData[GHOST]->vNormalData, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::GHOST][2]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::GHOST]->vertexCount * sizeof(float) * 2, this->objData[(int)ObjectType::GHOST]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[GHOST][2]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[GHOST]->vertexCount * sizeof(float) * 2, this->objData[GHOST]->vTextureCoordinateData, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 	glEnableVertexAttribArray(2);
 
-	glGenBuffers(1, &this->EBO[(int)ObjectType::GHOST]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[(int)ObjectType::GHOST]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[(int)ObjectType::GHOST]->indexCount * sizeof(int), this->objData[(int)ObjectType::GHOST]->indexData, GL_STATIC_DRAW);
+	glGenBuffers(1, &this->EBO[GHOST]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[GHOST]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[GHOST]->indexCount * sizeof(int), this->objData[GHOST]->indexData, GL_STATIC_DRAW);
 
 
 	// BLOCK
-	glGenVertexArrays(1, &this->VAO[(int)ObjectType::WALL]);
-	glBindVertexArray(this->VAO[(int)ObjectType::WALL]);
-	glGenBuffers(3, this->VBO[(int)ObjectType::WALL]);
+	glGenVertexArrays(1, &this->VAO[WALL]);
+	glBindVertexArray(this->VAO[WALL]);
+	glGenBuffers(3, this->VBO[WALL]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::WALL][0]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::WALL]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::WALL]->vPosData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[WALL][0]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[WALL]->vertexCount * sizeof(float) * 3, this->objData[WALL]->vPosData, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::WALL][1]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::WALL]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::WALL]->vNormalData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[WALL][1]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[WALL]->vertexCount * sizeof(float) * 3, this->objData[WALL]->vNormalData, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::WALL][2]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::WALL]->vertexCount * sizeof(float) * 2, this->objData[(int)ObjectType::WALL]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[WALL][2]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[WALL]->vertexCount * sizeof(float) * 2, this->objData[WALL]->vTextureCoordinateData, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 	glEnableVertexAttribArray(2);
 
-	glGenBuffers(1, &this->EBO[(int)ObjectType::WALL]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[(int)ObjectType::WALL]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[(int)ObjectType::WALL]->indexCount * sizeof(int), this->objData[(int)ObjectType::WALL]->indexData, GL_STATIC_DRAW);
+	glGenBuffers(1, &this->EBO[WALL]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[WALL]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[WALL]->indexCount * sizeof(int), this->objData[WALL]->indexData, GL_STATIC_DRAW);
 
 
 	// BEAD
-	glGenVertexArrays(1, &this->VAO[(int)ObjectType::BEAD]);
-	glBindVertexArray(this->VAO[(int)ObjectType::BEAD]);
-	glGenBuffers(3, this->VBO[(int)ObjectType::BEAD]);
+	glGenVertexArrays(1, &this->VAO[BEAD]);
+	glBindVertexArray(this->VAO[BEAD]);
+	glGenBuffers(3, this->VBO[BEAD]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::BEAD][0]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::BEAD]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::BEAD]->vPosData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BEAD][0]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BEAD]->vertexCount * sizeof(float) * 3, this->objData[BEAD]->vPosData, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::BEAD][1]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::BEAD]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::BEAD]->vNormalData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BEAD][1]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BEAD]->vertexCount * sizeof(float) * 3, this->objData[BEAD]->vNormalData, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::BEAD][2]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::BEAD]->vertexCount * sizeof(float) * 2, this->objData[(int)ObjectType::BEAD]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BEAD][2]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BEAD]->vertexCount * sizeof(float) * 2, this->objData[BEAD]->vTextureCoordinateData, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 	glEnableVertexAttribArray(2);
 
-	glGenBuffers(1, &this->EBO[(int)ObjectType::BEAD]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[(int)ObjectType::BEAD]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[(int)ObjectType::BEAD]->indexCount * sizeof(int), this->objData[(int)ObjectType::BEAD]->indexData, GL_STATIC_DRAW);
+	glGenBuffers(1, &this->EBO[BEAD]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[BEAD]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[BEAD]->indexCount * sizeof(int), this->objData[BEAD]->indexData, GL_STATIC_DRAW);
 
 
 
 	// POWERBEAD
-	glGenVertexArrays(1, &this->VAO[(int)ObjectType::POWERBEAD]);
-	glBindVertexArray(this->VAO[(int)ObjectType::POWERBEAD]);
-	glGenBuffers(3, this->VBO[(int)ObjectType::POWERBEAD]);
+	glGenVertexArrays(1, &this->VAO[POWERBEAD]);
+	glBindVertexArray(this->VAO[POWERBEAD]);
+	glGenBuffers(3, this->VBO[POWERBEAD]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::POWERBEAD][0]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::POWERBEAD]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::POWERBEAD]->vPosData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[POWERBEAD][0]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[POWERBEAD]->vertexCount * sizeof(float) * 3, this->objData[POWERBEAD]->vPosData, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::POWERBEAD][1]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::POWERBEAD]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::POWERBEAD]->vNormalData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[POWERBEAD][1]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[POWERBEAD]->vertexCount * sizeof(float) * 3, this->objData[POWERBEAD]->vNormalData, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::POWERBEAD][2]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::POWERBEAD]->vertexCount * sizeof(float) * 2, this->objData[(int)ObjectType::POWERBEAD]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[POWERBEAD][2]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[POWERBEAD]->vertexCount * sizeof(float) * 2, this->objData[POWERBEAD]->vTextureCoordinateData, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 	glEnableVertexAttribArray(2);
 
-	glGenBuffers(1, &this->EBO[(int)ObjectType::POWERBEAD]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[(int)ObjectType::POWERBEAD]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[(int)ObjectType::POWERBEAD]->indexCount * sizeof(int), this->objData[(int)ObjectType::POWERBEAD]->indexData, GL_STATIC_DRAW);
+	glGenBuffers(1, &this->EBO[POWERBEAD]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[POWERBEAD]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[POWERBEAD]->indexCount * sizeof(int), this->objData[POWERBEAD]->indexData, GL_STATIC_DRAW);
 
 
 	// BOTTOM
-	glGenVertexArrays(1, &this->VAO[(int)ObjectType::BOTTOM]);
-	glBindVertexArray(this->VAO[(int)ObjectType::BOTTOM]);
-	glGenBuffers(3, this->VBO[(int)ObjectType::BOTTOM]);
+	glGenVertexArrays(1, &this->VAO[BOTTOM]);
+	glBindVertexArray(this->VAO[BOTTOM]);
+	glGenBuffers(3, this->VBO[BOTTOM]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::BOTTOM][0]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::BOTTOM]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::BOTTOM]->vPosData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BOTTOM][0]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BOTTOM]->vertexCount * sizeof(float) * 3, this->objData[BOTTOM]->vPosData, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::BOTTOM][1]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::BOTTOM]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::BOTTOM]->vNormalData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BOTTOM][1]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BOTTOM]->vertexCount * sizeof(float) * 3, this->objData[BOTTOM]->vNormalData, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::BOTTOM][2]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::BOTTOM]->vertexCount * sizeof(float) * 2, this->objData[(int)ObjectType::BOTTOM]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BOTTOM][2]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BOTTOM]->vertexCount * sizeof(float) * 2, this->objData[BOTTOM]->vTextureCoordinateData, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 	glEnableVertexAttribArray(2);
 
-	glGenBuffers(1, &this->EBO[(int)ObjectType::BOTTOM]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[(int)ObjectType::BOTTOM]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[(int)ObjectType::BOTTOM]->indexCount * sizeof(int), this->objData[(int)ObjectType::BOTTOM]->indexData, GL_STATIC_DRAW);
+	glGenBuffers(1, &this->EBO[BOTTOM]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[BOTTOM]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[BOTTOM]->indexCount * sizeof(int), this->objData[BOTTOM]->indexData, GL_STATIC_DRAW);
 
 
 	//Texture
@@ -274,11 +274,11 @@ GLvoid InGameManager::InitBuffer() {
 
 void InGameManager::InitTexture() {
 	//Texture
-	glGenVertexArrays(1, &this->VAO[(int)ObjectType::TEXTURE]);
-	glBindVertexArray(VAO[(int)ObjectType::TEXTURE]);
-	glGenBuffers(3, this->VBO[(int)ObjectType::TEXTURE]);
+	glGenVertexArrays(1, &this->VAO[TEXTURE]);
+	glBindVertexArray(VAO[TEXTURE]);
+	glGenBuffers(3, this->VBO[TEXTURE]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[(int)ObjectType::TEXTURE][0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[TEXTURE][0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Background), Background, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); //--- 위치 속성
 	glEnableVertexAttribArray(0);
@@ -431,15 +431,15 @@ GLvoid InGameManager::DrawSubScene() {
 	}
 }
 
-Vector3 InGameManager::DirToVec3(Direction dir) {
+Vector3 InGameManager::DirToVec3(DIRECTION dir) {
 	switch (dir) {
-	case Direction::LEFT:
+	case DIRECTION::LEFT:
 		return Vector3(0, 0, -7.5);
-	case Direction::RIGHT:
+	case DIRECTION::RIGHT:
 		return Vector3(0, 0, 7.5);
-	case Direction::UP:
+	case DIRECTION::UP:
 		return Vector3(-7.5, 0, 0);
-	case Direction::DOWN:
+	case DIRECTION::DOWN:
 		return Vector3(7.5, 0, 0);
 	}
 }
@@ -569,9 +569,9 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 
 	// 플레이어가 이동 중이야, 근데 이동 중에 키를 눌렀어 다른 방향 키, 다른 방향 키 눌렀다고 해서 바로 반영되면 안되잖아. 왜냐면 도착해서 회전해야 i j 기반으로 움직이는거니까
 	// isArrived = true 인 순간이 i j 에 정확하게 도착한 순간인거지. 그래서 건들지 못하게 만드는거야 도착하기 전까지 새로운 키가 눌렸더라도.
-	if (dObject->isArrived && dObject->newDirection != Direction::NONE) {
+	if (dObject->isArrived && dObject->newDirection != DIRECTION::DIR_NONE) {
 		dObject->priorDirection = dObject->progressDirection; // priorDirection이 왜? 회전때문에 okay
-		if (dObject->priorDirection == Direction::NONE) // 
+		if (dObject->priorDirection == DIRECTION::DIR_NONE) // 
 			dObject->priorDirection = dObject->newDirection;
 		dObject->progressDirection = dObject->newDirection;
 		dObject->isArrived = false;
@@ -590,7 +590,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 	StaticObject* target;
 	Vector3 startPos;
 	switch (dObject->progressDirection) {
-	case Direction::UP:
+	case DIRECTION::UP:
 		if (dObject->board_i - 1 < 0) // 아에 빈 보드판으로 가지 않도록
 		{
 			break;
@@ -599,7 +599,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 
 		startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
 		target = this->map->boardShape[dObject->board_i - 1][dObject->board_j];
-		dObject->dir = this->DirToVec3(Direction::UP);
+		dObject->dir = this->DirToVec3(DIRECTION::UP);
 
 		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
 			if (dObject->GetPosition() == target->GetPosition()) {
@@ -629,7 +629,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 		}
 		break;
 
-	case Direction::DOWN:
+	case DIRECTION::DOWN:
 		if (dObject->board_i + 1 > 30) // 아에 빈 보드판으로 가지 않도록
 			break;
 		dObject->acc += this->deltaTime * speed;
@@ -637,7 +637,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 		startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
 		target = this->map->boardShape[dObject->board_i + 1][dObject->board_j];
 		//dir = target->GetPosition() - startPos;
-		dObject->dir = this->DirToVec3(Direction::DOWN);
+		dObject->dir = this->DirToVec3(DIRECTION::DOWN);
 		//cout << "[" << dObject->board_i << "," << dObject->board_j << "]" << target->GetType() << endl;
 
 		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
@@ -668,7 +668,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 		}
 		break;
 
-	case Direction::LEFT:
+	case DIRECTION::LEFT:
 		if (dObject->board_j - 1 < 0) // 아에 빈 보드판으로 가지 않도록
 			break;
 		dObject->acc += this->deltaTime * speed;
@@ -676,7 +676,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 		startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
 		target = this->map->boardShape[dObject->board_i][dObject->board_j - 1];
 		//dir = target->GetPosition() - startPos;
-		dObject->dir = this->DirToVec3(Direction::LEFT);
+		dObject->dir = this->DirToVec3(DIRECTION::LEFT);
 		//cout << "[" << dObject->board_i << "," << dObject->board_j << "]" << target->GetType() << endl;
 
 		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
@@ -707,7 +707,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 		}
 		break;
 
-	case Direction::RIGHT:
+	case DIRECTION::RIGHT:
 		if (player->board_j + 1 > 31) // 아에 빈 보드판으로 가지 않도록
 			break;
 		dObject->acc += this->deltaTime * speed;
@@ -716,7 +716,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 		target = this->map->boardShape[dObject->board_i][dObject->board_j + 1];
 		//cout << "[" << dObject->board_i << "," << dObject->board_j << "]" << target->GetType() << endl;
 		//dir = target->GetPosition() - startPos;
-		dObject->dir = this->DirToVec3(Direction::RIGHT);
+		dObject->dir = this->DirToVec3(DIRECTION::RIGHT);
 
 		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
 			if (dObject->GetPosition() == target->GetPosition()) {
@@ -835,7 +835,8 @@ void InGameManager::TimerFunction() {
 					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
 					this->DecreaseBeadNumber();
 					this->PlayingFxSound(SOUND_FILE_NAME_BEAD);
-					//PlaySound(TEXT(SOUND_FILE_NAME_BEAD), NULL, SND_ASYNC | SND_SYNC); 
+					//PlaySound(TEXT(SOUND_FILE_NAME_BEAD), NULL, SND_ASYNC | SND_SYNC); // 반응 느린건 일단 이따 생각할게유!  우웅ㅇ
+					cout << "멍멍" << endl;
 					if(this->GetBeadCount() <= 0)
 						this->SetState(GAMESTATE::CLEAR);
 					// cout << "beadNumber: " << this->beadNumber << endl;
@@ -977,12 +978,12 @@ GLvoid InGameManager::InitObject()
 	//this->block = new Block(Vector3(0, 0, 0));
 	//this->block2 = new Block(Vector3(10.0, 0, 0));
 
-	this->objData[(int)ObjectType::PLAYER] = new ObjData();
-	this->objData[(int)ObjectType::WALL] = new ObjData();
-	this->objData[(int)ObjectType::BEAD] = new ObjData();
-	this->objData[(int)ObjectType::GHOST] = new ObjData();
-	this->objData[(int)ObjectType::POWERBEAD] = new ObjData();
-	this->objData[(int)ObjectType::BOTTOM] = new ObjData();
+	this->objData[PLAYER] = new ObjData();
+	this->objData[WALL] = new ObjData();
+	this->objData[BEAD] = new ObjData();
+	this->objData[GHOST] = new ObjData();
+	this->objData[POWERBEAD] = new ObjData();
+	this->objData[BOTTOM] = new ObjData();
 
 	this->player = new Player();
 	this->bead = new Bead();
@@ -992,18 +993,18 @@ GLvoid InGameManager::InitObject()
 	//this->player->SetPlayerPos(this->map->boardShape[this->player->board_i][this->player->board_i]->GetPosition().GetGlmVec3());
 	this->SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
 	this->CameraSetting(false);
-	ReadObj(FILE_NAME, this->objData[(int)ObjectType::GHOST]->vPosData, this->objData[(int)ObjectType::GHOST]->vNormalData, this->objData[(int)ObjectType::GHOST]->vTextureCoordinateData, this->objData[(int)ObjectType::GHOST]->indexData, this->objData[(int)ObjectType::GHOST]->vertexCount, this->objData[(int)ObjectType::GHOST]->indexCount);
-	ReadObj(BEAD_FILE_NAME, this->objData[(int)ObjectType::BEAD]->vPosData, this->objData[(int)ObjectType::BEAD]->vNormalData, this->objData[(int)ObjectType::BEAD]->vTextureCoordinateData, this->objData[(int)ObjectType::BEAD]->indexData, this->objData[(int)ObjectType::BEAD]->vertexCount, this->objData[(int)ObjectType::BEAD]->indexCount);
-	ReadObj(KEY_ITEM_FILE_NAME, this->objData[(int)ObjectType::POWERBEAD]->vPosData, this->objData[(int)ObjectType::POWERBEAD]->vNormalData, this->objData[(int)ObjectType::POWERBEAD]->vTextureCoordinateData, this->objData[(int)ObjectType::POWERBEAD]->indexData, this->objData[(int)ObjectType::POWERBEAD]->vertexCount, this->objData[(int)ObjectType::POWERBEAD]->indexCount);
-	ReadObj(CUBE_FILE_NAME, this->objData[(int)ObjectType::WALL]->vPosData, this->objData[(int)ObjectType::WALL]->vNormalData, this->objData[(int)ObjectType::WALL]->vTextureCoordinateData, this->objData[(int)ObjectType::WALL]->indexData, this->objData[(int)ObjectType::WALL]->vertexCount, this->objData[(int)ObjectType::WALL]->indexCount);
-	ReadObj(CUBE_FILE_NAME, this->objData[(int)ObjectType::PLAYER]->vPosData, this->objData[(int)ObjectType::PLAYER]->vNormalData, this->objData[(int)ObjectType::PLAYER]->vTextureCoordinateData, this->objData[(int)ObjectType::PLAYER]->indexData, this->objData[(int)ObjectType::PLAYER]->vertexCount, this->objData[(int)ObjectType::PLAYER]->indexCount);
-	ReadObj(CUBE_FILE_NAME, this->objData[(int)ObjectType::BOTTOM]->vPosData, this->objData[(int)ObjectType::BOTTOM]->vNormalData, this->objData[(int)ObjectType::BOTTOM]->vTextureCoordinateData, this->objData[(int)ObjectType::BOTTOM]->indexData, this->objData[(int)ObjectType::BOTTOM]->vertexCount, this->objData[(int)ObjectType::BOTTOM]->indexCount);
+	ReadObj(FILE_NAME, this->objData[GHOST]->vPosData, this->objData[GHOST]->vNormalData, this->objData[GHOST]->vTextureCoordinateData, this->objData[GHOST]->indexData, this->objData[GHOST]->vertexCount, this->objData[GHOST]->indexCount);
+	ReadObj(BEAD_FILE_NAME, this->objData[BEAD]->vPosData, this->objData[BEAD]->vNormalData, this->objData[BEAD]->vTextureCoordinateData, this->objData[BEAD]->indexData, this->objData[BEAD]->vertexCount, this->objData[BEAD]->indexCount);
+	ReadObj(KEY_ITEM_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);
+	ReadObj(CUBE_FILE_NAME, this->objData[WALL]->vPosData, this->objData[WALL]->vNormalData, this->objData[WALL]->vTextureCoordinateData, this->objData[WALL]->indexData, this->objData[WALL]->vertexCount, this->objData[WALL]->indexCount);
+	ReadObj(CUBE_FILE_NAME, this->objData[PLAYER]->vPosData, this->objData[PLAYER]->vNormalData, this->objData[PLAYER]->vTextureCoordinateData, this->objData[PLAYER]->indexData, this->objData[PLAYER]->vertexCount, this->objData[PLAYER]->indexCount);
+	ReadObj(CUBE_FILE_NAME, this->objData[BOTTOM]->vPosData, this->objData[BOTTOM]->vNormalData, this->objData[BOTTOM]->vTextureCoordinateData, this->objData[BOTTOM]->indexData, this->objData[BOTTOM]->vertexCount, this->objData[BOTTOM]->indexCount);
 	cout << "test" << endl;
 	// vBlock.push_back(Block());
 	this->isInitComplete = true;
 }
 
-void InGameManager::GameStart(start_game recvStartGame)
+void InGameManager::GameStart(RecvStartGame recvStartGame)
 {
 	if (this->state == GAMESTATE::LOBBY)
 	{

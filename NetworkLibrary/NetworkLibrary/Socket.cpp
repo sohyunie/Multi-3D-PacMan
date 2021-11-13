@@ -101,8 +101,3 @@ void Socket::Recv()
 	if (retval == SOCKET_ERROR)
 		throw Exception("recv failed");
 }
-
-SOCKET Socket::GetSocket()
-{
-	return this->m_socket;
-}

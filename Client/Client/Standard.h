@@ -132,15 +132,15 @@ struct Vector3 {
 };
 
 // 충돌처리 위한 벡터 구조체 
-struct BoundingBox {
+struct Vector4 {
     float minX;
     float minZ;
     float maxX;
     float maxZ;
 
-    BoundingBox() {}
+    Vector4() {}
 
-    BoundingBox(float minX, float minZ, float maxX, float maxZ) {
+    Vector4(float minX, float minZ, float maxX, float maxZ) {
         this->minX = minX;
         this->minZ = minZ;
         this->maxX = maxX;
@@ -201,7 +201,6 @@ struct GhostCollisionData {
 	//	return isSame;
 	//}
 };
-
 
 //float deltaTime = 0.0f;
 
