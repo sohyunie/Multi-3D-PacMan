@@ -18,6 +18,8 @@ public:
 	bool IsEmpty();
 	bool IsFull();
 
+	short PeekSize();
+
 	static const int MaxBufferSize = 1024;
 
 	char m_buffer[MaxBufferSize];

@@ -18,3 +18,10 @@ void Message::CopyData(void* msg, int size)
 void Message::ReleaseData(void* msg)
 {
 }
+
+short Message::PeekSize()
+{
+	short size = 0;
+	std::memcpy(reinterpret_cast<char*>(&size), m_buffer, sizeof(short));
+	return size;
+}

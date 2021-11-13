@@ -31,47 +31,19 @@ Server::~Server()
 
 void Server::Update()
 {
-<<<<<<< HEAD
-	bool maxclient = false;
-	int p_id = 0;
+	CreateStartGameMsg();
 
-=======
-	int i = 0;
->>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
+	for (int i = 0; i < MaxClients; i++)
+		AcceptNewPlayer(i);
+
 	while(true)
 	{
-<<<<<<< HEAD
-		if (i < MaxClients)
-			AcceptNewPlayer(i++);
-<<<<<<< HEAD
-=======
-		if (p_id < MaxClients) {
-			startGameData.id[p_id] = p_id;
-			AcceptNewPlayer(p_id++);
-		}
-		else if (p_id == MaxClients && maxclient == false) {
-			LoadMap("map.txt");
-			CreateStartGameMsg();
-			maxclient = true;
-		}
->>>>>>> main
-		else {
-			// send game start msg to all clients 
-			for (int id = 0; id < MaxClients; ++id)
-				RecvAndSend(id);
-=======
-		else {
-			// send game start msg to all clients 
->>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
-		}
-			
-		
+		Sleep(500);
 	}
 }
 
 void Server::LoadMap(const char* filename)
 {
-<<<<<<< HEAD
 	ifstream in(filename);
 	ObjectInfo object;
 
@@ -81,37 +53,30 @@ void Server::LoadMap(const char* filename)
 		for (int j = 0; j < 30; ++j) {
 			in >> mapn;
 			startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
+			
+			object.active = true;
+			object.x = (float)j;
+			object.z = (float)i;
+			object.boundingOffset = 1.0;
 
 			if (mapn == 0) {					// BEAD
-				object.active = true;
-				object.x = (float)j;
-				object.z = (float)i;
 				object.id = bead_id++;
 				object.type = ObjectType::BEAD;
-				object.boundingOffset = 1.0;	// 바운딩박스 크기
 				map.beads.push_back(object);
 			}
 			else if (mapn == 1) {			// KEY
-				object.active = true;
-				object.x = (float)j;
-				object.z = (float)i;
 				object.id = key_id++;
 				object.type = ObjectType::KEY;
-				object.boundingOffset = 1.0;	
 				map.keys.push_back(object);
 			}
 			else if (mapn == 2) {			// WALL
-				object.active = true;
-				object.x = (float)j;
-				object.z = (float)i;
 				object.id = 0;
-				object.type = ObjectType::WALL;
-				object.boundingOffset = 1.0;	
+				object.type = ObjectType::WALL;					
 				map.walls.push_back(object);
 			}
 			else if (mapn == 3) {			// PLAYER_POS
-				startGameData.x[player_id] = (float)i;
-				startGameData.z[player_id++] = (float)j;
+				startGameData.x[player_id] = (float)j;
+				startGameData.z[player_id++] = (float)i;
 			}
 			else if (mapn == 4) {			// DOOR
 				map.door.active = true;
@@ -123,19 +88,17 @@ void Server::LoadMap(const char* filename)
 			}
 		}
 	}
-=======
->>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 }
 
 void Server::AcceptNewPlayer(int id)
 {
 	SOCKET new_client = m_listenSock.Accept();
 	m_clients.emplace_back(new_client, id);
-	m_threads.emplace_back(RecvAndSend, id);
-	cout << "Accepted new client [" << id << "]\n";
-	// TODO: Send join msg to all clients.
-	//		 Assign id and role
 
+	startGameData.my_id = id;
+	m_clients.back().CreateLoginOkAndMapInfoMsg(startGameData);
+
+	m_threads.emplace_back(RecvAndSend, id);
 }
 
 void Server::RecvAndSend(int id)
@@ -145,9 +108,8 @@ void Server::RecvAndSend(int id)
 	try {
 		while (loop)
 		{
-			//m_clients[id].Recv();
-			m_clients[id].ProcessMessage();
 			m_clients[id].Send();
+			m_clients[id].Recv();
 		}
 	}
 	catch (Exception& ex)
@@ -163,19 +125,13 @@ void Server::CreatePlayerJoinMsg()
 
 void Server::CreateStartGameMsg()
 {
-<<<<<<< HEAD
 	startGameData.type = MsgType::START_GAME;
 	startGameData.size = sizeof(startGameData);
+	for (int i = 0; i < MaxClients; ++i)
+		startGameData.id[i] = (char)i;
 	startGameData.playertype[0] = PlayerType::RUNNER;
 	startGameData.playertype[1] = PlayerType::TAGGER;
 	startGameData.playertype[2] = PlayerType::RUNNER;
-
-	for (int i = 0; i < MaxClients; ++i) {
-		startGameData.my_id = i;
-		m_clients[i].CreateLoginOkAndMapInfoMsg(startGameData);
-	}
-=======
->>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 }
 
 void Server::CreateUpdateMapInfoMsg()

@@ -15,21 +15,21 @@
 
 using namespace std;
 
-const short SERVER_PORT = 7777;				// 서버 포트 번호
-const char* const SERVER_IP = "127.0.0.1";		// 서버 IP 주소
+const short SERVER_PORT = 7777;			// 서버 포트 번호
+const char* const SERVER_IP = "192.168.122.139";		// 서버 IP 주소
 
 enum class MsgType : char		// 메시지를 식별할 수 있는 메시지 형식
 {	
 	LOGIN_REQUEST,				// 로그인 요청
-	LOGIN_OK,					// 로그인 확인
-	PLAYER_JOIN,				// 플레이어 입장
+	LOGIN_OK,							// 로그인 확인
+	PLAYER_JOIN,					// 플레이어 입장
 	START_GAME,					// 게임 시작
-	PLAYER_INPUT,				// 플레이어 키 입력
-	UPDATE_PLAYER_POS,			// 플레이어 위치
-	UPDATE_PLAYER_INFO,			// 플레이어 정보
-	UPDATE_BEAD,				// 비드
-	UPDATE_KEY,					// 키
-	DOOR_OPEN					// 최종 탈출구
+	PLAYER_INPUT,					// 플레이어 키 입력
+	UPDATE_PLAYER_POS,		// 플레이어 위치
+	UPDATE_PLAYER_INFO,		// 플레이어 정보
+	UPDATE_BEAD,					// 비드
+	UPDATE_KEY,						// 키
+	DOOR_OPEN						// 최종 탈출구
 };
 
 enum class PlayerType : char	// 플레이어 타입
@@ -38,40 +38,28 @@ enum class PlayerType : char	// 플레이어 타입
 	RUNNER							// 도망자
 };
 
-enum class ObjectType : char		// 오브젝트 타입
+enum class ObjectType : char	// 오브젝트 타입
 {
 	BEAD,								// 비드
-	KEY,								// 키
+	KEY,									// 키
 	DOOR,								// 탈출구
-	WALL,								// 벽
-	NONE,								// 아무것도 없음
-
-	// client 수정
-	GHOST,
-	TEXTURE,
-	PLAYER,
-	POWERBEAD,
-	BOTTOM,
-	ROAD,
+	WALL	,								// 벽
+	NONE								// 아무것도 없음
 };
 
 enum class WinStatus : char		// 승리 상태
 {
-	NONE,							// 게임 진행
+	NONE,									// 게임 진행
 	RUNNER_WIN,						// 러너 승리
-	TAGGER_WIN						// 태거 승리
+	TAGGER_WIN							// 태거 승리
 };
 
 enum class Direction : char
 {
-	NONE, 
 	UP,
 	DOWN,
 	LEFT,
-	RIGHT,
-
-	// client 수정
-	DIR_NONE,
+	RIGHT
 };
 
 struct Vector4				// 객체의 바운딩 박스 표현하기 위해 사용하는 vector4 구조체 
@@ -82,6 +70,7 @@ struct Vector4				// 객체의 바운딩 박스 표현하기 위해 사용하는 vector4 구조체
 	float MinZ;
 };
 
+#pragma pack(push, 1)
 struct player_join			// 플레이어가 추가되면 총 플레이어의 수를 보내어 대기 화면을 업데이트한다. 
 {
 	short size;
@@ -129,11 +118,7 @@ struct update_status			//맵에 존재하는 오브젝트들의 변화되어 사라졌는지, 그 상태
 	char id;
 	bool active;
 };
-
-struct Base {
-	short size;
-	MsgType type;
-};
+#pragma pack(pop)
 
 struct ObjectInfo			// 오브젝트의 정보를 관리하는 구조체
 {
