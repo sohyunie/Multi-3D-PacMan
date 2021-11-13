@@ -12,6 +12,8 @@ Server::Server()
 	if (WSAStartup(MAKEWORD(2, 2), &m_wsaData) != 0)
 		throw Exception("WSAStartup failed");
 
+	LoadMap("map.txt");
+
 	m_listenSock.Init();
 	m_listenSock.Bind(SERVER_PORT);
 	m_listenSock.Listen();
@@ -29,11 +31,20 @@ Server::~Server()
 
 void Server::Update()
 {
+<<<<<<< HEAD
 	bool maxclient = false;
 	int p_id = 0;
 
+=======
+	int i = 0;
+>>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 	while(true)
 	{
+<<<<<<< HEAD
+		if (i < MaxClients)
+			AcceptNewPlayer(i++);
+<<<<<<< HEAD
+=======
 		if (p_id < MaxClients) {
 			startGameData.id[p_id] = p_id;
 			AcceptNewPlayer(p_id++);
@@ -43,22 +54,29 @@ void Server::Update()
 			CreateStartGameMsg();
 			maxclient = true;
 		}
+>>>>>>> main
 		else {
 			// send game start msg to all clients 
 			for (int id = 0; id < MaxClients; ++id)
 				RecvAndSend(id);
+=======
+		else {
+			// send game start msg to all clients 
+>>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 		}
 			
+		
 	}
 }
 
 void Server::LoadMap(const char* filename)
 {
+<<<<<<< HEAD
 	ifstream in(filename);
 	ObjectInfo object;
 
 	int bead_id = 0, key_id = 0, player_id = 0;
-	float mapn;
+	char mapn;
 	for (int i = 0; i < 30; ++i) {
 		for (int j = 0; j < 30; ++j) {
 			in >> mapn;
@@ -66,8 +84,8 @@ void Server::LoadMap(const char* filename)
 
 			if (mapn == 0) {					// BEAD
 				object.active = true;
-				object.x = j;
-				object.z = i;
+				object.x = (float)j;
+				object.z = (float)i;
 				object.id = bead_id++;
 				object.type = ObjectType::BEAD;
 				object.boundingOffset = 1.0;	// 바운딩박스 크기
@@ -75,8 +93,8 @@ void Server::LoadMap(const char* filename)
 			}
 			else if (mapn == 1) {			// KEY
 				object.active = true;
-				object.x = j;
-				object.z = i;
+				object.x = (float)j;
+				object.z = (float)i;
 				object.id = key_id++;
 				object.type = ObjectType::KEY;
 				object.boundingOffset = 1.0;	
@@ -84,27 +102,29 @@ void Server::LoadMap(const char* filename)
 			}
 			else if (mapn == 2) {			// WALL
 				object.active = true;
-				object.x = j;
-				object.z = i;
+				object.x = (float)j;
+				object.z = (float)i;
 				object.id = 0;
 				object.type = ObjectType::WALL;
 				object.boundingOffset = 1.0;	
 				map.walls.push_back(object);
 			}
 			else if (mapn == 3) {			// PLAYER_POS
-				startGameData.x[player_id] = i;
-				startGameData.z[player_id++] = j;
+				startGameData.x[player_id] = (float)i;
+				startGameData.z[player_id++] = (float)j;
 			}
 			else if (mapn == 4) {			// DOOR
 				map.door.active = true;
-				map.door.x = j;
-				map.door.z = i;
+				map.door.x = (float)j;
+				map.door.z = (float)i;
 				map.door.id = 0;
 				map.door.type = ObjectType::DOOR;
 				map.door.boundingOffset = 1.0;
 			}
 		}
 	}
+=======
+>>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 }
 
 void Server::AcceptNewPlayer(int id)
@@ -143,6 +163,7 @@ void Server::CreatePlayerJoinMsg()
 
 void Server::CreateStartGameMsg()
 {
+<<<<<<< HEAD
 	startGameData.type = MsgType::START_GAME;
 	startGameData.size = sizeof(startGameData);
 	startGameData.playertype[0] = PlayerType::RUNNER;
@@ -153,6 +174,8 @@ void Server::CreateStartGameMsg()
 		startGameData.my_id = i;
 		m_clients[i].CreateLoginOkAndMapInfoMsg(startGameData);
 	}
+=======
+>>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 }
 
 void Server::CreateUpdateMapInfoMsg()
