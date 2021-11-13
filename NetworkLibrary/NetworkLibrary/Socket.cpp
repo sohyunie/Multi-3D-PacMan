@@ -101,3 +101,13 @@ void Socket::Recv()
 	if (retval == SOCKET_ERROR)
 		throw Exception("recv failed");
 }
+
+SOCKET Socket::GetSocket()
+{
+	return m_socket;
+}
+
+Message Socket::GetRecvMessage()
+{
+	return m_recvMessage;
+}

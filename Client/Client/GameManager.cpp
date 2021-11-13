@@ -151,7 +151,7 @@ void processSpecialKeys(int key, int x, int y)
 	{
 	case GLUT_KEY_RIGHT:
 		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
-		case Direction::DIR_NONE:
+		case Direction::NONE:
 			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
 			break;
 		case Direction::UP:
@@ -170,7 +170,7 @@ void processSpecialKeys(int key, int x, int y)
 		break;
 	case GLUT_KEY_LEFT:
 		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
-		case Direction::DIR_NONE:
+		case Direction::NONE:
 			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
 			break;
 		case Direction::UP:

@@ -44,7 +44,15 @@ enum class ObjectType : char	// 오브젝트 타입
 	KEY,									// 키
 	DOOR,								// 탈출구
 	WALL	,								// 벽
-	NONE								// 아무것도 없음
+	NONE,								// 아무것도 없음
+
+	// Client Only
+	PLAYER,
+	GHOST,
+	TEXTURE,
+	POWERBEAD,
+	BOTTOM,
+	ROAD,
 };
 
 enum class WinStatus : char		// 승리 상태
@@ -59,7 +67,10 @@ enum class Direction : char
 	UP,
 	DOWN,
 	LEFT,
-	RIGHT
+	RIGHT,
+
+	// Client Only
+	NONE,
 };
 
 struct Vector4				// 객체의 바운딩 박스 표현하기 위해 사용하는 vector4 구조체 
