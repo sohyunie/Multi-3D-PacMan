@@ -20,7 +20,9 @@ private:
     Message m_recvMessage;		// Recv에 사용되는 메시지 버퍼
     Message m_sendMessage;		// Send에 사용되는 메시지 버퍼
 
-    int myID;
+    MsgType msgtype;
+
+    char myID;
 public:
     static NetworkManager& GetInstance() {
         if (instance == NULL) {
@@ -30,7 +32,7 @@ public:
     }
     // 대화상자 프로시저
     int recvn(SOCKET s, char* buf, int len, int flags);
-    MsgType Recv();
+    void Recv();
     bool Send(Message& msg);
     void Network();
     void error_display(const char* msg);
