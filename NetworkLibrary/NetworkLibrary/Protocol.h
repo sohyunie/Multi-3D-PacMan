@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -15,43 +15,52 @@
 
 using namespace std;
 
-const short SERVER_PORT = 7777;			// ¼­¹ö Æ÷Æ® ¹øÈ£
-const char* const SERVER_IP = "192.168.122.139";		// ¼­¹ö IP ÁÖ¼Ò
+const short SERVER_PORT = 7777;			// ì„œë²„ í¬íŠ¸ ë²ˆí˜¸
+const char* const SERVER_IP = "192.168.122.139";		// ì„œë²„ IP ì£¼ì†Œ
 
-enum class MsgType : char		// ¸Þ½ÃÁö¸¦ ½Äº°ÇÒ ¼ö ÀÖ´Â ¸Þ½ÃÁö Çü½Ä
+enum class MsgType : char		// ë©”ì‹œì§€ë¥¼ ì‹ë³„í•  ìˆ˜ ìžˆëŠ” ë©”ì‹œì§€ í˜•ì‹
 {	
-	LOGIN_REQUEST,				// ·Î±×ÀÎ ¿äÃ»
-	LOGIN_OK,							// ·Î±×ÀÎ È®ÀÎ
-	PLAYER_JOIN,					// ÇÃ·¹ÀÌ¾î ÀÔÀå
-	START_GAME,					// °ÔÀÓ ½ÃÀÛ
-	PLAYER_INPUT,					// ÇÃ·¹ÀÌ¾î Å° ÀÔ·Â
-	UPDATE_PLAYER_POS,		// ÇÃ·¹ÀÌ¾î À§Ä¡
-	UPDATE_PLAYER_INFO,		// ÇÃ·¹ÀÌ¾î Á¤º¸
-	UPDATE_BEAD,					// ºñµå
-	UPDATE_KEY,						// Å°
-	DOOR_OPEN						// ÃÖÁ¾ Å»Ãâ±¸
+	LOGIN_REQUEST,				// ë¡œê·¸ì¸ ìš”ì²­
+	LOGIN_OK,							// ë¡œê·¸ì¸ í™•ì¸
+	PLAYER_JOIN,					// í”Œë ˆì´ì–´ ìž…ìž¥
+	START_GAME,					// ê²Œìž„ ì‹œìž‘
+	PLAYER_INPUT,					// í”Œë ˆì´ì–´ í‚¤ ìž…ë ¥
+	UPDATE_PLAYER_POS,		// í”Œë ˆì´ì–´ ìœ„ì¹˜
+	UPDATE_PLAYER_INFO,		// í”Œë ˆì´ì–´ ì •ë³´
+	UPDATE_BEAD,					// ë¹„ë“œ
+	UPDATE_KEY,						// í‚¤
+	DOOR_OPEN						// ìµœì¢… íƒˆì¶œêµ¬
 };
 
-enum class PlayerType : char	// ÇÃ·¹ÀÌ¾î Å¸ÀÔ
+enum class PlayerType : char	// í”Œë ˆì´ì–´ íƒ€ìž…
 {
-	TAGGER,							// ¼ú·¡
-	RUNNER							// µµ¸ÁÀÚ
+	TAGGER,							// ìˆ ëž˜
+	RUNNER							// ë„ë§ìž
 };
 
-enum class ObjectType : char	// ¿ÀºêÁ§Æ® Å¸ÀÔ
+enum class ObjectType : char	// ì˜¤ë¸Œì íŠ¸ íƒ€ìž…
 {
-	BEAD,								// ºñµå
-	KEY,									// Å°
-	DOOR,								// Å»Ãâ±¸
-	WALL	,								// º®
-	NONE								// ¾Æ¹«°Íµµ ¾øÀ½
+	BEAD,								// ë¹„ë“œ
+	KEY,									// í‚¤
+	DOOR,								// íƒˆì¶œêµ¬
+	WALL	,								// ë²½
+	NONE,								// ì•„ë¬´ê²ƒë„ ì—†ìŒ
+	
+	// client type
+	GHOST,
+	TEXTURE,
+	PLAYER,
+	POWERBEAD,
+	BOTTOM,
+	ROAD,
+
 };
 
-enum class WinStatus : char		// ½Â¸® »óÅÂ
+enum class WinStatus : char		// ìŠ¹ë¦¬ ìƒíƒœ
 {
-	NONE,									// °ÔÀÓ ÁøÇà
-	RUNNER_WIN,						// ·¯³Ê ½Â¸®
-	TAGGER_WIN							// ÅÂ°Å ½Â¸®
+	NONE,									// ê²Œìž„ ì§„í–‰
+	RUNNER_WIN,						// ëŸ¬ë„ˆ ìŠ¹ë¦¬
+	TAGGER_WIN							// íƒœê±° ìŠ¹ë¦¬
 };
 
 enum class Direction : char
@@ -59,10 +68,13 @@ enum class Direction : char
 	UP,
 	DOWN,
 	LEFT,
-	RIGHT
+	RIGHT,
+
+	// Client Type
+	NONE,
 };
 
-struct Vector4				// °´Ã¼ÀÇ ¹Ù¿îµù ¹Ú½º Ç¥ÇöÇÏ±â À§ÇØ »ç¿ëÇÏ´Â vector4 ±¸Á¶Ã¼ 
+struct Vector4				// ê°ì²´ì˜ ë°”ìš´ë”© ë°•ìŠ¤ í‘œí˜„í•˜ê¸° ìœ„í•´ ì‚¬ìš©í•˜ëŠ” vector4 êµ¬ì¡°ì²´ 
 {
 	float MaxX;				
 	float MinX;				
@@ -71,14 +83,14 @@ struct Vector4				// °´Ã¼ÀÇ ¹Ù¿îµù ¹Ú½º Ç¥ÇöÇÏ±â À§ÇØ »ç¿ëÇÏ´Â vector4 ±¸Á¶Ã¼
 };
 
 #pragma pack(push, 1)
-struct player_join			// ÇÃ·¹ÀÌ¾î°¡ Ãß°¡µÇ¸é ÃÑ ÇÃ·¹ÀÌ¾îÀÇ ¼ö¸¦ º¸³»¾î ´ë±â È­¸éÀ» ¾÷µ¥ÀÌÆ®ÇÑ´Ù. 
+struct player_join			// í”Œë ˆì´ì–´ê°€ ì¶”ê°€ë˜ë©´ ì´ í”Œë ˆì´ì–´ì˜ ìˆ˜ë¥¼ ë³´ë‚´ì–´ ëŒ€ê¸° í™”ë©´ì„ ì—…ë°ì´íŠ¸í•œë‹¤. 
 {
 	short size;
 	MsgType type;
 	char TotalPlayers;
 };
 
-struct start_game	// °ÔÀÓÀ» ½ÃÀÛÇÏ¸é, Å¬¶óÀÌ¾ðÆ®´Â ¸ðµç ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡Á¤º¸¿Í Å¸ÀÔ, id¸¦ ÀúÀåÇÑ´Ù.
+struct start_game	// ê²Œìž„ì„ ì‹œìž‘í•˜ë©´, í´ë¼ì´ì–¸íŠ¸ëŠ” ëª¨ë“  í”Œë ˆì´ì–´ì˜ ìœ„ì¹˜ì •ë³´ì™€ íƒ€ìž…, idë¥¼ ì €ìž¥í•œë‹¤.
 {
 	short size;
 	MsgType type;
@@ -90,7 +102,7 @@ struct start_game	// °ÔÀÓÀ» ½ÃÀÛÇÏ¸é, Å¬¶óÀÌ¾ðÆ®´Â ¸ðµç ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡Á¤º¸¿Í Å¸
 	char mapinfo[30][30];
 };
 
-struct player_input		//Å¬¶óÀÌ¾ðÆ®´Â Áö¼ÓÀûÀ¸·Î ¼­¹ö¿¡°Ô ÀÔ·Â °ªÀ» º¸³½´Ù. (ÀÔ·ÂÇÒ ¶§ ¸¶´Ù)
+struct player_input		//í´ë¼ì´ì–¸íŠ¸ëŠ” ì§€ì†ì ìœ¼ë¡œ ì„œë²„ì—ê²Œ ìž…ë ¥ ê°’ì„ ë³´ë‚¸ë‹¤. (ìž…ë ¥í•  ë•Œ ë§ˆë‹¤)
 {
 	short size;
 	MsgType type;
@@ -99,7 +111,7 @@ struct player_input		//Å¬¶óÀÌ¾ðÆ®´Â Áö¼ÓÀûÀ¸·Î ¼­¹ö¿¡°Ô ÀÔ·Â °ªÀ» º¸³½´Ù. (ÀÔ·ÂÇ
 	float z;
 };
 
-struct update_player_info			// ¼­¹ö´Â Áö¼ÓÀûÀ¸·Î Å¬¶óÀÌ¾ðÆ®µéÀÇ À§Ä¡¸¦ °»½ÅÇÏ¿© º¸³½´Ù. (1/30ÃÊ¸¶´Ù)
+struct update_player_info			// ì„œë²„ëŠ” ì§€ì†ì ìœ¼ë¡œ í´ë¼ì´ì–¸íŠ¸ë“¤ì˜ ìœ„ì¹˜ë¥¼ ê°±ì‹ í•˜ì—¬ ë³´ë‚¸ë‹¤. (1/30ì´ˆë§ˆë‹¤)
 {
 	short size;
 	MsgType type;
@@ -108,7 +120,7 @@ struct update_player_info			// ¼­¹ö´Â Áö¼ÓÀûÀ¸·Î Å¬¶óÀÌ¾ðÆ®µéÀÇ À§Ä¡¸¦ °»½ÅÇÏ¿© 
 	float z[3];
 };
 
-struct update_status			//¸Ê¿¡ Á¸ÀçÇÏ´Â ¿ÀºêÁ§Æ®µéÀÇ º¯È­µÇ¾î »ç¶óÁ³´ÂÁö, ±× »óÅÂ¸¦ º¸³½´Ù.(Ãæµ¹ÇÒ ¶§ ¸¶´Ù)
+struct update_status			//ë§µì— ì¡´ìž¬í•˜ëŠ” ì˜¤ë¸Œì íŠ¸ë“¤ì˜ ë³€í™”ë˜ì–´ ì‚¬ë¼ì¡ŒëŠ”ì§€, ê·¸ ìƒíƒœë¥¼ ë³´ë‚¸ë‹¤.(ì¶©ëŒí•  ë•Œ ë§ˆë‹¤)
 {
 	short size;
 	MsgType type;
@@ -120,22 +132,22 @@ struct update_status			//¸Ê¿¡ Á¸ÀçÇÏ´Â ¿ÀºêÁ§Æ®µéÀÇ º¯È­µÇ¾î »ç¶óÁ³´ÂÁö, ±× »óÅÂ
 };
 #pragma pack(pop)
 
-struct ObjectInfo			// ¿ÀºêÁ§Æ®ÀÇ Á¤º¸¸¦ °ü¸®ÇÏ´Â ±¸Á¶Ã¼
+struct ObjectInfo			// ì˜¤ë¸Œì íŠ¸ì˜ ì •ë³´ë¥¼ ê´€ë¦¬í•˜ëŠ” êµ¬ì¡°ì²´
 {
-	int id;										// ¿ÀºêÁ§Æ® ¾ÆÀÌµð
-	ObjectType type;						// ¿ÀºêÁ§Æ® Å¸ÀÔ
-	float x;									// ¿ÀºêÁ§Æ® x ÁÂÇ¥
-	float z;									// ¿ÀºêÁ§Æ® z ÁÂÇ¥
-	bool active;							// ¿ÀºêÁ§Æ® È°¼ºÈ­ ¿©ºÎ
-	float boundingOffset;				// ¿ÀºêÁ§Æ® ¹Ù¿îµå ¿ÀÇÁ¼Â
+	int id;										// ì˜¤ë¸Œì íŠ¸ ì•„ì´ë””
+	ObjectType type;						// ì˜¤ë¸Œì íŠ¸ íƒ€ìž…
+	float x;									// ì˜¤ë¸Œì íŠ¸ x ì¢Œí‘œ
+	float z;									// ì˜¤ë¸Œì íŠ¸ z ì¢Œí‘œ
+	bool active;							// ì˜¤ë¸Œì íŠ¸ í™œì„±í™” ì—¬ë¶€
+	float boundingOffset;				// ì˜¤ë¸Œì íŠ¸ ë°”ìš´ë“œ ì˜¤í”„ì…‹
 
-	Vector4 GetBoundingBox();		// ¿ÀºêÁ§Æ® ¹Ù¿îµù¹Ú½º »óÀÚ Á¤º¸ ¹ÝÈ¯
+	Vector4 GetBoundingBox();		// ì˜¤ë¸Œì íŠ¸ ë°”ìš´ë”©ë°•ìŠ¤ ìƒìž ì •ë³´ ë°˜í™˜
 };
 
-struct MapInfo							// ¸Ê¿¡ Á¸ÀçÇÏ´Â ¸ðµç ¿ÀºêÁ§Æ®¸¦ ´ã°í ÀÖ´Â ±¸Á¶Ã¼
+struct MapInfo							// ë§µì— ì¡´ìž¬í•˜ëŠ” ëª¨ë“  ì˜¤ë¸Œì íŠ¸ë¥¼ ë‹´ê³  ìžˆëŠ” êµ¬ì¡°ì²´
 {
-	vector<ObjectInfo> beads;		// ºñµåµéÀ» ´ã´Â º¤ÅÍ
-	vector<ObjectInfo> keys;			// Å°¸¦ ´ã°í ÀÖ´Â ¹è¿­
-	vector<ObjectInfo> walls;			// º® ¿ÀºêÁ§Æ®¸¦ ´ã´Â ¹è¿­
-	ObjectInfo door;						// Å»Ãâ±¸ ¿ÀºêÁ§Æ®
+	vector<ObjectInfo> beads;		// ë¹„ë“œë“¤ì„ ë‹´ëŠ” ë²¡í„°
+	vector<ObjectInfo> keys;			// í‚¤ë¥¼ ë‹´ê³  ìžˆëŠ” ë°°ì—´
+	vector<ObjectInfo> walls;			// ë²½ ì˜¤ë¸Œì íŠ¸ë¥¼ ë‹´ëŠ” ë°°ì—´
+	ObjectInfo door;						// íƒˆì¶œêµ¬ ì˜¤ë¸Œì íŠ¸
 };

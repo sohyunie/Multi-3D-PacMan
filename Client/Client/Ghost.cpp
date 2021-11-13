@@ -21,7 +21,7 @@ Ghost::Ghost(int i, int j, Vector3 pos, int id) {
 	this->scale = Vector3(0.5,0.5,0.5);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
 	this->color = glm::vec3(uidColor(dreColor), uidColor(dreColor), uidColor(dreColor));
-	this->newDirection = Direction::DIR_NONE;
+	this->newDirection = Direction::NONE;
 	this->boundingOffset = 1.5;
 }
 

@@ -11,24 +11,19 @@ public:
 	Message();
 	~Message();
 
-<<<<<<< HEAD
-	void Push(char* msg, int size);
-	void Pop(char* msg, int size);
+	//void Push(char* msg, int size);
+	//void Pop(char* msg, int size);
 
-	bool IsEmpty();
-	bool IsFull();
+	//bool IsEmpty();
+	//bool IsFull();
 
 	short PeekSize();
-
-	static const int MaxBufferSize = 1024;
 
 	char m_buffer[MaxBufferSize];
 private:
 	int m_readIndex;
 	int m_writeIndex;
 	int m_remainSize;
-=======
 	void CopyData(void* msg, int size);			// 메시지를 size만큼 MsgBuffer로 복사하는 함수, EndOffset이 증가함
 	void ReleaseData(void* msg);					// 버퍼에 있는 데이터를 하나의 메시지에 복사하는 함수, BeginOffset이 증가
->>>>>>> 6a2cfd896f3188109263f49570112d643876ecf6
 };
