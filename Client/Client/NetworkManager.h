@@ -11,7 +11,7 @@ private:
     static NetworkManager* instance;
     char buf[BUFSIZE2 + 1]; // 데이터 송수신 버퍼
 
-    SOCKET s_socket;
+    Socket* s_socket;
 
     char g_recv_buf[BUFSIZE];
     WSABUF mybuf_r;
@@ -31,13 +31,7 @@ public:
         return *instance;
     }
     // 대화상자 프로시저
-    int recvn(SOCKET s, char* buf, int len, int flags);
-    void Recv();
-    bool Send(Message& msg);
     void Network();
-    void error_display(const char* msg);
-    void do_recv();
-    void do_send(int input);
     void Update();
     bool GetIsConnected();
 };

@@ -569,9 +569,9 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 
 	// 플레이어가 이동 중이야, 근데 이동 중에 키를 눌렀어 다른 방향 키, 다른 방향 키 눌렀다고 해서 바로 반영되면 안되잖아. 왜냐면 도착해서 회전해야 i j 기반으로 움직이는거니까
 	// isArrived = true 인 순간이 i j 에 정확하게 도착한 순간인거지. 그래서 건들지 못하게 만드는거야 도착하기 전까지 새로운 키가 눌렸더라도.
-	if (dObject->isArrived && dObject->newDirection != Direction::DIR_NONE) {
+	if (dObject->isArrived && dObject->newDirection != Direction::NONE) {
 		dObject->priorDirection = dObject->progressDirection; // priorDirection이 왜? 회전때문에 okay
-		if (dObject->priorDirection == Direction::DIR_NONE) // 
+		if (dObject->priorDirection == Direction::NONE) // 
 			dObject->priorDirection = dObject->newDirection;
 		dObject->progressDirection = dObject->newDirection;
 		dObject->isArrived = false;
@@ -835,8 +835,7 @@ void InGameManager::TimerFunction() {
 					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
 					this->DecreaseBeadNumber();
 					this->PlayingFxSound(SOUND_FILE_NAME_BEAD);
-					//PlaySound(TEXT(SOUND_FILE_NAME_BEAD), NULL, SND_ASYNC | SND_SYNC); // 반응 느린건 일단 이따 생각할게유!  우웅ㅇ
-					cout << "멍멍" << endl;
+					//PlaySound(TEXT(SOUND_FILE_NAME_BEAD), NULL, SND_ASYNC | SND_SYNC); 
 					if(this->GetBeadCount() <= 0)
 						this->SetState(GAMESTATE::CLEAR);
 					// cout << "beadNumber: " << this->beadNumber << endl;

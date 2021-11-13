@@ -13,8 +13,8 @@ public:
 	void SetPlayerPos(Vector3 playerPos) { this->position = playerPos; }
 	void SetPlayerPos(glm::vec3 playerPos) { this->position = playerPos; }
 
-	Direction progressDirection = Direction::DIR_NONE;
-	Direction priorDirection = Direction::DIR_NONE;
+	Direction progressDirection = Direction::NONE;
+	Direction priorDirection = Direction::NONE;
 
 	int board_i = 3;
 	int board_j = 2;
