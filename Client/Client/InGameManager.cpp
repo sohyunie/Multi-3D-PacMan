@@ -391,7 +391,7 @@ GLvoid InGameManager::DrawScene() {
 		//	it++;
 		//}
 		this->map->DrawMap(s_program);
-		//this->player->DrawObject(s_program);
+		this->player->DrawObject(s_program);
 		this->bottom->DrawObject(s_program);
 		break;
 	case GAMESTATE::GAMEOVER:

@@ -37,7 +37,7 @@
 class Ghost;
 
 using namespace std;
-const int MAX_VAO_TYPE = 9;
+const int MAX_VAO_TYPE = 10;
 
 static MCI_OPEN_PARMS openBgm;
 static MCI_PLAY_PARMS playBgm;
