@@ -9,7 +9,7 @@ NetworkManager* NetworkManager::instance = nullptr;
 void NetworkManager::Update()
 {
     s_socket->Recv();
-    BasePacket basePacket = (BasePacket&)*(s_socket->GetRecvMessage().m_buffer + sizeof(double));
+    BasePacket basePacket = (BasePacket&)*(s_socket->GetRecvMessage().m_buffer);
 
     MsgType msgType = basePacket.type;
     switch (msgType)
@@ -22,8 +22,8 @@ void NetworkManager::Update()
         break;
     case MsgType::START_GAME:
     {
-        start_game startGame = (start_game&)*(s_socket->GetRecvMessage().m_buffer + sizeof(double));
-        myID = s_socket->GetRecvMessage().m_buffer[6];
+        start_game startGame = (start_game&)*(s_socket->GetRecvMessage().m_buffer);
+        myID = startGame.my_id;
         InGameManager::GetInstance().GameStart(startGame);
         break;
     }

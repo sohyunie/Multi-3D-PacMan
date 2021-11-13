@@ -390,8 +390,8 @@ GLvoid InGameManager::DrawScene() {
 		//	}
 		//	it++;
 		//}
-		this->player->DrawObject(s_program);
 		this->map->DrawMap(s_program);
+		//this->player->DrawObject(s_program);
 		this->bottom->DrawObject(s_program);
 		break;
 	case GAMESTATE::GAMEOVER:
@@ -835,8 +835,7 @@ void InGameManager::TimerFunction() {
 					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
 					this->DecreaseBeadNumber();
 					this->PlayingFxSound(SOUND_FILE_NAME_BEAD);
-					//PlaySound(TEXT(SOUND_FILE_NAME_BEAD), NULL, SND_ASYNC | SND_SYNC); // 반응 느린건 일단 이따 생각할게유!  우웅ㅇ
-					cout << "멍멍" << endl;
+					//PlaySound(TEXT(SOUND_FILE_NAME_BEAD), NULL, SND_ASYNC | SND_SYNC); // 반응 느린건 일단 이따 생각할게유! 
 					if(this->GetBeadCount() <= 0)
 						this->SetState(GAMESTATE::CLEAR);
 					// cout << "beadNumber: " << this->beadNumber << endl;
@@ -861,32 +860,32 @@ void InGameManager::TimerFunction() {
 			}
 
 			// Ghost
-			for (Ghost* g : this->vGhost) {
-				bool isCollision = g->CollisionCheck(obj);
-				if (isCollision) {
-					//cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
-					switch (obj.GetType()) {
-					case ObjectType::WALL:
-						break;
-					case ObjectType::BEAD:
-						g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
-						g->temp_i = i;
-						g->temp_j = j;
-						break;
-					case ObjectType::POWERBEAD:
-						g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
-						g->temp_i = i;
-						g->temp_j = j;
-						break;
-					case ObjectType::ROAD:
-						g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
-						//cout << "ROAD" << endl;
-						g->temp_i = i;
-						g->temp_j = j;
-						break;
-					}
-				}
-			}
+			//for (Ghost* g : this->vGhost) {
+			//	bool isCollision = g->CollisionCheck(obj);
+			//	if (isCollision) {
+			//		//cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
+			//		switch (obj.GetType()) {
+			//		case ObjectType::WALL:
+			//			break;
+			//		case ObjectType::BEAD:
+			//			g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
+			//			g->temp_i = i;
+			//			g->temp_j = j;
+			//			break;
+			//		case ObjectType::POWERBEAD:
+			//			g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
+			//			g->temp_i = i;
+			//			g->temp_j = j;
+			//			break;
+			//		case ObjectType::ROAD:
+			//			g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
+			//			//cout << "ROAD" << endl;
+			//			g->temp_i = i;
+			//			g->temp_j = j;
+			//			break;
+			//		}
+			//	}
+			//}
 		}
 	}
 
@@ -1006,7 +1005,7 @@ GLvoid InGameManager::InitObject()
 
 void InGameManager::GameStart(start_game startGame)
 {
-	if (this->state == GAMESTATE::LOBBY)
+	if (this->state == GAMESTATE::NONE)
 	{
 		this->map = new MapLoader(startGame.mapinfo);
 		this->PlayingBgm(SOUND_FILE_NAME_INGAME);

@@ -24,6 +24,7 @@
     <ClInclude Include="Bottom.h" />
     <ClInclude Include="DynamicObject.h" />
     <ClInclude Include="EndingScene.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="Ghost.h" />
     <ClInclude Include="InGameManager.h" />
     <ClInclude Include="InGameUI.h" />

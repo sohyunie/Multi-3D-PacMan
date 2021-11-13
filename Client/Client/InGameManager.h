@@ -91,6 +91,7 @@ public:
     GLvoid InitBuffer();
     GLvoid InitShader();
     GLvoid InitObject();
+    GLvoid InitScene();
 
     void GameStart(start_game recvStartGame);
 

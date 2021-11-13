@@ -132,15 +132,6 @@ void Server::CreateStartGameMsg()
 	startGameData.playertype[0] = PlayerType::RUNNER;
 	startGameData.playertype[1] = PlayerType::TAGGER;
 	startGameData.playertype[2] = PlayerType::RUNNER;
-
-	startGameData.x[0] = 50;
-	startGameData.z[0] = 50;
-
-	startGameData.x[1] = 60;
-	startGameData.z[1] = 60;
-
-	startGameData.x[2] = 70;
-	startGameData.z[2] = 70;
 }
 
 void Server::CreateUpdateMapInfoMsg()
