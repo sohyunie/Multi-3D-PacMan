@@ -3,13 +3,18 @@
 mutex Server::g_mapInfoLock;
 mutex Server::g_countOfKeyLock;
 MapInfo Server::map;
-
 int Server::countOfKeyAccquired = 0;
-bool Server::g_loop = false;
+
+mutex Server::g_timerLock;
+condition_variable Server::g_timerCv;
+Timer Server::g_timer;
 float Server::g_accum_time = 0.0f;
 
+mutex Server::g_loopLock;
+condition_variable Server::g_loopCv;
+bool Server::g_loop = false;
+
 vector<ClientInfo> Server::g_clients;
-Timer Server::g_timer;
 
 
 Server::Server()
@@ -48,9 +53,14 @@ void Server::Update()
 	{
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
-		if (g_accum_time >= 1.0f) {
+		if (g_accum_time >= 1.0f) 
+		{
+			g_timerCv.notify_all();
 			g_accum_time = 0.0f;
 		}
+
+		// do other things..
+
 	}
 }
 
@@ -112,14 +122,19 @@ void Server::AcceptNewPlayer(int id)
 
 void Server::SendAndRecv(int id)
 {
-
-	while (!g_loop) this_thread::sleep_for(100ms);
-
 	try {
+		{
+			unique_lock<mutex> loop_lock(g_loopLock);
+			g_loopCv.wait(loop_lock, [](){ return g_loop; });
+		}
+
 		while (g_loop)
 		{
-			/*g_clients[id].Send();
-			g_clients[id].Recv();*/
+			{
+				unique_lock<mutex> timer_lock(g_timerLock);
+				g_timerCv.wait(timer_lock);
+			}
+			std::cout << "working..[" << id << "]\n";
 		}
 	}
 	catch (Exception& ex)
@@ -160,4 +175,5 @@ void Server::GameStart()
 	}
 
 	g_loop = true;
+	g_loopCv.notify_all();
 }

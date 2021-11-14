@@ -28,15 +28,20 @@ public:
 
 	static vector<ClientInfo> g_clients;
 	static const int MaxClients = 3;
-	static bool g_loop;
 
+	static mutex g_timerLock;
+	static condition_variable g_timerCv;
 	static Timer g_timer;
 	static float g_accum_time;
+
+	static mutex g_loopLock;
+	static condition_variable g_loopCv;
+	static bool g_loop;
 
 private:
 	WSAData m_wsaData;
 	Socket m_listenSock;
-	vector<std::thread> m_threads;
+	vector<thread> m_threads;
 
 	start_game startGameData;
 };
