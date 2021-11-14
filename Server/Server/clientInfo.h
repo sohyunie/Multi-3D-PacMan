@@ -15,12 +15,13 @@ public:
 	void ProcessMessage();
 	void CheckObjectsStatus();
 	void IsCollided(Vector4& a, Vector4& b);
+	bool IsCollided(float x, float z, Direction dir);
 	void CreateLoginOkAndMapInfoMsg(start_game& s_game);
-	
-	pair<float, float> GetNewPosition();
+
+	pair<float, float> GetNewPosition(player_input p_input);
 	Vector4 GetBoundingBox();
 
-	
+	static Timer m_timer;
 private:
 	int m_id;
 	PlayerType m_type;
@@ -34,4 +35,7 @@ private:
 	Message m_sendMsg;
 	char temp_buffer[1024]; // Test
 	Direction m_direction;
+
+	player_input m_input;
+	char MAP[30][30];
 };

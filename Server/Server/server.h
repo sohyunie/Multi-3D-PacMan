@@ -44,4 +44,5 @@ private:
 	vector<thread> m_threads;
 
 	start_game startGameData;
+	player_input m_input;
 };

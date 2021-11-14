@@ -95,7 +95,7 @@ struct player_input		//Å¬¶óÀÌ¾ğÆ®´Â Áö¼ÓÀûÀ¸·Î ¼­¹ö¿¡°Ô ÀÔ·Â °ªÀ» º¸³½´Ù. (ÀÔ·ÂÇ
 {
 	short size;
 	MsgType type;
-	char input;
+	Direction input;
 	float x;
 	float z;
 };

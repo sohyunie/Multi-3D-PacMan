@@ -1,5 +1,7 @@
 #include "clientInfo.h"
 
+Timer ClientInfo::m_timer;
+
 ClientInfo::ClientInfo()
 	: m_id(0), 
 	  m_type(PlayerType::RUNNER),
@@ -25,7 +27,13 @@ ClientInfo::~ClientInfo()
 
 Vector4 ClientInfo::GetBoundingBox()
 {
-	return Vector4();
+	Vector4 vec;
+	vec.MaxX = m_pos_x + 0.5;
+	vec.MaxZ = m_pos_z + 0.5;
+	vec.MinX = m_pos_x - 0.5;
+	vec.MinZ = m_pos_z - 0.5;
+
+	return vec;
 }
 
 void ClientInfo::Send()
@@ -47,8 +55,97 @@ void ClientInfo::IsCollided(Vector4& a, Vector4& b)
 {
 }
 
-pair<float, float> ClientInfo::GetNewPosition()
+bool ClientInfo::IsCollided(float x, float z, Direction dir)
 {
+	// 벽, 비드, 열쇠, 문, 태거와 러너의 충돌
+	int mapx, mapz;
+	if (dir == Direction::UP || dir == Direction::RIGHT)
+	{
+		mapx = (int)x;
+		mapz = (int)z;
+	}
+	else if (dir == Direction::DOWN)
+	{
+		mapx = (int)x;
+		mapz = (int)z + 1;
+	}
+	else if (dir == Direction::LEFT)
+	{
+		mapx = (int)x + 1;
+		mapz = (int)z;
+	}
+
+	if (MAP[mapz][mapx] == 0)				// 비드 충돌시
+	{
+
+	}
+	else if (MAP[mapz][mapx] == 1)		// 키 충돌시
+	{
+
+	}
+	else if (MAP[mapz][mapx] == 2)		// 벽 충돌시
+	{
+		return true;
+	}
+	else if (MAP[mapz][mapx] == 3)		// 플레이어 시작 위치(아무 변화 없음)
+	{
+
+	}
+	else if (MAP[mapz][mapx] == 4)		// 최종문 체크시
+	{
+		return true;
+	}
+
+
+	return false;
+}
+
+pair<float, float> ClientInfo::GetNewPosition(player_input p_input)
+{
+	// 클라이언트에서 입력값을 계속 받아오고 있음
+	// 받을 때 마다 해당 방향에 충돌하는 물체 있는지 체크
+	// 충돌할 경우 이동하지 않고
+	// 충돌하지 않을 경우 이동
+
+	bool col = false;
+	float x, z;
+
+	if (p_input.input == Direction::UP)
+	{
+		z = p_input.z - m_timer.GetElapsedTime();
+		// 충돌체크
+		col = IsCollided(p_input.x, z, Direction::UP);
+
+		if(col == false)
+			p_input.z = z;
+	}
+	else if (p_input.input == Direction::DOWN)
+	{
+		z = p_input.z + m_timer.GetElapsedTime();
+		// 충돌체크
+		col = IsCollided(p_input.x, z, Direction::DOWN);
+
+		if (col == false)
+			p_input.z = z;
+	}
+	else if (p_input.input == Direction::LEFT)
+	{
+		x = p_input.x + m_timer.GetElapsedTime();
+		// 충돌체크
+		col = IsCollided(x, p_input.z, Direction::LEFT);
+
+		if (col == false)
+			p_input.x = x;
+	}
+	else if (p_input.input == Direction::RIGHT)
+	{
+		x = p_input.x - m_timer.GetElapsedTime();
+		// 충돌체크
+		col = IsCollided(x, p_input.z, Direction::RIGHT);
+
+		if (col == false)
+			p_input.x = x;
+	}
 
 	return pair<float, float>();
 }
@@ -56,4 +153,9 @@ pair<float, float> ClientInfo::GetNewPosition()
 void ClientInfo::CreateLoginOkAndMapInfoMsg(start_game& s_game)
 {
 	m_sendMsg.Push(reinterpret_cast<char*>(&s_game), sizeof(s_game));
+	for (int i = 0; i < 30; ++i) {
+		for (int j = 0; j < 30; ++j) {
+			MAP[i][j] = s_game.mapinfo[i][j];
+		}
+	}
 }

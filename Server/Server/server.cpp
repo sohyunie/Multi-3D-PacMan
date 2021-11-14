@@ -60,7 +60,6 @@ void Server::Update()
 		}
 
 		// do other things..
-
 	}
 }
 
@@ -110,6 +109,8 @@ void Server::LoadMap(const char* filename)
 			}
 		}
 	}
+
+	in.close();
 }
 
 void Server::AcceptNewPlayer(int id)
