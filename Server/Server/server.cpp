@@ -157,7 +157,7 @@ void Server::CreateStartGameMsg()
 		startGameData.id[i] = (char)i;
 	startGameData.playertype[0] = PlayerType::RUNNER;
 	startGameData.playertype[1] = PlayerType::TAGGER;
-	startGameData.playertype[2] = PlayerType::RUNNER;
+	startGameData.playertype[2] = PlayerType::RUNNER; 
 }
 
 void Server::CreateUpdateMapInfoMsg()

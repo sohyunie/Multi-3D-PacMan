@@ -17,8 +17,9 @@ public:
 	void IsCollided(Vector4& a, Vector4& b);
 	bool IsCollided(float x, float z, Direction dir);
 	void CreateLoginOkAndMapInfoMsg(start_game& s_game);
+	void GetPlayerInputInfo(player_input p_input);
 
-	pair<float, float> GetNewPosition(player_input p_input);
+	void GetNewPosition();
 	Vector4 GetBoundingBox();
 
 	static Timer m_timer;
