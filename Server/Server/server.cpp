@@ -2,7 +2,7 @@
 
 mutex Server::g_mapInfoLock;
 mutex Server::g_countOfKeyLock;
-MapInfo Server::map;
+MapInfo Server::g_map;
 int Server::countOfKeyAccquired = 0;
 
 mutex Server::g_timerLock;
@@ -84,29 +84,29 @@ void Server::LoadMap(const char* filename)
 			if (mapn == 0) {					// BEAD
 				object.id = bead_id++;
 				object.type = ObjectType::BEAD;
-				map.beads.push_back(object);
+				g_map.beads.push_back(object);
 			}
 			else if (mapn == 1) {			// KEY
 				object.id = key_id++;
 				object.type = ObjectType::KEY;
-				map.keys.push_back(object);
+				g_map.keys.push_back(object);
 			}
 			else if (mapn == 2) {			// WALL
 				object.id = 0;
 				object.type = ObjectType::WALL;					
-				map.walls.push_back(object);
+				g_map.walls.push_back(object);
 			}
 			else if (mapn == 3) {			// PLAYER_POS
 				startGameData.x[player_id] = (float)j;
 				startGameData.z[player_id++] = (float)i;
 			}
 			else if (mapn == 4) {			// DOOR
-				map.door.active = true;
-				map.door.x = (float)j;
-				map.door.z = (float)i;
-				map.door.id = 0;
-				map.door.type = ObjectType::DOOR;
-				map.door.boundingOffset = 1.0;
+				g_map.door.active = true;
+				g_map.door.x = (float)j;
+				g_map.door.z = (float)i;
+				g_map.door.id = 0;
+				g_map.door.type = ObjectType::DOOR;
+				g_map.door.boundingOffset = 1.0;
 			}
 		}
 	}
@@ -134,7 +134,8 @@ void Server::SendAndRecv(int id)
 				unique_lock<mutex> timer_lock(g_timerLock);
 				g_timerCv.wait(timer_lock);
 			}
-			std::cout << "working..[" << id << "]\n";
+			g_clients[id].Send();
+			g_clients[id].Recv();
 		}
 	}
 	catch (Exception& ex)
@@ -148,25 +149,37 @@ void Server::CreatePlayerJoinMsg()
 {
 }
 
-void Server::CreateStartGameMsg()
+void Server::InitializeStartGameInfo()
 {
 	startGameData.type = MsgType::START_GAME;
 	startGameData.size = sizeof(startGameData);
-	for (int i = 0; i < MaxClients; ++i)
+	for (int i = 0; i < MaxClients; ++i) {
 		startGameData.id[i] = (char)i;
-	startGameData.playertype[0] = PlayerType::RUNNER;
-	startGameData.playertype[1] = PlayerType::TAGGER;
-	startGameData.playertype[2] = PlayerType::RUNNER;
+		startGameData.playertype[i] = PlayerType::RUNNER;
+
+		g_clients[i].m_id = i;
+		g_clients[i].m_type = PlayerType::RUNNER;
+		g_clients[i].m_hp = 100;
+		g_clients[i].m_pos_x = startGameData.x[i];
+		g_clients[i].m_pos_z = startGameData.z[i];
+		g_clients[i].m_boundingOffset = 1.5f;
+	}
+
+	int tagger = rand() % MaxClients;
+	g_clients[tagger].m_type = PlayerType::TAGGER;
 }
 
 void Server::CreateUpdateMapInfoMsg()
 {
-
+	for (ClientInfo& client : g_clients)
+	{
+		client.CheckObjectsStatus(g_map);
+	}
 }
 
 void Server::GameStart()
 {
-	CreateStartGameMsg();
+	InitializeStartGameInfo();
 
 	for (int i = 0; i < g_clients.size(); i++)
 	{

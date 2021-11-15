@@ -15,7 +15,7 @@ public:
 	static void SendAndRecv(int id);
 	
 	void CreatePlayerJoinMsg();
-	void CreateStartGameMsg();
+	void InitializeStartGameInfo();
 	void CreateUpdateMapInfoMsg();
 
 	void GameStart();
@@ -23,7 +23,7 @@ public:
 public:
 	static mutex g_mapInfoLock;
 	static mutex g_countOfKeyLock;
-	static MapInfo map;
+	static MapInfo g_map;
 	static int countOfKeyAccquired;
 
 	static vector<ClientInfo> g_clients;

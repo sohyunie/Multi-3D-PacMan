@@ -130,7 +130,18 @@ struct ObjectInfo			// 오브젝트의 정보를 관리하는 구조체
 	bool active;							// 오브젝트 활성화 여부
 	float boundingOffset;				// 오브젝트 바운드 오프셋
 
-	Vector4 GetBoundingBox();		// 오브젝트 바운딩박스 상자 정보 반환
+	Vector4 GetBoundingBox()		// 오브젝트 바운딩박스 상자 정보 반환
+	{
+		Vector4 box =
+		{
+			x + boundingOffset,
+			x - boundingOffset,
+			z + boundingOffset,
+			z - boundingOffset
+		};
+		return box;
+	}
+
 };
 
 struct MapInfo							// 맵에 존재하는 모든 오브젝트를 담고 있는 구조체
