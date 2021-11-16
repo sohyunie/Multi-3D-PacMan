@@ -1,7 +1,5 @@
 #include "clientInfo.h"
 
-Timer ClientInfo::m_timer;
-
 ClientInfo::ClientInfo()
 	:	m_id(0),
 		m_type(PlayerType::RUNNER),
@@ -10,8 +8,7 @@ ClientInfo::ClientInfo()
 		m_pos_z(0.0f),
 		m_boundingOffset(0.0f),
 		m_sendMsg({}),
-		m_direction(Direction::UP),
-		m_input()
+		m_direction(Direction::UP)
 {
 }
 
@@ -53,14 +50,10 @@ void ClientInfo::CheckObjectsStatus()
 {
 }
 
-void ClientInfo::IsCollided(Vector4& a, Vector4& b)
-{
-}
-
-bool ClientInfo::IsCollided(float x, float z, Direction dir)
+bool ClientInfo::IsCollided(float x, float z, Direction dir, start_game &s_game)
 {
 	// 벽, 비드, 열쇠, 문, 태거와 러너의 충돌
-	int mapx, mapz;
+	int mapx = 0, mapz = 0;
 	if (dir == Direction::UP || dir == Direction::RIGHT)
 	{
 		mapx = (int)x;
@@ -77,23 +70,11 @@ bool ClientInfo::IsCollided(float x, float z, Direction dir)
 		mapz = (int)z;
 	}
 
-	if (MAP[mapz][mapx] == 0)				// 비드 충돌시
-	{
-
-	}
-	else if (MAP[mapz][mapx] == 1)		// 키 충돌시
-	{
-
-	}
-	else if (MAP[mapz][mapx] == 2)		// 벽 충돌시
+	if (s_game.mapinfo[mapz][mapx] == 2)		// 벽 충돌시
 	{
 		return true;
 	}
-	else if (MAP[mapz][mapx] == 3)		// 플레이어 시작 위치(아무 변화 없음)
-	{
-
-	}
-	else if (MAP[mapz][mapx] == 4)		// 최종문 체크시
+	else if (s_game.mapinfo[mapz][mapx] == 4)		// 최종문 체크시
 	{
 		return true;
 	}
@@ -105,7 +86,7 @@ bool ClientInfo::IsCollided(float x, float z, Direction dir)
 void ClientInfo::GetPlayerInputInfo(player_input p_input)
 {
 	// 방향 전환
-	if (p_input.input == Direction::LEFT)
+	if (p_input.input == 0)
 	{
 		if (m_direction == Direction::UP) {
 			m_direction = Direction::LEFT;
@@ -120,7 +101,7 @@ void ClientInfo::GetPlayerInputInfo(player_input p_input)
 			m_direction = Direction::DOWN;
 		}
 	}
-	else if (p_input.input == Direction::RIGHT)
+	else if (p_input.input == 1)
 	{
 		if (m_direction == Direction::UP) {
 			m_direction = Direction::RIGHT;
@@ -141,7 +122,7 @@ void ClientInfo::GetPlayerInputInfo(player_input p_input)
 	m_pos_z = p_input.z;
 }
 
-void ClientInfo::GetNewPosition()
+void ClientInfo::GetNewPosition(start_game& s_game, float elapsedTIme)
 {
 	// 클라이언트에서 입력값을 계속 받아오고 있음
 	// 받을 때 마다 해당 방향에 충돌하는 물체 있는지 체크
@@ -150,13 +131,13 @@ void ClientInfo::GetNewPosition()
 
 	bool col = false;
 	float x = m_pos_x, z = m_pos_z;
-	float speed = 3 * m_timer.GetElapsedTime();
+	float speed = 3 * elapsedTIme;
 
 	if (m_direction == Direction::UP)
 	{
 		z = z - speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::UP);
+		col = IsCollided(x, z, Direction::UP, s_game);
 
 		if(col == false)
 			m_pos_z = z;
@@ -165,7 +146,7 @@ void ClientInfo::GetNewPosition()
 	{
 		z = z + speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::DOWN);
+		col = IsCollided(x, z, Direction::DOWN, s_game);
 
 		if (col == false)
 			m_pos_z = z;
@@ -174,7 +155,7 @@ void ClientInfo::GetNewPosition()
 	{
 		x = x + speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::LEFT);
+		col = IsCollided(x, z, Direction::LEFT, s_game);
 
 		if (col == false)
 			m_pos_x = x;
@@ -183,7 +164,7 @@ void ClientInfo::GetNewPosition()
 	{
 		x = x - speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::RIGHT);
+		col = IsCollided(x, z, Direction::RIGHT, s_game);
 
 		if (col == false)
 			m_pos_x = x;

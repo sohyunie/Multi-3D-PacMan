@@ -14,12 +14,11 @@ public:
 	
 	void ProcessMessage();
 	void CheckObjectsStatus();
-	void IsCollided(Vector4& a, Vector4& b);
-	bool IsCollided(float x, float z, Direction dir);
+	bool IsCollided(float x, float z, Direction dir, start_game& s_game);
 	void CreateLoginOkAndMapInfoMsg(start_game& s_game);
 	void GetPlayerInputInfo(player_input p_input);
 
-	void GetNewPosition();
+	void GetNewPosition(start_game &s_game, float elapsedTime);
 	Vector4 GetBoundingBox();
 
 	
