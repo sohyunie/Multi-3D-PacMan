@@ -1,9 +1,7 @@
 #include "server.h"
 
 mutex Server::g_mapInfoLock;
-mutex Server::g_countOfKeyLock;
 MapInfo Server::g_map;
-int Server::countOfKeyAccquired = 0;
 
 mutex Server::g_timerLock;
 condition_variable Server::g_timerCv;
@@ -171,10 +169,86 @@ void Server::InitializeStartGameInfo()
 
 void Server::CreateUpdateMapInfoMsg()
 {
-	for (ClientInfo& client : g_clients)
+	update_status update_stat{};
+	update_stat.win = WinStatus::NONE;
+
+	vector<object_status> all_obj_status;
+	for (int i=0;i<g_clients.size();i++)
 	{
-		client.CheckObjectsStatus(g_map);
+		vector<object_status> stats = UpdateObjectStatus(i);
+		all_obj_status.insert(all_obj_status.end(), stats.begin(), stats.end());
+
+		if (CheckWinStatus(i))
+			update_stat.win = WinStatus::RUNNER_WIN;
 	}
+	
+	// TODO: 적과의 충돌 후 hp 감소..
+	// TODO: 모든 플레이어의 사망여부 체크
+	
+	// TODO: 모든 플레이어에게 메시지 보내기
+
+}
+
+vector<object_status> Server::UpdateObjectStatus(int id)
+{
+	vector<object_status> obj_stats;
+
+	const Vector4& clientBB = g_clients[id].GetBoundingBox();
+
+	g_mapInfoLock.lock();
+	for (ObjectInfo& bead : g_map.beads)
+	{
+		if (bead.active)
+		{
+			const Vector4& beadBB = bead.GetBoundingBox();
+			if (IsCollided(clientBB, beadBB))
+			{
+				bead.active = false;
+				obj_stats.emplace_back(bead.type, bead.id, bead.active);
+			}
+		}
+	}
+	for (ObjectInfo& key : g_map.keys)
+	{
+		if (key.active)
+		{
+			const Vector4& keyBB = key.GetBoundingBox();
+			if (IsCollided(clientBB, keyBB))
+			{
+				key.active = false;
+				m_countOfKeyAccquired += 1;
+				obj_stats.emplace_back(key.type, key.id, key.active);
+			}
+		}
+	}
+	g_mapInfoLock.unlock();
+	
+	return obj_stats;
+}
+
+bool Server::CheckWinStatus(int id)
+{
+	if (m_countOfKeyAccquired >= 3)
+	{
+		const Vector4& clientBB = g_clients[id].GetBoundingBox();
+		const Vector4& doorBB = g_map.door.GetBoundingBox();
+		if (IsCollided(clientBB, doorBB))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Server::IsCollided(const Vector4& a, const Vector4& b)
+{
+	if (a.MinX > b.MaxX || b.MinX > a.MinX)
+		return false;
+
+	if (a.MinZ > b.MaxZ || b.MinZ > a.MaxZ)
+		return false;
+
+	return true;
 }
 
 void Server::GameStart()

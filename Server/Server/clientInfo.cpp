@@ -46,43 +46,6 @@ void ClientInfo::ProcessMessage()
 	//cout << msg << endl;
 }
 
-void ClientInfo::CheckObjectsStatus(MapInfo& map)
-{
-	const Vector4& clientBB = GetBoundingBox();
-	for (ObjectInfo& bead : map.beads)
-	{
-		const Vector4& beadBB = bead.GetBoundingBox();
-		if (IsCollided(clientBB, beadBB))
-		{
-			bead.active = false;
-		}
-	}
-	for (ObjectInfo& key : map.keys)
-	{
-		const Vector4& keyBB = key.GetBoundingBox();
-		if (IsCollided(clientBB, keyBB))
-		{
-			key.active
-		}
-	}
-	const Vector4& doorBB = map.door.GetBoundingBox();
-	if (IsCollided(clientBB, doorBB))
-	{
-		
-	}
-}
-
-bool ClientInfo::IsCollided(const Vector4& a, const Vector4& b)
-{
-	if (a.MinX > b.MaxX || b.MinX > a.MinX)
-		return false;
-
-	if (a.MinZ > b.MaxZ || b.MinZ > a.MaxZ)
-		return false;
-
-	return true;
-}
-
 pair<float, float> ClientInfo::GetNewPosition()
 {
 	return pair<float, float>();

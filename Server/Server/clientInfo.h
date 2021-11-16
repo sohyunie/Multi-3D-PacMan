@@ -13,8 +13,6 @@ public:
 	void Send();
 	
 	void ProcessMessage();
-	void CheckObjectsStatus(MapInfo& map);
-	bool IsCollided(const Vector4& a, const Vector4& b);
 	void CreateLoginOkAndMapInfoMsg(start_game& s_game);
 	
 	pair<float, float> GetNewPosition();
@@ -31,6 +29,7 @@ public:
 
 private:
 	Message m_sendMsg;
+
 	char temp_buffer[1024]; // Test
 	Direction m_direction;
 };
