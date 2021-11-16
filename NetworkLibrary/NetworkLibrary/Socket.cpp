@@ -93,11 +93,21 @@ void Socket::Send(Message& msg)
 void Socket::Recv()
 {
 	int len = 0;
-	int retval = recvn(m_socket, (char*)&len, sizeof(int), 0);
+	int retval = recvn(m_socket, (char*)&len, sizeof(short), 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("recv failed");
 
 	retval = recvn(m_socket, m_recvMessage.m_buffer, len, 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("recv failed");
+}
+
+SOCKET Socket::GetSocket()
+{
+	return m_socket;
+}
+
+Message Socket::GetRecvMessage()
+{
+	return m_recvMessage;
 }

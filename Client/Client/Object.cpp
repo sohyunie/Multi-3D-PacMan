@@ -2,8 +2,8 @@
 #include "Object.h"
 
 bool Object::CollisionCheck(Object type) {
-    Vector4 mybbox = this->GetBoundingBox();
-    Vector4 otherbbox = type.GetBoundingBox();
+    CVector4 mybbox = this->GetBoundingBox();
+    CVector4 otherbbox = type.GetBoundingBox();
     bool xcollision = false;
     bool zcollision = false;
 
@@ -25,8 +25,8 @@ bool Object::CollisionCheck(Object type) {
 }
 
 
-Vector4 Object::GetBoundingBox() {
-    return Vector4(position.x - boundingOffset, position.z - boundingOffset, position.x + boundingOffset, position.z + boundingOffset);
+CVector4 Object::GetBoundingBox() {
+    return CVector4(position.x - boundingOffset, position.z - boundingOffset, position.x + boundingOffset, position.z + boundingOffset);
 }
 
 void Object::DrawObject(GLuint s_program) {

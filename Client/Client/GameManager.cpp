@@ -151,7 +151,7 @@ void processSpecialKeys(int key, int x, int y)
 	{
 	case GLUT_KEY_RIGHT:
 		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
-		case Direction::DIR_NONE:
+		case Direction::NONE:
 			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
 			break;
 		case Direction::UP:
@@ -170,7 +170,7 @@ void processSpecialKeys(int key, int x, int y)
 		break;
 	case GLUT_KEY_LEFT:
 		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
-		case Direction::DIR_NONE:
+		case Direction::NONE:
 			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
 			break;
 		case Direction::UP:
@@ -210,9 +210,6 @@ void TimerFunction(int value) {
 
 int main(int argc, char** argv)
 {
-	// Network Thread
-	thread networkTherad(&NetworkManager::Network, &NetworkManager::GetInstance());	// 우리가 쓸 함수, 우리가 쓸 함수가 어떤 애의 건지 객체를 보여줌. 
-
 	//PlaySound(TEXT(SOUND_FILE_NAME_LOBBY), NULL, SND_ASYNC | SND_LOOP);
 	InGameManager::GetInstance().PlayingBgm(SOUND_FILE_NAME_LOBBY);
 	glutInit(&argc, argv);
@@ -234,6 +231,8 @@ int main(int argc, char** argv)
 	InitShader();
 	InitBuffer();
 
+	// Network Thread
+	thread networkTherad(&NetworkManager::Network, &NetworkManager::GetInstance());	// 우리가 쓸 함수, 우리가 쓸 함수가 어떤 애의 건지 객체를 보여줌. 
 
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
