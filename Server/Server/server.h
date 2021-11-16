@@ -15,16 +15,19 @@ public:
 	static void SendAndRecv(int id);
 	
 	void CreatePlayerJoinMsg();
-	void CreateStartGameMsg();
+	void InitializeStartGameInfo();
 	void CreateUpdateMapInfoMsg();
 
+	vector<object_status> UpdateObjectStatus(int id);
+	bool CheckWinStatus(int id);
+	bool IsCollided(const Vector4& a, const Vector4& b);
+	
 	void GameStart();
 
 public:
 	static mutex g_mapInfoLock;
-	static mutex g_countOfKeyLock;
-	static MapInfo map;
-	static int countOfKeyAccquired;
+	//static mutex g_countOfKeyLock;
+	static MapInfo g_map;
 
 	static vector<ClientInfo> g_clients;
 	static const int MaxClients = 3;
@@ -44,5 +47,5 @@ private:
 	vector<thread> m_threads;
 
 	start_game startGameData;
-	player_input m_input;
+	int m_countOfKeyAccquired = 0;
 };

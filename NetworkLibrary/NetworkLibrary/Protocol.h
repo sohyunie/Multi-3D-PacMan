@@ -28,9 +28,7 @@ enum class MsgType : char		// 메시지를 식별할 수 있는 메시지 형식
 	PLAYER_INPUT,					// 플레이어 키 입력
 	UPDATE_PLAYER_POS,		// 플레이어 위치
 	UPDATE_PLAYER_INFO,		// 플레이어 정보
-	UPDATE_BEAD,					// 비드
-	UPDATE_KEY,						// 키
-	DOOR_OPEN						// 최종 탈출구
+	UPDATE_STATUS
 };
 
 enum class PlayerType : char	// 플레이어 타입
@@ -120,15 +118,22 @@ struct update_player_info			// 서버는 지속적으로 클라이언트들의 위치를 갱신하여 
 	float z[3];
 };
 
+struct object_status
+{
+	ObjectType objType;
+	char id;
+	bool active;
+};
+
 struct update_status			//맵에 존재하는 오브젝트들의 변화되어 사라졌는지, 그 상태를 보낸다.(충돌할 때 마다)
 {
 	short size;
 	MsgType type;
 	WinStatus win;
 	char hp;
-	ObjectType objType;
+	/*ObjectType objType;
 	char id;
-	bool active;
+	bool active;*/
 };
 #pragma pack(pop)
 
@@ -141,7 +146,18 @@ struct ObjectInfo			// 오브젝트의 정보를 관리하는 구조체
 	bool active;							// 오브젝트 활성화 여부
 	float boundingOffset;				// 오브젝트 바운드 오프셋
 
-	Vector4 GetBoundingBox();		// 오브젝트 바운딩박스 상자 정보 반환
+	Vector4 GetBoundingBox()		// 오브젝트 바운딩박스 상자 정보 반환
+	{
+		Vector4 box =
+		{
+			x + boundingOffset,
+			x - boundingOffset,
+			z + boundingOffset,
+			z - boundingOffset
+		};
+		return box;
+	}
+
 };
 
 struct MapInfo							// 맵에 존재하는 모든 오브젝트를 담고 있는 구조체

@@ -28,13 +28,14 @@ ClientInfo::~ClientInfo()
 
 Vector4 ClientInfo::GetBoundingBox()
 {
-	Vector4 vec;
-	vec.MaxX = m_pos_x + 0.5;
-	vec.MaxZ = m_pos_z + 0.5;
-	vec.MinX = m_pos_x - 0.5;
-	vec.MinZ = m_pos_z - 0.5;
-
-	return vec;
+	Vector4 box =
+	{
+		m_pos_x + m_boundingOffset,
+		m_pos_x - m_boundingOffset,
+		m_pos_z + m_boundingOffset,
+		m_pos_z - m_boundingOffset
+	};
+	return box;
 }
 
 void ClientInfo::Send()
@@ -195,10 +196,4 @@ void ClientInfo::CreateLoginOkAndMapInfoMsg(start_game& s_game)
 {
 	m_sendMsg.Push(reinterpret_cast<char*>(&s_game), sizeof(s_game));
 	ClientInfo::Send();
-
-	for (int i = 0; i < 30; ++i) {
-		for (int j = 0; j < 30; ++j) {
-			MAP[i][j] = s_game.mapinfo[i][j];
-		}
-	}
 }

@@ -22,21 +22,18 @@ public:
 	void GetNewPosition();
 	Vector4 GetBoundingBox();
 
-	static Timer m_timer;
-private:
-	int m_id;
-	PlayerType m_type;
 	
+public:
+	int m_id;
+	PlayerType m_type;	
 	int m_hp;
-
 	float m_pos_x;
 	float m_pos_z;
-
 	float m_boundingOffset;
+
+private:
 	Message m_sendMsg;
+
 	char temp_buffer[1024]; // Test
 	Direction m_direction;
-
-	player_input m_input;
-	char MAP[30][30];
 };
