@@ -139,7 +139,7 @@ struct update_status			//맵에 존재하는 오브젝트들의 변화되어 사라졌는지, 그 상태
 
 struct ObjectInfo			// 오브젝트의 정보를 관리하는 구조체
 {
-	int id;										// 오브젝트 아이디
+	short id;										// 오브젝트 아이디
 	ObjectType type;						// 오브젝트 타입
 	float x;									// 오브젝트 x 좌표
 	float z;									// 오브젝트 z 좌표

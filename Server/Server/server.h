@@ -17,6 +17,7 @@ public:
 	void CreatePlayerJoinMsg();
 	void InitializeStartGameInfo();
 	void CreateUpdateMapInfoMsg();
+	void CreatePlayerInfo();
 
 	vector<object_status> UpdateObjectStatus(int id);
 	bool CheckWinStatus(int id);
@@ -31,6 +32,7 @@ public:
 
 	static vector<ClientInfo> g_clients;
 	static const int MaxClients = 3;
+	static update_player_info u_p_info;
 
 	static mutex g_timerLock;
 	static condition_variable g_timerCv;

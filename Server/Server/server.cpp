@@ -205,7 +205,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			if (IsCollided(clientBB, beadBB))
 			{
 				bead.active = false;
-				obj_stats.push_back( bead.type , bead.id, bead.active );
+				obj_stats.push_back({ bead.type , bead.id, bead.active });
 			}
 		}
 	}
@@ -218,7 +218,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			{
 				key.active = false;
 				m_countOfKeyAccquired += 1;
-				obj_stats.emplace_back(key.type, key.id, key.active);
+				obj_stats.push_back({ key.type, key.id, key.active });
 			}
 		}
 	}
@@ -256,7 +256,7 @@ void Server::GameStart()
 {
 	InitializeStartGameInfo();
 
-	for (int i = 0; i < g_clients.size(); i++)
+	for (int i = 0; i < g_clients.size(); ++i)
 	{
 		startGameData.my_id = i;
 		g_clients[i].CreateLoginOkAndMapInfoMsg(startGameData);
@@ -264,4 +264,15 @@ void Server::GameStart()
 
 	g_loop = true;
 	g_loopCv.notify_all();
+}
+
+void Server::CreatePlayerInfo()
+{
+	u_p_info.type = MsgType::UPDATE_PLAYER_INFO;
+	u_p_info.size = sizeof(u_p_info);
+	for (int i = 0; i < g_clients.size(); ++i) {
+		u_p_info.id[i] = g_clients[i].m_id;
+		u_p_info.x[i] = g_clients[i].m_pos_x;
+		u_p_info.z[i] = g_clients[i].m_pos_z;
+	}
 }
