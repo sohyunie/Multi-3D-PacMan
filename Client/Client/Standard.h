@@ -37,7 +37,7 @@
 class Ghost;
 
 using namespace std;
-const int MAX_VAO_TYPE = 9;
+const int MAX_VAO_TYPE = 10;
 
 static MCI_OPEN_PARMS openBgm;
 static MCI_PLAY_PARMS playBgm;
@@ -132,15 +132,15 @@ struct Vector3 {
 };
 
 // 충돌처리 위한 벡터 구조체 
-struct Vector4 {
+struct CVector4 {
     float minX;
     float minZ;
     float maxX;
     float maxZ;
 
-    Vector4() {}
+    CVector4() {}
 
-    Vector4(float minX, float minZ, float maxX, float maxZ) {
+    CVector4(float minX, float minZ, float maxX, float maxZ) {
         this->minX = minX;
         this->minZ = minZ;
         this->maxX = maxX;
@@ -201,7 +201,11 @@ struct GhostCollisionData {
 	//	return isSame;
 	//}
 };
-
+struct BasePacket
+{
+	short size;
+	MsgType type;
+};
 //float deltaTime = 0.0f;
 
 const float blockVertex[6][6][2][3] = {

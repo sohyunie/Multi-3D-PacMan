@@ -73,3 +73,10 @@ bool Message::IsFull()
 {
 	return m_remainSize == 0;
 }
+
+short Message::PeekSize()
+{
+	short size = 0;
+	std::memcpy(reinterpret_cast<char*>(&size), m_buffer, sizeof(short));
+	return size;
+}

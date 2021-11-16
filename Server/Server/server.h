@@ -25,7 +25,7 @@ public:
 	static int countOfKeyAccquired;
 
 	static vector<ClientInfo> m_clients;
-	static const int MaxClients = 1;
+	static const int MaxClients = 3;
 
 private:
 	WSAData m_wsaData;

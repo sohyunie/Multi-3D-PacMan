@@ -16,7 +16,7 @@
 using namespace std;
 
 const short SERVER_PORT = 7777;			// 서버 포트 번호
-const char* const SERVER_IP = "127.0.0.1";		// 서버 IP 주소
+const char* const SERVER_IP = "192.168.122.139";		// 서버 IP 주소
 
 enum class MsgType : char		// 메시지를 식별할 수 있는 메시지 형식
 {	
@@ -44,7 +44,15 @@ enum class ObjectType : char	// 오브젝트 타입
 	KEY,									// 키
 	DOOR,								// 탈출구
 	WALL	,								// 벽
-	NONE								// 아무것도 없음
+	NONE,								// 아무것도 없음
+
+	// Client Only
+	PLAYER,
+	GHOST,
+	TEXTURE,
+	POWERBEAD,
+	BOTTOM,
+	ROAD,
 };
 
 enum class WinStatus : char		// 승리 상태
@@ -59,7 +67,10 @@ enum class Direction : char
 	UP,
 	DOWN,
 	LEFT,
-	RIGHT
+	RIGHT,
+
+	// Client Only
+	NONE,
 };
 
 struct Vector4				// 객체의 바운딩 박스 표현하기 위해 사용하는 vector4 구조체 
@@ -70,6 +81,7 @@ struct Vector4				// 객체의 바운딩 박스 표현하기 위해 사용하는 vector4 구조체
 	float MinZ;
 };
 
+#pragma pack(push, 1)
 struct player_join			// 플레이어가 추가되면 총 플레이어의 수를 보내어 대기 화면을 업데이트한다. 
 {
 	short size;
@@ -117,6 +129,7 @@ struct update_status			//맵에 존재하는 오브젝트들의 변화되어 사라졌는지, 그 상태
 	char id;
 	bool active;
 };
+#pragma pack(pop)
 
 struct ObjectInfo			// 오브젝트의 정보를 관리하는 구조체
 {
