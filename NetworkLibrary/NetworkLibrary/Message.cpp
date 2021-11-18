@@ -13,6 +13,14 @@ Message::~Message()
 {
 }
 
+void Message::Clear()
+{
+	std::memset(m_buffer, 0, MaxBufferSize);
+	m_writeIndex = 0;
+	m_readIndex = 0;
+	m_remainSize = MaxBufferSize;
+}
+
 void Message::Push(char* msg, int size)
 {
 	if (IsFull() || size <= 0)
@@ -74,9 +82,21 @@ bool Message::IsFull()
 	return m_remainSize == 0;
 }
 
-short Message::PeekSize()
+MsgType Message::GetMsgType()
+{
+	MsgType type{};
+	std::memcpy(reinterpret_cast<void*>(&type), m_buffer + m_readIndex + 2, sizeof(MsgType));
+	return type;
+}
+
+short Message::GetTotalMsgSize()
+{
+	return (short)(MaxBufferSize - m_remainSize);
+}
+
+short Message::PeekNextPacketSize()
 {
 	short size = 0;
-	std::memcpy(reinterpret_cast<char*>(&size), m_buffer, sizeof(short));
+	std::memcpy(reinterpret_cast<void*>(&size), m_buffer + m_readIndex, sizeof(size));
 	return size;
 }

@@ -16,8 +16,10 @@
 
 using namespace std;
 
-const short SERVER_PORT = 7777;			// 서버 포트 번호
-const char* const SERVER_IP = "192.168.122.139";		// 서버 IP 주소
+const short SERVER_PORT = 7777;			
+const char* const SERVER_IP = "127.0.0.1";
+
+static const int MaxBufferSize = 1024;
 
 enum class MsgType : char		// 메시지를 식별할 수 있는 메시지 형식
 {	
@@ -26,7 +28,6 @@ enum class MsgType : char		// 메시지를 식별할 수 있는 메시지 형식
 	PLAYER_JOIN,					// 플레이어 입장
 	START_GAME,					// 게임 시작
 	PLAYER_INPUT,					// 플레이어 키 입력
-	UPDATE_PLAYER_POS,		// 플레이어 위치
 	UPDATE_PLAYER_INFO,		// 플레이어 정보
 	UPDATE_STATUS
 };
@@ -42,7 +43,7 @@ enum class ObjectType : char	// 오브젝트 타입
 	BEAD,								// 비드
 	KEY,									// 키
 	DOOR,								// 탈출구
-	WALL	,								// 벽
+	WALL,								// 벽
 	NONE,								// 아무것도 없음
 
 	// Client Only

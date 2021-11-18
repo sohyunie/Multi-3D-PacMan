@@ -15,6 +15,7 @@ public:
 	static void SendAndRecv(int id);
 	
 	void CreatePlayerJoinMsg();
+	void GameStart();
 	void InitializeStartGameInfo();
 	void CreateUpdateMapInfoMsg();
 
@@ -22,7 +23,7 @@ public:
 	bool CheckWinStatus(int id);
 	bool IsCollided(const Vector4& a, const Vector4& b);
 	
-	void GameStart();
+	
 
 public:
 	static mutex g_mapInfoLock;
@@ -40,6 +41,8 @@ public:
 	static mutex g_loopLock;
 	static condition_variable g_loopCv;
 	static bool g_loop;
+
+	static mutex g_sendMsgLock; // TEST
 
 private:
 	WSAData m_wsaData;

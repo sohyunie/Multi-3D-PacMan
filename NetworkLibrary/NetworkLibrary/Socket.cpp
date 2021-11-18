@@ -22,7 +22,7 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 
 
 Socket::Socket()
-	: m_socket(), m_recvMessage({})
+	: m_socket(), m_recvBuffer{}
 {
 }
 
@@ -79,13 +79,13 @@ SOCKET Socket::Accept()
 
 void Socket::Send(Message& msg) 
 {
-	short size = msg.PeekSize();
-	cout << size << endl;
+	short size = msg.GetTotalMsgSize();
+	
 	int retval = send(m_socket, (char*)&size, sizeof(short), 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("send size failed");
 
-	retval = send(m_socket, (char*)&msg.m_buffer, sizeof(msg.m_buffer), 0);
+	retval = send(m_socket, (char*)&msg.m_buffer, size, 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("send buffer failed");
 }
@@ -97,17 +97,9 @@ void Socket::Recv()
 	if (retval == SOCKET_ERROR)
 		throw Exception("recv failed");
 
-	retval = recvn(m_socket, m_recvMessage.m_buffer, len, 0);
+	retval = recvn(m_socket, m_recvBuffer, len, 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("recv failed");
-}
 
-SOCKET Socket::GetSocket()
-{
-	return m_socket;
-}
-
-Message Socket::GetRecvMessage()
-{
-	return m_recvMessage;
+	m_recvMsg.Push(m_recvBuffer, len);
 }

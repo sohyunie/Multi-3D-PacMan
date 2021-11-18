@@ -42,8 +42,25 @@ void ClientInfo::Send()
 
 void ClientInfo::ProcessMessage()
 {
-	std::string msg(m_recvMessage.m_buffer);
-	//cout << msg << endl;
+	while (!m_recvMsg.IsEmpty())
+	{
+		MsgType msg_type = m_recvMsg.GetMsgType();
+
+		switch (msg_type)
+		{
+		case MsgType::PLAYER_INPUT:
+		{
+			player_input pi{};
+			m_recvMsg.Pop(reinterpret_cast<char*>(&pi), sizeof(player_input));
+			cout << "size: " << pi.size << endl;
+			cout << "type: " << (int)pi.type << endl;
+			cout << "input: " << (int)pi.input << endl;
+			cout << "x: " << pi.x << endl;
+			cout << "z: " << pi.z << endl;
+			break;
+		}
+		}
+	}
 }
 
 void ClientInfo::CheckObjectsStatus()
@@ -173,8 +190,3 @@ void ClientInfo::GetNewPosition(start_game& s_game, float elapsedTIme)
 	//return pair<float, float>();
 }
 
-void ClientInfo::CreateLoginOkAndMapInfoMsg(start_game& s_game)
-{
-	m_sendMsg.Push(reinterpret_cast<char*>(&s_game), sizeof(s_game));
-	ClientInfo::Send();
-}
