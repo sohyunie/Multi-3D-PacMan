@@ -6,18 +6,16 @@ class ClientInfo : public Socket
 {
 public:
 	ClientInfo();
-	ClientInfo(SOCKET sck, int id);
 	virtual ~ClientInfo();
 
 public:
-	void Send();
-	
+	void Init(SOCKET sck, int id);
+
 	void ProcessMessage();
-	void CheckObjectsStatus();
 	bool IsCollided(float x, float z, Direction dir, start_game& s_game);
 	
-	void GetPlayerInputInfo(player_input p_input);
-	void GetNewPosition(start_game &s_game, float elapsedTime);
+	void ChangeDirection(player_input& p_input);
+	void SetNewPosition(start_game& s_game, float elapsedTime);
 	Vector4 GetBoundingBox();
 
 public:
@@ -29,5 +27,6 @@ public:
 	float m_boundingOffset;
 
 	Message m_sendMsg;
+	mutex m_directionLock;
 	Direction m_direction;
 };

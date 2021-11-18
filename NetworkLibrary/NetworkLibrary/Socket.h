@@ -21,6 +21,6 @@ public:
 	void Listen();																			// 접근하는 호스트 받기
 	void Connect(const char* ServerAddress, short ServerPort);		// 서버 주소로 연결 시도
 	SOCKET Accept();																	// 클라이언트 연결후 소켓 반환
-	void Send(Message& msg);														// 메시지를 상대 호스트에게 전송한다
-	void Recv();
+	int Send(Message& msg);														// 메시지를 상대 호스트에게 전송한다
+	int Recv();
 };

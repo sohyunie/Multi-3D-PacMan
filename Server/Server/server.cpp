@@ -12,10 +12,10 @@ mutex Server::g_loopLock;
 condition_variable Server::g_loopCv;
 bool Server::g_loop = false;
 
-vector<ClientInfo> Server::g_clients;
+array<ClientInfo, Server::MaxClients> Server::g_clients;
 
-mutex Server::g_sendMsgLock; // TEST
-
+mutex Server::g_sendMsgLock;
+Message Server::g_sendMsg;
 
 Server::Server()
 {
@@ -28,6 +28,8 @@ Server::Server()
 	m_listenSock.Bind(SERVER_PORT);
 	m_listenSock.Listen();
 
+	m_threads.reserve(MaxClients);
+
 	cout << "Listening to clients..\n";
 }
 
@@ -37,57 +39,6 @@ Server::~Server()
 		thrd.join();
 
 	WSACleanup();
-}
-
-void Server::Update()
-{
-	int max_clients = 1; // temporary variable
-	for (int i = 0; i < max_clients; i++)
-		AcceptNewPlayer(i);
-
-	GameStart();
-	std::cout << "Game Start\n";
-	g_timer.Start();
-
-	while(g_loop)
-	{
-		g_timer.Tick();
-		g_accum_time += g_timer.GetElapsedTime();
-		if (g_accum_time >= 1.0f) 
-		{
-			g_timerCv.notify_all();
-			g_accum_time = 0.0f;
-		}
-
-		// do other things..
-		// calculate new position
-		// check map status
-		// check tagger and runner collision
-		// check win status
-
-		// TEST
-		//update_player_info player_info{};
-		//player_info.size = sizeof(update_player_info);
-		//player_info.type = MsgType::UPDATE_PLAYER_INFO;
-		//for (int i = 0; i < 3; i++) {
-		//	player_info.x[i] = i;
-		//	player_info.z[i] = i;
-		//}
-		//
-		//for (auto& client : g_clients) {
-		//	//g_sendMsgLock.lock();
-		//	client.m_sendMsg.Clear();
-		//	client.m_sendMsg.Push(reinterpret_cast<char*>(&player_info), sizeof(update_player_info));
-		//	//cout << "[main] Pushing packets\n";
-		//	//g_sendMsgLock.unlock();
-		//}
-
-		// TEST: 연산이 많으면 Tick의 빈도가 적어진다.
-		// 타이머의 시간 계산은 정확하지만, 다른 스레드에 알리는 시간은 1초를 넘어선다.
-		/*unsigned long long sum = 0;
-		for (int i = 0; i < 1'000'000'000; i++)
-			sum += i * 2;*/		
-	}
 }
 
 void Server::LoadMap(const char* filename)
@@ -100,8 +51,8 @@ void Server::LoadMap(const char* filename)
 	for (int i = 0; i < 30; ++i) {
 		for (int j = 0; j < 30; ++j) {
 			in >> mapn;
-			startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
-			
+			m_startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
+
 			object.active = true;
 			object.x = (float)j;
 			object.z = (float)i;
@@ -119,12 +70,12 @@ void Server::LoadMap(const char* filename)
 			}
 			else if (mapn == 2) {			// WALL
 				object.id = 0;
-				object.type = ObjectType::WALL;					
+				object.type = ObjectType::WALL;
 				g_map.walls.push_back(object);
 			}
 			else if (mapn == 3) {			// PLAYER_POS
-				startGameData.x[player_id] = (float)j;
-				startGameData.z[player_id++] = (float)i;
+				m_startGameData.x[player_id] = (float)j;
+				m_startGameData.z[player_id++] = (float)i;
 			}
 			else if (mapn == 4) {			// DOOR
 				g_map.door.active = true;
@@ -140,12 +91,77 @@ void Server::LoadMap(const char* filename)
 	in.close();
 }
 
+void Server::Update()
+{
+	int max_clients = 3; // temporary variable
+	for (int i = 0; i < max_clients; i++)
+		AcceptNewPlayer(i);
+
+	GameStart();
+	std::cout << "Game Start\n";
+	g_timer.Start();
+
+	while (g_loop)
+	{
+		g_timer.Tick();
+		g_accum_time += g_timer.GetElapsedTime();
+		if (g_accum_time >= 1.0f)
+		{
+			g_timerCv.notify_all();
+			g_accum_time = 0.0f;
+		}
+
+		if (g_sendMsg.IsEmpty())
+		{
+			CreatePlayerInfoMsg(g_timer.GetElapsedTime());
+			CreateUpdateStatusMsg();
+		}	
+	}
+}
+
 void Server::AcceptNewPlayer(int id)
 {
 	SOCKET new_client = m_listenSock.Accept();
-	g_clients.emplace_back(new_client, id);
+	g_clients[id].Init(new_client, id);
 	m_threads.emplace_back(SendAndRecv, id);
 	std::cout << "Accepted New Client[" << id << "]\n";
+}
+
+void Server::GameStart()
+{
+	InitializeStartGameInfo();
+
+	int temp_size = 3;
+	for (int i = 0; i < temp_size; i++)
+	{
+		m_startGameData.my_id = i;
+		g_sendMsg.Clear();
+		g_sendMsg.Push(reinterpret_cast<char*>(&m_startGameData), sizeof(start_game));
+		g_clients[i].Send(g_sendMsg);
+	}
+
+	g_loop = true;
+	g_loopCv.notify_all();
+}
+
+void Server::InitializeStartGameInfo()
+{
+	m_startGameData.type = MsgType::START_GAME;
+	m_startGameData.size = sizeof(m_startGameData);
+	for (int i = 0; i < g_clients.size(); ++i) {
+		m_startGameData.id[i] = (char)i;
+		m_startGameData.playertype[i] = PlayerType::RUNNER;
+
+		g_clients[i].m_id = i;
+		g_clients[i].m_type = PlayerType::RUNNER;
+		g_clients[i].m_hp = 100;
+		g_clients[i].m_pos_x = m_startGameData.x[i];
+		g_clients[i].m_pos_z = m_startGameData.z[i];
+		g_clients[i].m_boundingOffset = 1.5f;
+	}
+
+	int tagger = rand() % g_clients.size();
+	g_clients[tagger].m_type = PlayerType::TAGGER;
 }
 
 void Server::SendAndRecv(int id)
@@ -165,10 +181,7 @@ void Server::SendAndRecv(int id)
 			std::cout << "[" << id << "] Tick!" << std::endl;
 			//g_clients[id].Recv();
 			//g_clients[id].ProcessMessage();
-
-			//g_sendMsgLock.lock();
-			//g_clients[id].Send();
-			//g_sendMsgLock.unlock();
+			//g_clients[id].Send(g_sendMsg);
 		}
 	}
 	catch (Exception& ex)
@@ -180,50 +193,31 @@ void Server::SendAndRecv(int id)
 
 void Server::CreatePlayerJoinMsg()
 {
+
 }
 
-void Server::GameStart()
+void Server::CreatePlayerInfoMsg(float elapsedTime)
 {
-	InitializeStartGameInfo();
-
+	update_player_info info{};
+	info.size = sizeof(update_player_info);
+	info.type = MsgType::UPDATE_PLAYER_INFO;
 	for (int i = 0; i < g_clients.size(); i++)
 	{
-		startGameData.my_id = i;
-		g_clients[i].m_sendMsg.Push(reinterpret_cast<char*>(&startGameData), sizeof(start_game));
-		g_clients[i].Send();
+		g_clients[i].SetNewPosition(m_startGameData, elapsedTime);
+		info.id[i] = g_clients[i].m_id;
+		info.x[i] = g_clients[i].m_pos_x;
+		info.z[i] = g_clients[i].m_pos_z;
 	}
-
-	g_loop = true;
-	g_loopCv.notify_all();
+	g_sendMsg.Push(reinterpret_cast<char*>(&info), sizeof(update_player_info));
 }
 
-void Server::InitializeStartGameInfo()
-{
-	startGameData.type = MsgType::START_GAME;
-	startGameData.size = sizeof(startGameData);
-	for (int i = 0; i < g_clients.size(); ++i) {
-		startGameData.id[i] = (char)i;
-		startGameData.playertype[i] = PlayerType::RUNNER;
-
-		g_clients[i].m_id = i;
-		g_clients[i].m_type = PlayerType::RUNNER;
-		g_clients[i].m_hp = 100;
-		g_clients[i].m_pos_x = startGameData.x[i];
-		g_clients[i].m_pos_z = startGameData.z[i];
-		g_clients[i].m_boundingOffset = 1.5f;
-	}
-
-	int tagger = rand() % g_clients.size();
-	g_clients[tagger].m_type = PlayerType::TAGGER;
-}
-
-void Server::CreateUpdateMapInfoMsg()
+void Server::CreateUpdateStatusMsg()
 {
 	update_status update_stat{};
 	update_stat.win = WinStatus::NONE;
 
 	vector<object_status> all_obj_status;
-	for (int i=0;i<g_clients.size();i++)
+	for (int i = 0; i < g_clients.size(); i++)
 	{
 		vector<object_status> stats = UpdateObjectStatus(i);
 		all_obj_status.insert(all_obj_status.end(), stats.begin(), stats.end());
@@ -231,10 +225,10 @@ void Server::CreateUpdateMapInfoMsg()
 		if (CheckWinStatus(i))
 			update_stat.win = WinStatus::RUNNER_WIN;
 	}
-	
+
 	// TODO: 적과의 충돌 후 hp 감소..
 	// TODO: 모든 플레이어의 사망여부 체크
-	
+
 	// TODO: 모든 플레이어에게 메시지 보내기
 
 }
@@ -245,7 +239,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 
 	const Vector4& clientBB = g_clients[id].GetBoundingBox();
 
-	g_mapInfoLock.lock();
+	//g_mapInfoLock.lock();
 	for (ObjectInfo& bead : g_map.beads)
 	{
 		if (bead.active)
@@ -271,7 +265,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			}
 		}
 	}
-	g_mapInfoLock.unlock();
+	//g_mapInfoLock.unlock();
 	
 	return obj_stats;
 }
