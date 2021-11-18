@@ -14,6 +14,7 @@ private:
     Socket* s_socket;
 
     char g_recv_buf[BUFSIZE];
+    Message m_sendMsg;
     WSABUF mybuf_r;
     WSABUF mybuf;
     bool isConnected = false;
@@ -33,4 +34,5 @@ public:
     void Network();
     void Update();
     bool GetIsConnected();
+    void SendPlayerInput(float x, float z, char input);
 };
