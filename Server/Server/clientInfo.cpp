@@ -12,15 +12,14 @@ ClientInfo::ClientInfo()
 {
 }
 
-ClientInfo::ClientInfo(SOCKET sck, int id)
-	: ClientInfo()
+ClientInfo::~ClientInfo()
+{
+}
+
+void ClientInfo::Init(SOCKET sck, int id)
 {
 	m_id = id;
 	m_socket = sck;
-}
-
-ClientInfo::~ClientInfo()
-{
 }
 
 Vector4 ClientInfo::GetBoundingBox()
@@ -35,19 +34,25 @@ Vector4 ClientInfo::GetBoundingBox()
 	return box;
 }
 
-void ClientInfo::Send()
-{
-	Socket::Send(m_sendMsg);
-}
-
 void ClientInfo::ProcessMessage()
 {
-	std::string msg(m_recvMessage.m_buffer);
-	//cout << msg << endl;
-}
+	while (!m_recvMsg.IsEmpty())
+	{
+		MsgType msg_type = m_recvMsg.GetMsgType();
 
-void ClientInfo::CheckObjectsStatus()
-{
+		switch (msg_type)
+		{
+		case MsgType::PLAYER_INPUT:
+		{
+			player_input pi{};
+			m_recvMsg.Pop(reinterpret_cast<char*>(&pi), sizeof(player_input));
+			if (pi.x != m_pos_x || pi.z != m_pos_z)
+				std::cout << "Position is incorrect. Need to ban [" << m_id << "]\n";
+			ChangeDirection(pi);
+			break;
+		}
+		}
+	}
 }
 
 bool ClientInfo::IsCollided(float x, float z, Direction dir, start_game &s_game)
@@ -78,14 +83,13 @@ bool ClientInfo::IsCollided(float x, float z, Direction dir, start_game &s_game)
 	{
 		return true;
 	}
-
-
 	return false;
 }
 
-void ClientInfo::GetPlayerInputInfo(player_input p_input)
+void ClientInfo::ChangeDirection(player_input& p_input)
 {
 	// 방향 전환
+	m_directionLock.lock();
 	if (p_input.input == 0)
 	{
 		if (m_direction == Direction::UP) {
@@ -116,13 +120,10 @@ void ClientInfo::GetPlayerInputInfo(player_input p_input)
 			m_direction = Direction::UP;
 		}
 	}
-
-	// 위치정보 저장
-	m_pos_x = p_input.x;
-	m_pos_z = p_input.z;
+	m_directionLock.unlock();
 }
 
-void ClientInfo::GetNewPosition(start_game& s_game, float elapsedTIme)
+void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 {
 	// 클라이언트에서 입력값을 계속 받아오고 있음
 	// 받을 때 마다 해당 방향에 충돌하는 물체 있는지 체크
@@ -132,8 +133,12 @@ void ClientInfo::GetNewPosition(start_game& s_game, float elapsedTIme)
 	bool col = false;
 	float x = m_pos_x, z = m_pos_z;
 	float speed = 3 * elapsedTIme;
+	
+	m_directionLock.lock();
+	Direction dir = m_direction;
+	m_directionLock.unlock();
 
-	if (m_direction == Direction::UP)
+	if (dir == Direction::UP)
 	{
 		z = z - speed;
 		// 충돌체크
@@ -142,7 +147,7 @@ void ClientInfo::GetNewPosition(start_game& s_game, float elapsedTIme)
 		if(col == false)
 			m_pos_z = z;
 	}
-	else if (m_direction == Direction::DOWN)
+	else if (dir == Direction::DOWN)
 	{
 		z = z + speed;
 		// 충돌체크
@@ -151,7 +156,7 @@ void ClientInfo::GetNewPosition(start_game& s_game, float elapsedTIme)
 		if (col == false)
 			m_pos_z = z;
 	}
-	else if (m_direction == Direction::LEFT)
+	else if (dir == Direction::LEFT)
 	{
 		x = x + speed;
 		// 충돌체크
@@ -160,7 +165,7 @@ void ClientInfo::GetNewPosition(start_game& s_game, float elapsedTIme)
 		if (col == false)
 			m_pos_x = x;
 	}
-	else if (m_direction == Direction::RIGHT)
+	else if (dir == Direction::RIGHT)
 	{
 		x = x - speed;
 		// 충돌체크
@@ -169,12 +174,5 @@ void ClientInfo::GetNewPosition(start_game& s_game, float elapsedTIme)
 		if (col == false)
 			m_pos_x = x;
 	}
-
-	//return pair<float, float>();
 }
 
-void ClientInfo::CreateLoginOkAndMapInfoMsg(start_game& s_game)
-{
-	m_sendMsg.Push(reinterpret_cast<char*>(&s_game), sizeof(s_game));
-	ClientInfo::Send();
-}

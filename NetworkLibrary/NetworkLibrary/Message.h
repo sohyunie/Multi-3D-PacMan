@@ -1,10 +1,14 @@
 #pragma once
 
+#include "Protocol.h"
+
 class Message
 {
 public:
 	Message();
 	~Message();
+
+	void Clear();
 
 	void Push(char* msg, int size);
 	void Pop(char* msg, int size);
@@ -12,9 +16,9 @@ public:
 	bool IsEmpty();
 	bool IsFull();
 
-	short PeekSize();
-
-	static const int MaxBufferSize = 1024;
+	MsgType GetMsgType();
+	short GetTotalMsgSize();
+	short PeekNextPacketSize();
 
 	char m_buffer[MaxBufferSize];
 private:
