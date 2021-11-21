@@ -47,6 +47,19 @@ bool NetworkManager::GetIsConnected()
     return this->isConnected;
 }
 
+void NetworkManager::SendPlayerInput(float x, float z, char input)
+{
+    player_input playerInput;
+    playerInput.size = sizeof(player_input);
+    playerInput.type = MsgType::PLAYER_INPUT;
+    playerInput.x = x;
+    playerInput.z = z;
+    playerInput.input = input;
+
+    m_sendMsg.Push(reinterpret_cast<char*>(&playerInput), sizeof(playerInput));
+    s_socket->Send(m_sendMsg);
+}
+
 void NetworkManager::Network()
 {
     try {
