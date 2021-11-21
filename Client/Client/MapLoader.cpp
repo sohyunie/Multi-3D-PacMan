@@ -16,7 +16,8 @@ MapLoader::MapLoader(char mapArray[][30])
     {
         for (int j = 0; j < MAP_SIZE; j++)
         {
-            BOARD_TYPE type = (BOARD_TYPE)mapArray[i][j];
+            int mapIndex = (int)mapArray[i][j] - 48;
+            BOARD_TYPE type = (BOARD_TYPE)mapIndex; 
 
             Vector3 position = Vector3((i * 7.5f - 35), 0, (j * 7.5f - 35));
             switch (type) {

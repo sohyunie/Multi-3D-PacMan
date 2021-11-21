@@ -146,48 +146,59 @@ void releaseKey(int key, int x, int y) {
 
 void processSpecialKeys(int key, int x, int y)
 {
-	Vector3 playerPos = Vector3();
-	switch (key)
-	{
-	case GLUT_KEY_RIGHT:
-		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
-		case DIRECTION::DIR_NONE:
-			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::UP;
-			break;
-		case DIRECTION::UP:
-			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::LEFT;
-			break;
-		case DIRECTION::LEFT:
-			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::DOWN;
-			break;
-		case DIRECTION::DOWN:
-			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::RIGHT;
-			break;
-		case DIRECTION::RIGHT:
-			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::UP;
-			break;
-		}
-		break;
-	case GLUT_KEY_LEFT:
-		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
-		case DIRECTION::DIR_NONE:
-			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::UP;
-			break;
-		case DIRECTION::UP:
-			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::RIGHT;
-			break;
-		case DIRECTION::RIGHT:
-			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::DOWN;
-			break;
-		case DIRECTION::DOWN:
-			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::LEFT;
-			break;
-		case DIRECTION::LEFT:
-			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::UP;
-			break;
-		}
-		break;
-	}
+	int dirNumber = (key == GLUT_KEY_RIGHT) ? 1 : 0;
+	NetworkManager::GetInstance().SendPlayerInput(
+		InGameManager::GetInstance().GetPlayer()->GetPlayerPos().x,
+		InGameManager::GetInstance().GetPlayer()->GetPlayerPos().y,
+		(char)dirNumber
+	);
+	//Vector3 playerPos = Vector3();
+	//switch (key)
+	//{
+	//case GLUT_KEY_RIGHT:
+	//	NetworkManager::GetInstance().SendPlayerInput(
+	//		InGameManager::GetInstance().GetPlayer()->GetPlayerPos().x,
+	//		InGameManager::GetInstance().GetPlayer()->GetPlayerPos().y,
+	//		(char)key
+	//	);
+	//	switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
+	//	case Direction::NONE:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
+	//		break;
+	//	case Direction::UP:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::LEFT;
+	//		break;
+	//	case Direction::LEFT:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::DOWN;
+	//		break;
+	//	case Direction::DOWN:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::RIGHT;
+	//		break;
+	//	case Direction::RIGHT:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
+	//		break;
+	//	}
+	//	break;
+	//case GLUT_KEY_LEFT:
+	//	switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
+	//	case Direction::NONE:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
+	//		break;
+	//	case Direction::UP:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::RIGHT;
+	//		break;
+	//	case Direction::RIGHT:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::DOWN;
+	//		break;
+	//	case Direction::DOWN:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::LEFT;
+	//		break;
+	//	case Direction::LEFT:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
+	//		break;
+	//	}
+	//	break;
+	//}
 
 	glutPostRedisplay();
 }
@@ -210,9 +221,6 @@ void TimerFunction(int value) {
 
 int main(int argc, char** argv)
 {
-	// Network Thread
-	thread networkTherad(&NetworkManager::Network, &NetworkManager::GetInstance());	// 우리가 쓸 함수, 우리가 쓸 함수가 어떤 애의 건지 객체를 보여줌. 
-
 	//PlaySound(TEXT(SOUND_FILE_NAME_LOBBY), NULL, SND_ASYNC | SND_LOOP);
 	InGameManager::GetInstance().PlayingBgm(SOUND_FILE_NAME_LOBBY);
 	glutInit(&argc, argv);
@@ -234,6 +242,8 @@ int main(int argc, char** argv)
 	InitShader();
 	InitBuffer();
 
+	// Network Thread
+	thread networkTherad(&NetworkManager::Network, &NetworkManager::GetInstance());	// 우리가 쓸 함수, 우리가 쓸 함수가 어떤 애의 건지 객체를 보여줌. 
 
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);

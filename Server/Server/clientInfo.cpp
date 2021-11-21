@@ -35,7 +35,7 @@ void ClientInfo::Send()
 
 void ClientInfo::ProcessMessage()
 {
-	std::string msg(m_recvMessage.MsgBuffer);
+	std::string msg(m_recvMessage.m_buffer);
 	//cout << msg << endl;
 }
 
@@ -53,7 +53,7 @@ pair<float, float> ClientInfo::GetNewPosition()
 	return pair<float, float>();
 }
 
-void ClientInfo::CreateLoginOkAndMapInfoMsg(start_game s_game)
+void ClientInfo::CreateLoginOkAndMapInfoMsg(start_game& s_game)
 {
-	m_sendMsg.Push((char*)&s_game, sizeof(s_game));
+	m_sendMsg.Push(reinterpret_cast<char*>(&s_game), sizeof(s_game));
 }

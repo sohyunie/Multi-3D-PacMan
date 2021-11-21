@@ -24,6 +24,7 @@
     <ClInclude Include="Bottom.h" />
     <ClInclude Include="DynamicObject.h" />
     <ClInclude Include="EndingScene.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="Ghost.h" />
     <ClInclude Include="InGameManager.h" />
     <ClInclude Include="InGameUI.h" />
@@ -61,6 +62,11 @@
   <ItemGroup>
     <None Include="fragment.glsl" />
     <None Include="vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NetworkLibrary\NetworkLibrary\NetworkLibrary.vcxproj">
+      <Project>{f575a30c-ef6e-4e56-b9db-e1816c606d0f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -165,6 +171,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\../NetworkLibrary/NetworkLibrary\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

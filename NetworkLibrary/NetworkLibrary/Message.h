@@ -12,11 +12,12 @@ public:
 	bool IsEmpty();
 	bool IsFull();
 
+	short PeekSize();
+
 	static const int MaxBufferSize = 1024;
 
-	char* MsgBuffer = m_buffer;	// 임시로 만들어논 것
-private:
 	char m_buffer[MaxBufferSize];
+private:
 	int m_readIndex;
 	int m_writeIndex;
 	int m_remainSize;
