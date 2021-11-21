@@ -107,6 +107,8 @@ void Server::Update()
 		g_accum_time += g_timer.GetElapsedTime();
 		if (g_accum_time >= 1.0f)
 		{
+			CopySendMsgToAllClients();
+			g_sendMsg.Clear();
 			g_timerCv.notify_all();
 			g_accum_time = 0.0f;
 		}
@@ -114,7 +116,7 @@ void Server::Update()
 		if (g_sendMsg.IsEmpty())
 		{
 			CreatePlayerInfoMsg(g_timer.GetElapsedTime());
-			CreateUpdateStatusMsg();
+			CreateUpdateStatusMsg();			
 		}	
 	}
 }
@@ -139,7 +141,7 @@ void Server::GameStart()
 		g_sendMsg.Push(reinterpret_cast<char*>(&m_startGameData), sizeof(start_game));
 		g_clients[i].Send(g_sendMsg);
 	}
-
+	g_sendMsg.Clear();
 	g_loop = true;
 	g_loopCv.notify_all();
 }
@@ -178,10 +180,10 @@ void Server::SendAndRecv(int id)
 				unique_lock<mutex> timer_lock(g_timerLock);
 				g_timerCv.wait(timer_lock);
 			}
-			std::cout << "[" << id << "] Tick!" << std::endl;
-			//g_clients[id].Recv();
-			//g_clients[id].ProcessMessage();
-			//g_clients[id].Send(g_sendMsg);
+			//std::cout << "[" << id << "] Tick!" << std::endl;
+			g_clients[id].Recv();
+			g_clients[id].ProcessMessage();
+			g_clients[id].SendMsg();
 		}
 	}
 	catch (Exception& ex)
@@ -214,6 +216,7 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 void Server::CreateUpdateStatusMsg()
 {
 	update_status update_stat{};
+	update_stat.type = MsgType::UPDATE_STATUS;
 	update_stat.win = WinStatus::NONE;
 
 	vector<object_status> all_obj_status;
@@ -230,7 +233,14 @@ void Server::CreateUpdateStatusMsg()
 	// TODO: 모든 플레이어의 사망여부 체크
 
 	// TODO: 모든 플레이어에게 메시지 보내기
+	update_stat.size = sizeof(update_status) + all_obj_status.size() * sizeof(object_status);
+	g_sendMsg.Push(reinterpret_cast<char*>(&update_stat), update_stat.size);
+}
 
+void Server::CopySendMsgToAllClients()
+{
+	for (ClientInfo& client : g_clients)
+		client.m_sendMsg = g_sendMsg;
 }
 
 vector<object_status> Server::UpdateObjectStatus(int id)

@@ -22,6 +22,11 @@ void ClientInfo::Init(SOCKET sck, int id)
 	m_socket = sck;
 }
 
+void ClientInfo::SendMsg()
+{
+	Send(m_sendMsg);
+}
+
 Vector4 ClientInfo::GetBoundingBox()
 {
 	Vector4 box =
@@ -46,8 +51,6 @@ void ClientInfo::ProcessMessage()
 		{
 			player_input pi{};
 			m_recvMsg.Pop(reinterpret_cast<char*>(&pi), sizeof(player_input));
-			if (pi.x != m_pos_x || pi.z != m_pos_z)
-				std::cout << "Position is incorrect. Need to ban [" << m_id << "]\n";
 			ChangeDirection(pi);
 			break;
 		}
@@ -57,7 +60,6 @@ void ClientInfo::ProcessMessage()
 
 bool ClientInfo::IsCollided(float x, float z, Direction dir, start_game &s_game)
 {
-	// 벽, 비드, 열쇠, 문, 태거와 러너의 충돌
 	int mapx = 0, mapz = 0;
 	if (dir == Direction::UP || dir == Direction::RIGHT)
 	{
@@ -132,7 +134,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 
 	bool col = false;
 	float x = m_pos_x, z = m_pos_z;
-	float speed = 3 * elapsedTIme;
+	float speed = 5000 * elapsedTIme;
 	
 	m_directionLock.lock();
 	Direction dir = m_direction;

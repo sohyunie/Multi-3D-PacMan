@@ -21,6 +21,8 @@ public:
 	void CreatePlayerInfoMsg(float elapsedTime);
 	void CreateUpdateStatusMsg();
 
+	void CopySendMsgToAllClients();
+
 	vector<object_status> UpdateObjectStatus(int id);
 	bool CheckWinStatus(int id);
 	bool IsCollided(const Vector4& a, const Vector4& b);	
