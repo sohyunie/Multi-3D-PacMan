@@ -74,7 +74,6 @@ SOCKET Socket::Accept()
 	SOCKET accept_socket = accept(m_socket, NULL, 0);
 	if (accept_socket == INVALID_SOCKET)
 		throw Exception("accept failed");
-	cout << (int)accept_socket << endl;
 	return accept_socket;
 }
 
@@ -101,7 +100,6 @@ int Socket::Recv()
 	int retval = recvn(m_socket, (char*)&len, sizeof(short), 0);
 	if (retval == SOCKET_ERROR) 
 		throw Exception("recv failed");
-	cout << retval << endl;
 	if (retval == 0)
 		return retval;
 

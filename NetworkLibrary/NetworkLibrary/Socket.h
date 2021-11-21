@@ -5,7 +5,7 @@
 
 class Socket 
 {
-protected:
+public:
 	SOCKET m_socket;					// 소켓 핸들
 	char m_recvBuffer[MaxBufferSize];		// Recv에 사용되는 메시지 버퍼
 	
