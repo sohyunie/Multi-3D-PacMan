@@ -9,7 +9,7 @@ NetworkManager* NetworkManager::instance = nullptr;
 void NetworkManager::Update()
 {
     s_socket->Recv();
-    BasePacket basePacket = (BasePacket&)*(s_socket->GetRecvMessage().m_buffer);
+    BasePacket basePacket = (BasePacket&)*(s_socket->m_recvMsg.m_buffer);
 
     MsgType msgType = basePacket.type;
     switch (msgType)
@@ -22,22 +22,16 @@ void NetworkManager::Update()
         break;
     case MsgType::START_GAME:
     {
-        start_game startGame = (start_game&)*(s_socket->GetRecvMessage().m_buffer);
+        start_game startGame = (start_game&)*(s_socket->m_recvMsg.m_buffer);
         myID = startGame.my_id;
         InGameManager::GetInstance().GameStart(startGame);
         break;
     }
     case MsgType::PLAYER_INPUT:
         break;
-    case MsgType::UPDATE_PLAYER_POS:
-        break;
     case MsgType::UPDATE_PLAYER_INFO:
         break;
-    case MsgType::UPDATE_BEAD:
-        break;
-    case MsgType::UPDATE_KEY:
-        break;
-    case MsgType::DOOR_OPEN:
+    case MsgType::UPDATE_STATUS:
         break;
     }
 }
@@ -75,12 +69,10 @@ void NetworkManager::Network()
         s_socket = new Socket();
         s_socket->Init();
         s_socket->Connect("127.0.0.1", SERVER_PORT);
-        isConnected = true;
-
-        
+        isConnected = true;        
 
         int tcp_option = 1;
-        setsockopt(s_socket->GetSocket(), IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&tcp_option), sizeof(tcp_option));
+        setsockopt(s_socket->m_socket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&tcp_option), sizeof(tcp_option));
 
         while (true)
         {

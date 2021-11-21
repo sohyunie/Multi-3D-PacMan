@@ -22,6 +22,7 @@ private:
     MsgType msgtype;
 
     char myID;
+
 public:
     static NetworkManager& GetInstance() {
         if (instance == NULL) {
@@ -29,8 +30,7 @@ public:
         }
         return *instance;
     }
-    // 대화상자 프로시저
-    int recvn(SOCKET s, char* buf, int len, int flags);
+
     void Network();
     void Update();
     bool GetIsConnected();
