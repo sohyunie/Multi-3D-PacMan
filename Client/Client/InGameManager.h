@@ -32,6 +32,7 @@ private:
     Object* object;
     ObjData* objData[MAX_VAO_TYPE];
     Player* player;
+    Player* otherPlayer[2];
     MapLoader* map;
     Bead* bead;
     PowerBead* powerBead;

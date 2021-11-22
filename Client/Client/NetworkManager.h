@@ -43,7 +43,9 @@ public:
     void Network();
     void Update();
     bool GetIsConnected();
+    int GetMyID();
     void SendPlayerInput();
+    PlayerInfo GetPlayerInfo(int id);
 
     void SetLastInput(char input);
 };
