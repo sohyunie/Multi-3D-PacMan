@@ -19,7 +19,8 @@ using namespace std;
 const short SERVER_PORT = 7777;			
 const char* const SERVER_IP = "127.0.0.1";
 
-static const int MaxBufferSize = 1024;
+const int MaxBufferSize = 1024;
+const int MaxClients = 3;
 
 enum class MsgType : char		// 메시지를 식별할 수 있는 메시지 형식
 {	
@@ -122,7 +123,7 @@ struct update_player_info			// 서버는 지속적으로 클라이언트들의 위치를 갱신하여 
 struct object_status
 {
 	ObjectType objType;
-	char id;
+	char x, z;
 	bool active;
 };
 
@@ -132,18 +133,13 @@ struct update_status			//맵에 존재하는 오브젝트들의 변화되어 사라졌는지, 그 상태
 	MsgType type;
 	WinStatus win;
 	char hp;
-	/*ObjectType objType;
-	char id;
-	bool active;*/
 };
 #pragma pack(pop)
 
 struct ObjectInfo			// 오브젝트의 정보를 관리하는 구조체
 {
-	char id;										// 오브젝트 아이디
 	ObjectType type;						// 오브젝트 타입
-	float x;									// 오브젝트 x 좌표
-	float z;									// 오브젝트 z 좌표
+	char x, z;									
 	bool active;							// 오브젝트 활성화 여부
 	float boundingOffset;				// 오브젝트 바운드 오프셋
 
@@ -158,7 +154,6 @@ struct ObjectInfo			// 오브젝트의 정보를 관리하는 구조체
 		};
 		return box;
 	}
-
 };
 
 struct MapInfo							// 맵에 존재하는 모든 오브젝트를 담고 있는 구조체

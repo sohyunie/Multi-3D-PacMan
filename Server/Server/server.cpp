@@ -54,22 +54,19 @@ void Server::LoadMap(const char* filename)
 			m_startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
 
 			object.active = true;
-			object.x = (float)j;
-			object.z = (float)i;
+			object.x = (char)j;
+			object.z = (char)i;
 			object.boundingOffset = 1.0;
 
-			if (mapn == 0) {					// BEAD
-				object.id = bead_id++;
+			if (mapn == 0) {
 				object.type = ObjectType::BEAD;
 				g_map.beads.push_back(object);
 			}
-			else if (mapn == 1) {			// KEY
-				object.id = key_id++;
+			else if (mapn == 1) {
 				object.type = ObjectType::KEY;
 				g_map.keys.push_back(object);
 			}
-			else if (mapn == 2) {			// WALL
-				object.id = 0;
+			else if (mapn == 2) {
 				object.type = ObjectType::WALL;
 				g_map.walls.push_back(object);
 			}
@@ -79,9 +76,8 @@ void Server::LoadMap(const char* filename)
 			}
 			else if (mapn == 4) {			// DOOR
 				g_map.door.active = true;
-				g_map.door.x = (float)j;
-				g_map.door.z = (float)i;
-				g_map.door.id = 0;
+				g_map.door.x = (char)j;
+				g_map.door.z = (char)i;
 				g_map.door.type = ObjectType::DOOR;
 				g_map.door.boundingOffset = 1.0;
 			}
@@ -117,7 +113,7 @@ void Server::Update()
 		{
 			CreatePlayerInfoMsg(g_timer.GetElapsedTime());
 			CreateUpdateStatusMsg();			
-		}	
+		}
 	}
 }
 
@@ -258,7 +254,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			if (IsCollided(clientBB, beadBB))
 			{
 				bead.active = false;
-				obj_stats.push_back({ bead.type , bead.id, bead.active });
+				obj_stats.push_back({ bead.type , bead.x, bead.z, bead.active });
 			}
 		}
 	}
@@ -271,7 +267,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			{
 				key.active = false;
 				m_countOfKeyAccquired += 1;
-				obj_stats.push_back({ key.type, key.id, key.active });
+				obj_stats.push_back({ key.type, key.x, key.z, key.active });
 			}
 		}
 	}
