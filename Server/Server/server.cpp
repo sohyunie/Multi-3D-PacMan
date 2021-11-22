@@ -54,22 +54,19 @@ void Server::LoadMap(const char* filename)
 			m_startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
 
 			object.active = true;
-			object.x = (float)j;
-			object.z = (float)i;
+			object.x = (char)j;
+			object.z = (char)i;
 			object.boundingOffset = 1.0;
 
-			if (mapn == 0) {					// BEAD
-				object.id = bead_id++;
+			if (mapn == 0) {
 				object.type = ObjectType::BEAD;
 				g_map.beads.push_back(object);
 			}
-			else if (mapn == 1) {			// KEY
-				object.id = key_id++;
+			else if (mapn == 1) {
 				object.type = ObjectType::KEY;
 				g_map.keys.push_back(object);
 			}
-			else if (mapn == 2) {			// WALL
-				object.id = 0;
+			else if (mapn == 2) {
 				object.type = ObjectType::WALL;
 				g_map.walls.push_back(object);
 			}
@@ -79,9 +76,8 @@ void Server::LoadMap(const char* filename)
 			}
 			else if (mapn == 4) {			// DOOR
 				g_map.door.active = true;
-				g_map.door.x = (float)j;
-				g_map.door.z = (float)i;
-				g_map.door.id = 0;
+				g_map.door.x = (char)j;
+				g_map.door.z = (char)i;
 				g_map.door.type = ObjectType::DOOR;
 				g_map.door.boundingOffset = 1.0;
 			}
@@ -107,15 +103,14 @@ void Server::Update()
 		g_accum_time += g_timer.GetElapsedTime();
 		if (g_accum_time >= 1.0f)
 		{
+			CopySendMsgToAllClients();
+			g_sendMsg.Clear();
 			g_timerCv.notify_all();
 			g_accum_time = 0.0f;
 		}
 
-		if (g_sendMsg.IsEmpty())
-		{
-			CreatePlayerInfoMsg(g_timer.GetElapsedTime());
-			CreateUpdateStatusMsg();
-		}	
+		CreatePlayerInfoMsg(g_timer.GetElapsedTime());
+		CreateUpdateStatusMsg();			
 	}
 }
 
@@ -139,7 +134,7 @@ void Server::GameStart()
 		g_sendMsg.Push(reinterpret_cast<char*>(&m_startGameData), sizeof(start_game));
 		g_clients[i].Send(g_sendMsg);
 	}
-
+	g_sendMsg.Clear();
 	g_loop = true;
 	g_loopCv.notify_all();
 }
@@ -178,10 +173,10 @@ void Server::SendAndRecv(int id)
 				unique_lock<mutex> timer_lock(g_timerLock);
 				g_timerCv.wait(timer_lock);
 			}
-			std::cout << "[" << id << "] Tick!" << std::endl;
-			//g_clients[id].Recv();
-			//g_clients[id].ProcessMessage();
-			//g_clients[id].Send(g_sendMsg);
+			//std::cout << "[" << id << "] Tick!" << std::endl;
+			g_clients[id].Recv();
+			g_clients[id].ProcessMessage();
+			g_clients[id].SendMsg();
 		}
 	}
 	catch (Exception& ex)
@@ -198,39 +193,47 @@ void Server::CreatePlayerJoinMsg()
 
 void Server::CreatePlayerInfoMsg(float elapsedTime)
 {
-	update_player_info info{};
-	info.size = sizeof(update_player_info);
-	info.type = MsgType::UPDATE_PLAYER_INFO;
+	m_player_info.size = sizeof(update_player_info);
+	m_player_info.type = MsgType::UPDATE_PLAYER_INFO;
 	for (int i = 0; i < g_clients.size(); i++)
 	{
 		g_clients[i].SetNewPosition(m_startGameData, elapsedTime);
-		info.id[i] = g_clients[i].m_id;
-		info.x[i] = g_clients[i].m_pos_x;
-		info.z[i] = g_clients[i].m_pos_z;
+		m_player_info.id[i] = g_clients[i].m_id;
+		m_player_info.x[i] = g_clients[i].m_pos_x;
+		m_player_info.z[i] = g_clients[i].m_pos_z;
 	}
-	g_sendMsg.Push(reinterpret_cast<char*>(&info), sizeof(update_player_info));
 }
 
 void Server::CreateUpdateStatusMsg()
 {
-	update_status update_stat{};
-	update_stat.win = WinStatus::NONE;
+	m_update_info.type = MsgType::UPDATE_STATUS;
+	m_update_info.win = WinStatus::NONE;
 
-	vector<object_status> all_obj_status;
 	for (int i = 0; i < g_clients.size(); i++)
 	{
 		vector<object_status> stats = UpdateObjectStatus(i);
-		all_obj_status.insert(all_obj_status.end(), stats.begin(), stats.end());
+		m_object_info.insert(m_object_info.end(), stats.begin(), stats.end());
 
 		if (CheckWinStatus(i))
-			update_stat.win = WinStatus::RUNNER_WIN;
+			m_update_info.win = WinStatus::RUNNER_WIN;
 	}
 
 	// TODO: 적과의 충돌 후 hp 감소..
 	// TODO: 모든 플레이어의 사망여부 체크
 
 	// TODO: 모든 플레이어에게 메시지 보내기
+	m_update_info.size = sizeof(update_status) + m_object_info.size() * sizeof(object_status);
+}
 
+void Server::CopySendMsgToAllClients()
+{
+	Message sendMsg{};
+	sendMsg.Push(reinterpret_cast<char*>(&m_player_info), sizeof(update_player_info));
+	sendMsg.Push(reinterpret_cast<char*>(&m_update_info), sizeof(update_status));
+	sendMsg.Push(reinterpret_cast<char*>(m_object_info.data()), m_object_info.size() * sizeof(object_status));
+
+	for (ClientInfo& client : g_clients)
+		client.m_sendMsg = g_sendMsg;
 }
 
 vector<object_status> Server::UpdateObjectStatus(int id)
@@ -248,7 +251,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			if (IsCollided(clientBB, beadBB))
 			{
 				bead.active = false;
-				obj_stats.push_back({ bead.type , bead.id, bead.active });
+				obj_stats.push_back({ bead.type , bead.x, bead.z, bead.active });
 			}
 		}
 	}
@@ -261,7 +264,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			{
 				key.active = false;
 				m_countOfKeyAccquired += 1;
-				obj_stats.push_back({ key.type, key.id, key.active });
+				obj_stats.push_back({ key.type, key.x, key.z, key.active });
 			}
 		}
 	}

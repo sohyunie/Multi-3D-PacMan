@@ -11,6 +11,8 @@ public:
 public:
 	void Init(SOCKET sck, int id);
 
+	void SendMsg();
+
 	void ProcessMessage();
 	bool IsCollided(float x, float z, Direction dir, start_game& s_game);
 	

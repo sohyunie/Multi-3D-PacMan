@@ -24,7 +24,6 @@ private:
     GLuint VAO[MAX_VAO_TYPE];
     GLuint VBO[MAX_VAO_TYPE][3];
     GLuint EBO[MAX_VAO_TYPE];
-    //vector<Block> vBlock; // 여기서 변수 저렇게 써있자나..?! ㅇ그러면 메모리가 ㅇ우ㅛㅇ렁훙겡 웅웅ㅇ 요렇게 잡혀 그런데우웅
     Block* block;
     Block* block2;
     //Ghost* ghost[20];
@@ -93,7 +92,7 @@ public:
     GLvoid InitObject();
     GLvoid InitScene();
 
-    void GameStart(start_game recvStartGame);
+    void GameStart(start_game& recvStartGame);
 
     float GetDegreeCameraRotate() { return this->degreeCameraRotate; }
     float GetDegreeLightPos() { return this->degreeLightPos; }

@@ -146,48 +146,60 @@ void releaseKey(int key, int x, int y) {
 
 void processSpecialKeys(int key, int x, int y)
 {
-	Vector3 playerPos = Vector3();
-	switch (key)
-	{
-	case GLUT_KEY_RIGHT:
-		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
-		case Direction::NONE:
-			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
-			break;
-		case Direction::UP:
-			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::LEFT;
-			break;
-		case Direction::LEFT:
-			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::DOWN;
-			break;
-		case Direction::DOWN:
-			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::RIGHT;
-			break;
-		case Direction::RIGHT:
-			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
-			break;
-		}
-		break;
-	case GLUT_KEY_LEFT:
-		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
-		case Direction::NONE:
-			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
-			break;
-		case Direction::UP:
-			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::RIGHT;
-			break;
-		case Direction::RIGHT:
-			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::DOWN;
-			break;
-		case Direction::DOWN:
-			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::LEFT;
-			break;
-		case Direction::LEFT:
-			InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
-			break;
-		}
-		break;
-	}
+	int dirNumber = (key == GLUT_KEY_RIGHT) ? 1 : 0;
+
+	NetworkManager::GetInstance().SetLastInput(dirNumber);
+
+	// 1 : 0 -> rotate 클라이언트에서 알아서 하는 것
+	// rotation 끝나면 NetworkManager::GetInstance().SetLastInput(-1);
+
+	//Vector3 playerPos = Vector3();
+	//switch (key)
+	//{
+	//case GLUT_KEY_RIGHT:
+	//	NetworkManager::GetInstance().SendPlayerInput(
+	//		InGameManager::GetInstance().GetPlayer()->GetPlayerPos().x,
+	//		InGameManager::GetInstance().GetPlayer()->GetPlayerPos().y,
+	//		(char)key
+	//	);
+	//	switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
+	//	case Direction::NONE:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
+	//		break;
+	//	case Direction::UP:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::LEFT;
+	//		break;
+	//	case Direction::LEFT:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::DOWN;
+	//		break;
+	//	case Direction::DOWN:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::RIGHT;
+	//		break;
+	//	case Direction::RIGHT:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
+	//		break;
+	//	}
+	//	break;
+	//case GLUT_KEY_LEFT:
+	//	switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
+	//	case Direction::NONE:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
+	//		break;
+	//	case Direction::UP:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::RIGHT;
+	//		break;
+	//	case Direction::RIGHT:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::DOWN;
+	//		break;
+	//	case Direction::DOWN:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::LEFT;
+	//		break;
+	//	case Direction::LEFT:
+	//		InGameManager::GetInstance().GetPlayer()->newDirection = Direction::UP;
+	//		break;
+	//	}
+	//	break;
+	//}
 
 	glutPostRedisplay();
 }

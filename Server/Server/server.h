@@ -21,6 +21,8 @@ public:
 	void CreatePlayerInfoMsg(float elapsedTime);
 	void CreateUpdateStatusMsg();
 
+	void CopySendMsgToAllClients();
+
 	vector<object_status> UpdateObjectStatus(int id);
 	bool CheckWinStatus(int id);
 	bool IsCollided(const Vector4& a, const Vector4& b);	
@@ -48,6 +50,10 @@ private:
 	WSAData m_wsaData;
 	Socket m_listenSock;
 	vector<thread> m_threads;
+
+	update_player_info m_player_info;
+	update_status m_update_info;
+	vector<object_status> m_object_info;
 
 	start_game m_startGameData;
 	int m_countOfKeyAccquired = 0;

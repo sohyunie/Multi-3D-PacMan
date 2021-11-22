@@ -5,22 +5,33 @@
 #define BUFSIZE 2048
 #define BUFSIZE2 128
 
+struct PlayerInfo
+{
+    char id;
+    float x;
+    float z;
+    PlayerType type;
+    Direction dir;
+};
+
 class NetworkManager
 {
 private:
     static NetworkManager* instance;
-    char buf[BUFSIZE2 + 1]; // 데이터 송수신 버퍼
 
-    Socket* s_socket;
-
-    char g_recv_buf[BUFSIZE];
-    WSABUF mybuf_r;
-    WSABUF mybuf;
+    Socket s_socket;
+    Message m_sendMsg;
+    
     bool isConnected = false;
 
     MsgType msgtype;
 
     char myID;
+
+    mutex inputLock;
+    char last_input;
+    PlayerInfo players[MaxClients];
+
 public:
     static NetworkManager& GetInstance() {
         if (instance == NULL) {
@@ -28,9 +39,11 @@ public:
         }
         return *instance;
     }
-    // 대화상자 프로시저
-    int recvn(SOCKET s, char* buf, int len, int flags);
+
     void Network();
     void Update();
     bool GetIsConnected();
+    void SendPlayerInput();
+
+    void SetLastInput(char input);
 };
