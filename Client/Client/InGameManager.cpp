@@ -28,8 +28,8 @@ char* filetobuf(const char* file)
 	FILE* fptr;
 	long length;
 	char* buf;
-	fptr = fopen(file, "rb"); // Open file for reading
-	if (!fptr) // Return NULL on failure
+	errno_t erron = fopen_s(&fptr, file, "rb"); // Open file for reading
+	if (erron != 0) // Return NULL on failure
 		return NULL;
 	fseek(fptr, 0, SEEK_END); // Seek to the end of the file
 	length = ftell(fptr); // Find out how many bytes into the file we are
@@ -750,8 +750,8 @@ void InGameManager::PlayingBgm(const char* name) {
 	return;
 	mciSendCommand(this->dwID, MCI_CLOSE, 0, NULL); //dwID 음악 종료
 	wchar_t text[30];
-
-	mbstowcs(text, name, strlen(name) + 1);
+	size_t size;
+	mbstowcs_s(&size, text, name, _TRUNCATE);
 	openBgm.lpstrElementName = text; //파일 오픈
 	openBgm.lpstrDeviceType = TEXT("waveaudio"); //wave 형식
 	mciSendCommand(0, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_OPEN_TYPE, (DWORD)(LPVOID)&openBgm);
@@ -765,7 +765,8 @@ void InGameManager::PlayingFxSound(const char* name) {
 	mciSendCommand(this->fxDwID, MCI_CLOSE, 0, NULL); //dwID 음악 종료
 
 	wchar_t text[30];
-	mbstowcs(text, name, strlen(name) + 1);
+	size_t size;
+	mbstowcs_s(&size, text, name, _TRUNCATE);
 	openFxSound.lpstrElementName = text; //파일 오픈
 	openFxSound.lpstrDeviceType = TEXT("waveaudio"); //mp3 형식
 	mciSendCommand(0, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_OPEN_TYPE, (DWORD)(LPVOID)&openFxSound);
@@ -1003,10 +1004,13 @@ GLvoid InGameManager::InitObject()
 	this->isInitComplete = true;
 }
 
-void InGameManager::GameStart(start_game startGame)
+void InGameManager::GameStart(start_game& startGame)
 {
 	if (this->state == GAMESTATE::NONE)
 	{
+		// 플레이어 배열에 위치와 아이디, 타입까지 결정.
+		// 타입이 0이면 고스트, 러너 플레이어로 그리기.
+
 		this->map = new MapLoader(startGame.mapinfo);
 		this->PlayingBgm(SOUND_FILE_NAME_INGAME);
 		this->SetState(GAMESTATE::INGAME);

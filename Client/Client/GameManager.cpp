@@ -147,11 +147,12 @@ void releaseKey(int key, int x, int y) {
 void processSpecialKeys(int key, int x, int y)
 {
 	int dirNumber = (key == GLUT_KEY_RIGHT) ? 1 : 0;
-	NetworkManager::GetInstance().SendPlayerInput(
-		InGameManager::GetInstance().GetPlayer()->GetPlayerPos().x,
-		InGameManager::GetInstance().GetPlayer()->GetPlayerPos().y,
-		(char)dirNumber
-	);
+
+	NetworkManager::GetInstance().SetLastInput(dirNumber);
+
+	// 1 : 0 -> rotate 클라이언트에서 알아서 하는 것
+	// rotation 끝나면 NetworkManager::GetInstance().SetLastInput(-1);
+
 	//Vector3 playerPos = Vector3();
 	//switch (key)
 	//{

@@ -92,7 +92,7 @@ public:
     GLvoid InitObject();
     GLvoid InitScene();
 
-    void GameStart(start_game recvStartGame);
+    void GameStart(start_game& recvStartGame);
 
     float GetDegreeCameraRotate() { return this->degreeCameraRotate; }
     float GetDegreeLightPos() { return this->degreeLightPos; }
