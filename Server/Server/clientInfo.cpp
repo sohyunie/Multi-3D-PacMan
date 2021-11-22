@@ -8,7 +8,7 @@ ClientInfo::ClientInfo()
 		m_pos_z(0.0f),
 		m_boundingOffset(0.0f),
 		m_sendMsg({}),
-		m_direction(Direction::UP)
+		m_direction(Direction::DOWN)
 {
 }
 
@@ -51,6 +51,7 @@ void ClientInfo::ProcessMessage()
 		{
 			player_input pi{};
 			m_recvMsg.Pop(reinterpret_cast<char*>(&pi), sizeof(player_input));
+			cout << "1 : " << (int)pi.input << "\n";
 			ChangeDirection(pi);
 			break;
 		}
@@ -61,19 +62,19 @@ void ClientInfo::ProcessMessage()
 bool ClientInfo::IsCollided(float x, float z, Direction dir, start_game &s_game)
 {
 	int mapx = 0, mapz = 0;
-	if (dir == Direction::UP || dir == Direction::RIGHT)
+	if (dir == Direction::DOWN || dir == Direction::LEFT)
 	{
 		mapx = (int)x;
 		mapz = (int)z;
 	}
-	else if (dir == Direction::DOWN)
+	else if (dir == Direction::UP)
 	{
 		mapx = (int)x;
-		mapz = (int)z + 1;
+		mapz = (int)(z + 1);
 	}
-	else if (dir == Direction::LEFT)
+	else if (dir == Direction::RIGHT)
 	{
-		mapx = (int)x + 1;
+		mapx = (int)(x + 1);
 		mapz = (int)z;
 	}
 
@@ -122,6 +123,7 @@ void ClientInfo::ChangeDirection(player_input& p_input)
 			m_direction = Direction::UP;
 		}
 	}
+	cout << m_id << "规氢  : " << (int)m_direction << "\n";
 	m_directionLock.unlock();
 }
 
@@ -142,7 +144,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 
 	if (dir == Direction::UP)
 	{
-		z = z - speed;
+		z = z + speed;
 		// 面倒眉农
 		col = IsCollided(x, z, Direction::UP, s_game);
 
@@ -151,7 +153,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	}
 	else if (dir == Direction::DOWN)
 	{
-		z = z + speed;
+		z = z - speed;
 		// 面倒眉农
 		col = IsCollided(x, z, Direction::DOWN, s_game);
 
@@ -160,7 +162,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	}
 	else if (dir == Direction::LEFT)
 	{
-		x = x + speed;
+		x = x - speed;
 		// 面倒眉农
 		col = IsCollided(x, z, Direction::LEFT, s_game);
 
@@ -169,7 +171,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	}
 	else if (dir == Direction::RIGHT)
 	{
-		x = x - speed;
+		x = x + speed;
 		// 面倒眉农
 		col = IsCollided(x, z, Direction::RIGHT, s_game);
 

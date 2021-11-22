@@ -16,7 +16,7 @@
 
 using namespace std;
 
-const short SERVER_PORT = 7777;			
+const short SERVER_PORT = 7778;			
 const char* const SERVER_IP = "127.0.0.1";
 
 const int MaxBufferSize = 1024;
