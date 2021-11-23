@@ -212,6 +212,7 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 		g_clients[i].Send(g_sendMsg);
 	}
 	g_sendMsg.Clear();
+	
 }
 
 void Server::CreateUpdateStatusMsg()

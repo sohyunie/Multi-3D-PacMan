@@ -62,17 +62,17 @@ void ClientInfo::ProcessMessage()
 bool ClientInfo::IsCollided(float x, float z, Direction dir, start_game &s_game)
 {
 	int mapx = 0, mapz = 0;
-	if (dir == Direction::DOWN || dir == Direction::LEFT)
+	if (dir == Direction::UP || dir == Direction::RIGHT)
 	{
 		mapx = (int)x;
 		mapz = (int)z;
 	}
-	else if (dir == Direction::UP)
+	else if (dir == Direction::DOWN)
 	{
 		mapx = (int)x;
 		mapz = (int)(z + 1);
 	}
-	else if (dir == Direction::RIGHT)
+	else if (dir == Direction::LEFT)
 	{
 		mapx = (int)(x + 1);
 		mapz = (int)z;
