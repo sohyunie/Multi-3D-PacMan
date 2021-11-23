@@ -71,9 +71,7 @@ void Socket::Connect(const char* const ServerAddress, short ServerPort)
 
 SOCKET Socket::Accept()
 {
-	SOCKADDR_IN clientaddr;
-	int addrlen = sizeof(clientaddr);
-	SOCKET accept_socket = accept(m_socket, (SOCKADDR*)&clientaddr, &addrlen);
+	SOCKET accept_socket = accept(m_socket, NULL, 0);
 	if (accept_socket == INVALID_SOCKET)
 		throw Exception("accept failed");
 	return accept_socket;
