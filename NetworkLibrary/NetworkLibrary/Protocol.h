@@ -132,7 +132,6 @@ struct update_status			//맵에 존재하는 오브젝트들의 변화되어 사라졌는지, 그 상태
 	short size;
 	MsgType type;
 	WinStatus win;
-	char hp;
 };
 #pragma pack(pop)
 
