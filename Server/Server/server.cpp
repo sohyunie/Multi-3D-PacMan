@@ -58,23 +58,23 @@ void Server::LoadMap(const char* filename)
 			object.z = (char)i;
 			object.boundingOffset = 1.0;
 
-			if (mapn == 0) {
+			if (mapn == '0') {
 				object.type = ObjectType::BEAD;
 				g_map.beads.push_back(object);
 			}
-			else if (mapn == 1) {
+			else if (mapn == '1') {
 				object.type = ObjectType::KEY;
 				g_map.keys.push_back(object);
 			}
-			else if (mapn == 2) {
+			else if (mapn == '2') {
 				object.type = ObjectType::WALL;
 				g_map.walls.push_back(object);
 			}
-			else if (mapn == 3) {			// PLAYER_POS
+			else if (mapn == '3') {			// PLAYER_POS
 				m_startGameData.x[player_id] = (float)j;
 				m_startGameData.z[player_id++] = (float)i;
 			}
-			else if (mapn == 4) {			// DOOR
+			else if (mapn == '4') {			// DOOR
 				g_map.door.active = true;
 				g_map.door.x = (char)j;
 				g_map.door.z = (char)i;
@@ -87,9 +87,10 @@ void Server::LoadMap(const char* filename)
 	in.close();
 }
 
+
 void Server::Update()
 {
-	int max_clients = 3; // temporary variable
+	int max_clients = MaxClients; // temporary variable
 	for (int i = 0; i < max_clients; i++)
 		AcceptNewPlayer(i);
 
@@ -108,9 +109,8 @@ void Server::Update()
 			g_timerCv.notify_all();
 			g_accum_time = 0.0f;
 		}
-
 		CreatePlayerInfoMsg(g_timer.GetElapsedTime());
-		CreateUpdateStatusMsg();			
+		CreateUpdateStatusMsg();
 	}
 }
 
@@ -126,7 +126,7 @@ void Server::GameStart()
 {
 	InitializeStartGameInfo();
 
-	int temp_size = 3;
+	int temp_size = MaxClients;
 	for (int i = 0; i < temp_size; i++)
 	{
 		m_startGameData.my_id = i;
@@ -157,6 +157,7 @@ void Server::InitializeStartGameInfo()
 
 	int tagger = rand() % g_clients.size();
 	g_clients[tagger].m_type = PlayerType::TAGGER;
+	m_startGameData.playertype[tagger] = PlayerType::TAGGER;
 }
 
 void Server::SendAndRecv(int id)
@@ -202,6 +203,16 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
 	}
+	
+	int temp_size = MaxClients;
+	for (int i = 0; i < temp_size; i++)
+	{
+		g_sendMsg.Clear();
+		g_sendMsg.Push(reinterpret_cast<char*>(&m_player_info), sizeof(m_player_info));
+		g_clients[i].Send(g_sendMsg);
+	}
+	g_sendMsg.Clear();
+	
 }
 
 void Server::CreateUpdateStatusMsg()

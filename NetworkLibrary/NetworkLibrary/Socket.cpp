@@ -57,13 +57,13 @@ void Socket::Listen()
 		throw Exception("listen failed");
 }
 
-void Socket::Connect(const char* ServerAddress, short ServerPort)
+void Socket::Connect(const char* const ServerAddress, short ServerPort)
 {
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
 	inet_pton(AF_INET, ServerAddress, &serveraddr.sin_addr);
-	serveraddr.sin_port = htons(SERVER_PORT);
+	serveraddr.sin_port = htons(ServerPort);
 	int retval = connect(m_socket, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR)
 		throw Exception("connect failed");
