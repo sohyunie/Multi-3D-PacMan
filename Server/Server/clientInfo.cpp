@@ -49,6 +49,7 @@ void ClientInfo::ProcessMessage()
 		{
 		case MsgType::PLAYER_INPUT:
 		{
+			std::cout << "Received input message\n";
 			player_input pi{};
 			m_recvMsg.Pop(reinterpret_cast<char*>(&pi), sizeof(player_input));
 			ChangeDirection(pi);			
