@@ -21,7 +21,7 @@ public:
 	Vector4 GetBoundingBox();
 
 public:
-	int m_id;
+	char m_id;
 	PlayerType m_type;	
 	int m_hp;
 	float m_pos_x;

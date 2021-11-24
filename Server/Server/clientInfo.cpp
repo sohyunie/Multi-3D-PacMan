@@ -51,8 +51,7 @@ void ClientInfo::ProcessMessage()
 		{
 			player_input pi{};
 			m_recvMsg.Pop(reinterpret_cast<char*>(&pi), sizeof(player_input));
-			cout << "1 : " << (int)pi.input << "\n";
-			ChangeDirection(pi);
+			ChangeDirection(pi);			
 			break;
 		}
 		}
@@ -123,7 +122,6 @@ void ClientInfo::ChangeDirection(player_input& p_input)
 			m_direction = Direction::UP;
 		}
 	}
-	cout << m_id << "¹æÇâ  : " << (int)m_direction << "\n";
 	m_directionLock.unlock();
 }
 
@@ -136,7 +134,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 
 	bool col = false;
 	float x = m_pos_x, z = m_pos_z;
-	float speed = 5000 * elapsedTIme;
+	float speed = 1 * elapsedTIme;
 	
 	m_directionLock.lock();
 	Direction dir = m_direction;

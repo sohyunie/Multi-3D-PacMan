@@ -14,9 +14,6 @@ bool Server::g_loop = false;
 
 array<ClientInfo, Server::MaxClients> Server::g_clients;
 
-mutex Server::g_sendMsgLock;
-Message Server::g_sendMsg;
-
 Server::Server()
 {
 	if (WSAStartup(MAKEWORD(2, 2), &m_wsaData) != 0)
@@ -87,11 +84,9 @@ void Server::LoadMap(const char* filename)
 	in.close();
 }
 
-
 void Server::Update()
 {
-	int max_clients = MaxClients; // temporary variable
-	for (int i = 0; i < max_clients; i++)
+	for (int i = 0; i < maxClient; i++)
 		AcceptNewPlayer(i);
 
 	GameStart();
@@ -105,7 +100,6 @@ void Server::Update()
 		if (g_accum_time >= 1.0f)
 		{
 			CopySendMsgToAllClients();
-			g_sendMsg.Clear();
 			g_timerCv.notify_all();
 			g_accum_time = 0.0f;
 		}
@@ -126,15 +120,13 @@ void Server::GameStart()
 {
 	InitializeStartGameInfo();
 
-	int temp_size = MaxClients;
-	for (int i = 0; i < temp_size; i++)
+	for (int i = 0; i < maxClient; i++)
 	{
+		Message sendMsg{};
 		m_startGameData.my_id = i;
-		g_sendMsg.Clear();
-		g_sendMsg.Push(reinterpret_cast<char*>(&m_startGameData), sizeof(start_game));
-		g_clients[i].Send(g_sendMsg);
+		sendMsg.Push(reinterpret_cast<char*>(&m_startGameData), sizeof(start_game));
+		g_clients[i].Send(sendMsg);
 	}
-	g_sendMsg.Clear();
 	g_loop = true;
 	g_loopCv.notify_all();
 }
@@ -147,7 +139,7 @@ void Server::InitializeStartGameInfo()
 		m_startGameData.id[i] = (char)i;
 		m_startGameData.playertype[i] = PlayerType::RUNNER;
 
-		g_clients[i].m_id = i;
+		g_clients[i].m_id = (char)i;
 		g_clients[i].m_type = PlayerType::RUNNER;
 		g_clients[i].m_hp = 100;
 		g_clients[i].m_pos_x = m_startGameData.x[i];
@@ -203,16 +195,6 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
 	}
-	
-	int temp_size = MaxClients;
-	for (int i = 0; i < temp_size; i++)
-	{
-		g_sendMsg.Clear();
-		g_sendMsg.Push(reinterpret_cast<char*>(&m_player_info), sizeof(m_player_info));
-		g_clients[i].Send(g_sendMsg);
-	}
-	g_sendMsg.Clear();
-	
 }
 
 void Server::CreateUpdateStatusMsg()
@@ -232,7 +214,6 @@ void Server::CreateUpdateStatusMsg()
 	// TODO: 적과의 충돌 후 hp 감소..
 	// TODO: 모든 플레이어의 사망여부 체크
 
-	// TODO: 모든 플레이어에게 메시지 보내기
 	m_update_info.size = sizeof(update_status) + m_object_info.size() * sizeof(object_status);
 }
 
@@ -241,10 +222,12 @@ void Server::CopySendMsgToAllClients()
 	Message sendMsg{};
 	sendMsg.Push(reinterpret_cast<char*>(&m_player_info), sizeof(update_player_info));
 	sendMsg.Push(reinterpret_cast<char*>(&m_update_info), sizeof(update_status));
+	cout << "object size: " << m_object_info.size() << std::endl;
 	sendMsg.Push(reinterpret_cast<char*>(m_object_info.data()), m_object_info.size() * sizeof(object_status));
+	m_object_info.clear();
 
 	for (ClientInfo& client : g_clients)
-		client.m_sendMsg = g_sendMsg;
+		client.m_sendMsg = sendMsg;
 }
 
 vector<object_status> Server::UpdateObjectStatus(int id)
@@ -300,7 +283,7 @@ bool Server::CheckWinStatus(int id)
 
 bool Server::IsCollided(const Vector4& a, const Vector4& b)
 {
-	if (a.MinX > b.MaxX || b.MinX > a.MinX)
+	if (a.MinX > b.MaxX || b.MinX > a.MaxX)
 		return false;
 
 	if (a.MinZ > b.MaxZ || b.MinZ > a.MaxZ)
