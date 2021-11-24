@@ -15,7 +15,7 @@ Exception::Exception(const char* error_msg)
 	ErrorString += msgBuffer;
 }
 
-const char* Exception::what()
+const char* Exception::what() const
 {
 	return ErrorString.c_str();
 }
