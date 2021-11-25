@@ -3,6 +3,7 @@
 #include "Standard.h"
 #include "NetworkManager.h"
 #include "InGameManager.h"
+#include "Player.h"
 //#include <winsock2.h>
 
 NetworkManager* NetworkManager::instance = nullptr;
@@ -26,8 +27,8 @@ void NetworkManager::Update()
             packets.Pop(reinterpret_cast<char*>(&player_info), sizeof(update_player_info));
             // 플레이어의 아이디에 따라 위치 갱신
             for (int i = 0; i < MaxClients; ++i) {
-                players[i].x = player_info.x[i];
-                players[i].z = player_info.z[i];
+                //players[i].x = player_info.x[i];
+                //players[i].z = player_info.z[i];
             }
             break;
         }
@@ -65,11 +66,14 @@ int NetworkManager::GetMyID()
 
 void NetworkManager::SendPlayerInput()
 {
+    Player* players = InGameManager::GetInstance().GetPlayer();
+    int id = InGameManager::GetInstance().GetMyID();
+
     player_input playerInput;
     playerInput.size = sizeof(player_input);
     playerInput.type = MsgType::PLAYER_INPUT;
-    playerInput.x = players[myID].x;
-    playerInput.z = players[myID].z;
+    playerInput.x = players[id].GetPosition().x;
+    playerInput.z = players[id].GetPosition().z;
 
     inputLock.lock();
     playerInput.input = last_input;
@@ -79,11 +83,6 @@ void NetworkManager::SendPlayerInput()
     s_socket.Send(m_sendMsg);
 
     m_sendMsg.Clear();
-}
-
-PlayerInfo NetworkManager::GetPlayerInfo(int id)
-{
-    return this->players[id];
 }
 
 void NetworkManager::SetLastInput(char input)
@@ -96,10 +95,6 @@ void NetworkManager::SetLastInput(char input)
 void NetworkManager::Network()
 {
     try {
-        //cout << "ip 주소를 입력해주세요." << endl;
-        //cin.getline(address, sizeof(address));
-        //cout << address << "와 연결되었습니다" << endl;
-
         // 서버 connect
         wcout.imbue(locale("korean"));
         WSADATA WSAData;
@@ -107,31 +102,21 @@ void NetworkManager::Network()
 
         s_socket = Socket();       
         s_socket.Init();
-        s_socket.Connect("127.0.0.1", SERVER_PORT);
+        s_socket.Connect(SERVER_IP, SERVER_PORT);
         isConnected = true;        
-
-        //int tcp_option = 1;
-        //setsockopt(s_socket->m_socket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&tcp_option), sizeof(tcp_option));
 
         // 맵 정보 받기.
         s_socket.Recv();
         start_game game_info{};
         s_socket.m_recvMsg.Pop(reinterpret_cast<char*>(&game_info), sizeof(start_game));
-
-        for (int i = 0; i < MaxClients; ++i) {
-            players[i].id = game_info.id[i];
-            players[i].type = game_info.playertype[i];
-            players[i].x = game_info.x[i];
-            players[i].z = game_info.z[i];
-        }
         InGameManager::GetInstance().GameStart(game_info);
 
-        while (true)
+        /*while (true)
         {
             Update();
-        }
+        }*/
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
         std::cout << e.what() << std::endl;
     }

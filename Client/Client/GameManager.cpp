@@ -222,6 +222,8 @@ void TimerFunction(int value) {
 
 int main(int argc, char** argv)
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	//PlaySound(TEXT(SOUND_FILE_NAME_LOBBY), NULL, SND_ASYNC | SND_LOOP);
 	InGameManager::GetInstance().PlayingBgm(SOUND_FILE_NAME_LOBBY);
 	glutInit(&argc, argv);
