@@ -55,5 +55,8 @@ private:
 	start_game m_startGameData;
 	int m_countOfKeyAccquired = 0;
 
+	int m_taggerIndex = 0;
+	
+	const float m_offset = 7.5f;
 	const int maxClient = 1; // TEST
 };

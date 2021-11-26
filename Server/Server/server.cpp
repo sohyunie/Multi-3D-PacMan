@@ -51,8 +51,10 @@ void Server::LoadMap(const char* filename)
 			m_startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
 
 			object.active = true;
-			object.x = (char)j;
-			object.z = (char)i;
+			object.row = (char)j;
+			object.col = (char)i;
+			object.x = i * m_offset;
+			object.z = j * m_offset;
 			object.boundingOffset = 1.0;
 
 			if (mapn == '0') {
@@ -147,9 +149,9 @@ void Server::InitializeStartGameInfo()
 		g_clients[i].m_boundingOffset = 1.5f;
 	}
 
-	int tagger = rand() % g_clients.size();
-	g_clients[tagger].m_type = PlayerType::TAGGER;
-	m_startGameData.playertype[tagger] = PlayerType::TAGGER;
+	m_taggerIndex = rand() % g_clients.size();
+	g_clients[m_taggerIndex].m_type = PlayerType::TAGGER;
+	m_startGameData.playertype[m_taggerIndex] = PlayerType::TAGGER;
 }
 
 void Server::SendAndRecv(int id)
@@ -202,17 +204,39 @@ void Server::CreateUpdateStatusMsg()
 	m_update_info.type = MsgType::UPDATE_STATUS;
 	m_update_info.win = WinStatus::NONE;
 
+	int deathCount = 0;
+	const Vector4& taggerBB = g_clients[m_taggerIndex].GetBoundingBox();
 	for (int i = 0; i < g_clients.size(); i++)
 	{
+		if (g_clients[i].m_active == false) continue;
+
 		vector<object_status> stats = UpdateObjectStatus(i);
 		m_object_info.insert(m_object_info.end(), stats.begin(), stats.end());
+		
+		if (i == m_taggerIndex) continue;
 
 		if (CheckWinStatus(i))
+		{
 			m_update_info.win = WinStatus::RUNNER_WIN;
+			break;
+		}
+
+		const Vector4& runnerBB = g_clients[i].GetBoundingBox();
+		if (IsCollided(taggerBB, runnerBB))
+		{
+			g_clients[i].m_hp -= 25;
+
+			if (g_clients[i].m_hp <= 0) {
+				g_clients[i].m_active = false;
+				deathCount += 1;
+			}
+		}
+
+		m_update_info.player_active[i] = g_clients[i].m_active;
 	}
 
-	// TODO: 적과의 충돌 후 hp 감소..
-	// TODO: 모든 플레이어의 사망여부 체크
+	if (deathCount >= MaxClients)
+		m_update_info.win = WinStatus::TAGGER_WIN;
 
 	m_update_info.size = sizeof(update_status) + m_object_info.size() * sizeof(object_status);
 }
@@ -245,7 +269,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			if (IsCollided(clientBB, beadBB))
 			{
 				bead.active = false;
-				obj_stats.push_back({ bead.type , bead.x, bead.z, bead.active });
+				obj_stats.push_back({ bead.type , bead.row, bead.col, bead.active });
 			}
 		}
 	}
@@ -258,7 +282,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			{
 				key.active = false;
 				m_countOfKeyAccquired += 1;
-				obj_stats.push_back({ key.type, key.x, key.z, key.active });
+				obj_stats.push_back({ key.type, key.row, key.col, key.active });
 			}
 		}
 	}

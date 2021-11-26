@@ -27,6 +27,9 @@ public:
 	float m_pos_x;
 	float m_pos_z;
 	float m_boundingOffset;
+	bool m_active;
+
+	std::chrono::high_resolution_clock::time_point hit_time;
 
 	Message m_sendMsg;
 	mutex m_directionLock;

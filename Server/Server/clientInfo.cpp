@@ -8,7 +8,8 @@ ClientInfo::ClientInfo()
 		m_pos_z(0.0f),
 		m_boundingOffset(0.0f),
 		m_sendMsg({}),
-		m_direction(Direction::DOWN)
+		m_direction(Direction::DOWN),
+		m_active(false)
 {
 }
 
@@ -20,6 +21,7 @@ void ClientInfo::Init(SOCKET sck, int id)
 {
 	m_id = id;
 	m_socket = sck;
+	m_active = true;
 }
 
 void ClientInfo::SendMsg()
