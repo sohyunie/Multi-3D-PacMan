@@ -45,6 +45,8 @@ void NetworkManager::Update()
                 object_status obj_info{};
                 packets.Pop(reinterpret_cast<char*>(&obj_info), sizeof(object_status));
                 // 오브젝트: 비드, 키 그리지 않기(active=false)
+                InGameManager::GetInstance().RecvUpdateObject(obj_info);
+                
                 // 문
                 left -= sizeof(object_status);
             }

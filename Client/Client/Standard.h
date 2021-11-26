@@ -52,7 +52,7 @@ static MCI_PLAY_PARMS playFxSound;
 #define LIGHT_AMBIENT	glm::vec3(0.1, 0.1, 0.1)
 #define LIGHT_COLOR		glm::vec3(1.0, 1.0, 1.0)
 
-#define FILE_NAME		"ghost.obj"
+#define DOOR_FILE_NAME		"doors.obj"
 #define BEAD_FILE_NAME	"bead.obj"
 #define KEY_ITEM_FILE_NAME	"key.obj"
 #define CUBE_FILE_NAME	"block.obj"

@@ -9,12 +9,12 @@ uniform_int_distribution <int>uidDirection{ 0,3 };
 // 생성자
 // 헤더랑 따로 한 이유: 헤더에서는 이 클래스가 어떤 역할 하는지 보기 쉽게 만드는 거고 잡다한게 써있으면 복잡하니까 정의들은 cpp에다가 풀어놓는다.
 Ghost::Ghost() {
-	this->type = ObjectType::GHOST;
+	this->type = ObjectType::DOOR;
 }
 
 Ghost::Ghost(int i, int j, Vector3 pos, int id) {
 	this->id;
-	this->type = ObjectType::GHOST;
+	this->type = ObjectType::DOOR;
 	this->position = pos;
 	this->board_i = i;
 	this->board_j = j;

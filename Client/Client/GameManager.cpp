@@ -205,7 +205,7 @@ void processSpecialKeys(int key, int x, int y)
 }
 
 void TimerFunction(int value) {
-	InGameManager::GetInstance().TimerFunction();
+	//InGameManager::GetInstance().TimerFunction();
 
 	switch (InGameManager::GetInstance().GetState())
 	{

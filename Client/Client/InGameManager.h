@@ -110,7 +110,7 @@ public:
     bool GetPresence() { return this->isBead; }
     void CalculateTime();
     void CameraSetting(bool isFps);
-    void TimerFunction();
+    //void TimerFunction();
     void CheckDirection(DynamicObject* dObject);
     Vector3 DirToVec3(Direction dir);
     void CreateGhost(int i, int j, Vector3 position);
@@ -118,7 +118,7 @@ public:
     Ghost* FindGhostByID(int id);
     float CountBeadAmount();
     void DecreaseBeadNumber();
-    string GetNearByGhost();
+    //string GetNearByGhost();
 
     void DrawTextureImage();
     GLuint GetTexture(TextureType type);
@@ -153,6 +153,8 @@ public:
 
     void PlayingBgm(const char* name);
     void PlayingFxSound(const char* name);
+
+    void RecvUpdateObject(object_status obj_info);
 
     // int GetMyID() const { return myID; }
 protected:

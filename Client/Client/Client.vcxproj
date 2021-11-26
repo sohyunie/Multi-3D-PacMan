@@ -22,6 +22,7 @@
     <ClInclude Include="Bead.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Bottom.h" />
+    <ClInclude Include="Door.h" />
     <ClInclude Include="DynamicObject.h" />
     <ClInclude Include="EndingScene.h" />
     <ClInclude Include="GameManager.h" />
@@ -71,6 +72,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Standard.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Door.cpp" />
     <ClCompile Include="DynamicObject.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Standard.h</PrecompiledHeaderFile>
