@@ -3,7 +3,6 @@
 #include "Standard.h"
 #include "NetworkManager.h"
 #include "InGameManager.h"
-#include "Player.h"
 //#include <winsock2.h>
 
 NetworkManager* NetworkManager::instance = nullptr;
@@ -27,8 +26,8 @@ void NetworkManager::Update()
             packets.Pop(reinterpret_cast<char*>(&player_info), sizeof(update_player_info));
             // 플레이어의 아이디에 따라 위치 갱신
             for (int i = 0; i < MaxClients; ++i) {
-                //players[i].x = player_info.x[i];
-                //players[i].z = player_info.z[i];
+                players[i].x = player_info.x[i];
+                players[i].z = player_info.z[i];
             }
             break;
         }
@@ -66,14 +65,14 @@ int NetworkManager::GetMyID()
 
 void NetworkManager::SendPlayerInput()
 {
-    Player* players = InGameManager::GetInstance().GetPlayer();
-    int id = InGameManager::GetInstance().GetMyID();
+    // Player* players = InGameManager::GetInstance().GetPlayer();
+    // int id = InGameManager::GetInstance().GetMyID();
 
     player_input playerInput;
     playerInput.size = sizeof(player_input);
     playerInput.type = MsgType::PLAYER_INPUT;
-    playerInput.x = players[id].GetPosition().x;
-    playerInput.z = players[id].GetPosition().z;
+    playerInput.x = players[myID].x;
+    playerInput.z = players[myID].z;
 
     inputLock.lock();
     playerInput.input = last_input;
@@ -83,6 +82,11 @@ void NetworkManager::SendPlayerInput()
     s_socket.Send(m_sendMsg);
 
     m_sendMsg.Clear();
+}
+
+PlayerInfo NetworkManager::GetPlayerInfo(int id) 
+{
+    return this->players[id];
 }
 
 void NetworkManager::SetLastInput(char input)
@@ -109,12 +113,20 @@ void NetworkManager::Network()
         s_socket.Recv();
         start_game game_info{};
         s_socket.m_recvMsg.Pop(reinterpret_cast<char*>(&game_info), sizeof(start_game));
+
+        for (int i = 0; i < MaxClients; ++i) {
+            players[i].id = game_info.id[i];
+            players[i].type = game_info.playertype[i];
+            players[i].x = game_info.x[i];
+            players[i].z = game_info.z[i];
+        }
+
         InGameManager::GetInstance().GameStart(game_info);
 
-        /*while (true)
+        while (true)
         {
             Update();
-        }*/
+        }
     }
     catch (Exception& e)
     {

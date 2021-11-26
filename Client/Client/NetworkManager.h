@@ -5,6 +5,15 @@
 #define BUFSIZE 2048
 #define BUFSIZE2 128
 
+struct PlayerInfo
+{
+    char id;
+    float x;
+    float z;
+    PlayerType type;
+    Direction dir;
+};
+
 class NetworkManager
 {
 private:
@@ -22,6 +31,8 @@ private:
     mutex inputLock;
     char last_input;
 
+    PlayerInfo players[MaxClients];
+
 public:
     static NetworkManager& GetInstance() {
         if (instance == NULL) {
@@ -35,6 +46,8 @@ public:
     bool GetIsConnected();
     int GetMyID();
     void SendPlayerInput();
+
+    PlayerInfo GetPlayerInfo(int id);
 
     void SetLastInput(char input);
 };

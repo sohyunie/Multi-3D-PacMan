@@ -87,18 +87,18 @@ void InGameManager::CalculateTime() {
 void InGameManager::CameraSetting(bool isFps) {
 	if (this->state == GAMESTATE::INGAME) {
 		if (false) {
-			Vector3 dir = Vector3(this->players[myID].GetPosition().x + this->players[myID].dir.x, -1, this->players[myID].GetPosition().z + this->players[myID].dir.z);
+			Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, -1, this->player->GetPosition().z + this->player->dir.z);
 
 			this->cameraDirection = dir.GetGlmVec3();
-			this->cameraPos = this->players[myID].GetPosition().GetGlmVec3();
+			this->cameraPos = this->player->GetPosition().GetGlmVec3();
 			this->cameraPos.y += 1;
 			//this->cameraPos.y += 1;
 		}
 		else {
-			Vector3 dir = Vector3(this->players[myID].GetPosition().x + this->players[myID].dir.x, 0, this->players[myID].GetPosition().z + this->players[myID].dir.z);
+			Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, 0, this->player->GetPosition().z + this->player->dir.z);
 			this->cameraDirection = dir.GetGlmVec3();
 			this->cameraDirection.y += 5;
-			this->cameraPos = this->players[myID].GetPosition().GetGlmVec3();
+			this->cameraPos = this->player->GetPosition().GetGlmVec3();
 			this->cameraPos.y += 80;
 		}
 	}
@@ -392,9 +392,17 @@ GLvoid InGameManager::DrawScene() {
 		//	it++;
 		//}
 		this->map->DrawMap(s_program);
-		for (int i = 0; i < MaxClients; i++)
+
+		PlayerInfo playerInfo = NetworkManager::GetInstance().GetPlayerInfo(player->id);
+		Vector3 playerPos(playerInfo.x, 0, playerInfo.z);
+		this->player->SetPosition(playerPos);
+		this->player->DrawObject(s_program);
+		for (int i = 0; i < 2; i++)
 		{
-			players[i].DrawObject(s_program);
+			PlayerInfo playerInfo = NetworkManager::GetInstance().GetPlayerInfo(otherPlayer[i]->id);
+			Vector3 pos(playerInfo.x, 0, playerInfo.z);
+			otherPlayer[i]->SetPosition(pos);
+			otherPlayer[i]->DrawObject(s_program);
 		}
 		this->bottom->DrawObject(s_program);
 		break;
@@ -488,7 +496,7 @@ void InGameManager::SetState(GAMESTATE state) {
 }
 
 void InGameManager::InitGame() {
-	delete[] this->players;
+	delete this->player;
 	delete this->map;
 	delete this->bead;
 	delete this->powerBead;
@@ -496,7 +504,7 @@ void InGameManager::InitGame() {
 	delete this->bottom;
 	this->beadNumber = 0;
 	this->inGameTime = 0;
-	//this->player->hp = 100.0;
+	this->player->hp = 100.0;
 
 	this->InitObject();
 }
@@ -537,8 +545,8 @@ string InGameManager::GetBestRecord() { //[TODO] 계속 불리지 않도록 수정
 string InGameManager::GetNearByGhost() {
 	int count = 0;
 	for (Ghost* ghost : this->vGhost) {
-		int distance_i = abs(this->players[myID].board_i - ghost->board_i);
-		int distance_j = abs(this->players[myID].board_j - ghost->board_j);
+		int distance_i = abs(this->player->board_i - ghost->board_i);
+		int distance_j = abs(this->player->board_j - ghost->board_j);
 		if (distance_i < 4 && distance_j < 4)
 			count++;
 	}
@@ -712,7 +720,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 		break;
 
 	case Direction::RIGHT:
-		if (players[myID].board_j + 1 > 31) // 아에 빈 보드판으로 가지 않도록
+		if (player->board_j + 1 > 31) // 아에 빈 보드판으로 가지 않도록
 			break;
 		dObject->acc += this->deltaTime * speed;
 
@@ -988,14 +996,21 @@ GLvoid InGameManager::InitObject()
 	this->objData[(int)ObjectType::GHOST] = new ObjData();
 	this->objData[(int)ObjectType::POWERBEAD] = new ObjData();
 	this->objData[(int)ObjectType::BOTTOM] = new ObjData();
+
+	this->player = new Player();
+	for (int i = 0; i < MaxClients; ++i)
+	{
+		this->otherPlayer[i] = new Player();
+	}
+
 	this->bead = new Bead();
 	this->powerBead = new PowerBead();
 	this->ingameUI = new InGameUI();
-	this->bottom = new Bottom(Vector3(75,0,75));\
+	this->bottom = new Bottom(Vector3(75,0,75));
 
-	players = new Player[MaxClients];
-	//this->player->SetPlayerPos(this->map->boardShape[this->player->board_i][this->player->board_i]->GetPosition().GetGlmVec3());
-	//this->SetCameraPos(this->players[myID]->GetPlayerPos().GetGlmVec3());
+	
+	// this->player->SetPlayerPos(this->map->boardShape[this->player->board_i][this->player->board_i]->GetPosition().GetGlmVec3());
+	this->SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
 	this->CameraSetting(false);
 	ReadObj(FILE_NAME, this->objData[(int)ObjectType::GHOST]->vPosData, this->objData[(int)ObjectType::GHOST]->vNormalData, this->objData[(int)ObjectType::GHOST]->vTextureCoordinateData, this->objData[(int)ObjectType::GHOST]->indexData, this->objData[(int)ObjectType::GHOST]->vertexCount, this->objData[(int)ObjectType::GHOST]->indexCount);
 	ReadObj(BEAD_FILE_NAME, this->objData[(int)ObjectType::BEAD]->vPosData, this->objData[(int)ObjectType::BEAD]->vNormalData, this->objData[(int)ObjectType::BEAD]->vTextureCoordinateData, this->objData[(int)ObjectType::BEAD]->indexData, this->objData[(int)ObjectType::BEAD]->vertexCount, this->objData[(int)ObjectType::BEAD]->indexCount);
@@ -1010,20 +1025,16 @@ GLvoid InGameManager::InitObject()
 
 void InGameManager::GameStart(start_game& startGame)
 {
-	if (this->state == GAMESTATE::NONE)
-	{
-		// 플레이어 배열에 위치와 아이디, 타입까지 결정.
-		// 타입이 0이면 고스트, 러너 플레이어로 그리기.
-		this->myID = startGame.my_id;
-		
-		for (int i = 0; i < MaxClients; i++) {
-			this->players[i].id = startGame.id[i];
-			this->players[i].type = startGame.playertype[i];
-			this->players[i].SetPosition(Vector3(startGame.x[i], 0.0f, startGame.z[i]));
-		}
-		this->SetCameraPos(players[myID].GetPosition().GetGlmVec3());
-		this->map = new MapLoader(startGame.mapinfo);
-		this->PlayingBgm(SOUND_FILE_NAME_INGAME);
-		this->SetState(GAMESTATE::INGAME);
+	// 플레이어 배열에 위치와 아이디, 타입까지 결정.
+	// 타입이 0이면 고스트, 러너 플레이어로 그리기.
+
+	this->player->id = NetworkManager::GetInstance().GetMyID();
+	int index = 0;
+	for (int i = 0; i < 3; ++i) {
+		if (i == this->player->id) continue;
+		this->otherPlayer[index++]->id = i;
 	}
+	this->map = new MapLoader(startGame.mapinfo);
+	this->PlayingBgm(SOUND_FILE_NAME_INGAME);
+	this->SetState(GAMESTATE::INGAME);
 }
