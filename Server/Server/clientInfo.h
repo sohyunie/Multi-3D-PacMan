@@ -14,10 +14,11 @@ public:
 	void SendMsg();
 
 	void ProcessMessage();
-	bool IsCollided(float x, float z, Direction dir, start_game& s_game);
+	bool Collied(const Vector4& a, const Vector4& b);
+	bool IsCollided(float x, float z, Direction dir, start_game& s_game, MapInfo& map);
 	
 	void ChangeDirection(player_input& p_input);
-	void SetNewPosition(start_game& s_game, float elapsedTime);
+	void SetNewPosition(start_game& s_game, float elapsedTime, MapInfo& map);
 	Vector4 GetBoundingBox();
 
 public:
