@@ -15,7 +15,7 @@ public:
 
 	void ProcessMessage();
 	bool Collied(const Vector4& a, const Vector4& b);
-	bool IsCollided(float x, float z, Direction dir, start_game& s_game, MapInfo& map);
+	bool MapCollied(MapInfo& map);
 	
 	void ChangeDirection(player_input& p_input);
 	void SetNewPosition(start_game& s_game, float elapsedTime, MapInfo& map);

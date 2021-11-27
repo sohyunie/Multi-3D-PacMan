@@ -64,56 +64,24 @@ void ClientInfo::ProcessMessage()
 bool ClientInfo::Collied(const Vector4& a, const Vector4& b)
 {
 	if (a.MinX > b.MaxX || b.MinX > a.MaxX)
-		return true;
+		return false;
+	if(a.MinZ > b.MaxZ || b.MinZ > a.MaxZ)
+		return false;
 
-	if (a.MinZ > b.MaxZ || b.MinZ > a.MaxZ)
-		return true;
-
-	return false;
+	return true;
 }
 
-bool ClientInfo::IsCollided(float x, float z, Direction dir, start_game &s_game, MapInfo& map)
+bool ClientInfo::MapCollied(MapInfo& map)
 {
-	int mapx = 0, mapz = 0;
-	if (dir == Direction::UP)
-	{
-		mapx = (int)x;
-		mapz = (int)(z-1);
-	}
-	else if (dir == Direction::DOWN)
-	{
-		mapx = (int)x;
-		mapz = (int)(z + 1);
-	}
-	else if (dir == Direction::LEFT)
-	{
-		mapx = (int)(x - 1);
-		mapz = (int)z;
-	}
-	else if (dir == Direction::RIGHT)
-	{
-		mapx = (int)(x + 1);
-		mapz = (int)z;
-	}
-
 	const Vector4& clientBB = GetBoundingBox();
 
 	for (ObjectInfo& wall : map.walls)
 	{
 		const Vector4& WallBB = wall.GetBoundingBox();
-
 		if (Collied(clientBB, WallBB)) {
 			return true;
 		}
 	}
-
-	/*
-	if (s_game.mapinfo[mapz][mapx] == '2')		// 벽 충돌시
-	{
-		return true;
-	}
-	*/
-
 	return false;
 }
 
@@ -163,7 +131,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme, MapInfo& 
 
 	bool col = false;
 	float x = m_pos_x, z = m_pos_z;
-	float speed = 10 * elapsedTIme;
+	float speed = 1 * elapsedTIme;
 	
 	m_directionLock.lock();
 	Direction dir = m_direction;
@@ -173,7 +141,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme, MapInfo& 
 	{
 		z = z + speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::UP, s_game, map);
+		col = MapCollied(map);
 
 		if(col == false)
 			m_pos_z = z;
@@ -182,7 +150,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme, MapInfo& 
 	{
 		z = z - speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::DOWN, s_game, map);
+		col = MapCollied(map);
 
 		if (col == false)
 			m_pos_z = z;
@@ -191,7 +159,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme, MapInfo& 
 	{
 		x = x - speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::LEFT, s_game, map);
+		col = MapCollied(map);
 
 		if (col == false)
 			m_pos_x = x;
@@ -200,7 +168,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme, MapInfo& 
 	{
 		x = x + speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::RIGHT, s_game, map);
+		col = MapCollied(map);
 
 		if (col == false)
 			m_pos_x = x;

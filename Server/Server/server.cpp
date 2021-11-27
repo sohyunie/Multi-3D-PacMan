@@ -53,8 +53,8 @@ void Server::LoadMap(const char* filename)
 			object.active = true;
 			object.row = (char)j;
 			object.col = (char)i;
-			object.x = i * m_offset;
-			object.z = j * m_offset;
+			object.x = (float)j * m_offset;
+			object.z = (float)i * m_offset;
 			object.boundingOffset = 1.0;
 
 			if (mapn == '0') {
