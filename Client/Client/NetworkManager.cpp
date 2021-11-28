@@ -37,6 +37,7 @@ void NetworkManager::Update()
 
             update_status update_info{};
             packets.Pop(reinterpret_cast<char*>(&update_info), sizeof(update_status));
+            InGameManager::GetInstance().RecvUpdateStatus(obj_info);
             // Win 상태에 따라 종료화면 처리
 
             left -= sizeof(update_status);
@@ -115,6 +116,7 @@ void NetworkManager::Network()
         s_socket.Recv();
         start_game game_info{};
         s_socket.m_recvMsg.Pop(reinterpret_cast<char*>(&game_info), sizeof(start_game));
+        this->myID = game_info.my_id;
 
         for (int i = 0; i < MaxClients; ++i) {
             players[i].id = game_info.id[i];

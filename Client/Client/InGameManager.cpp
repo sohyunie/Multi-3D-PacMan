@@ -393,7 +393,7 @@ GLvoid InGameManager::DrawScene() {
 		//}
 		this->map->DrawMap(s_program);
 
-		PlayerInfo playerInfo = NetworkManager::GetInstance().GetPlayerInfo(player->id);
+		PlayerInfo playerInfo = NetworkManager::GetInstance().GetPlayerInfo(player->id);// 인자로 넘겨준 ID의 플레이어 정보를 가져와서 세팅 (player->id는 내 아이디를 뜻함)
 		Vector3 playerPos(playerInfo.x, 0, playerInfo.z);
 		this->player->SetPosition(playerPos);
 		this->player->DrawObject(s_program);
@@ -1056,5 +1056,32 @@ void InGameManager::RecvUpdateObject(object_status obj_info)
 		break;
 	case ObjectType::ROAD:
 		break;
+	}
+}
+
+void InGameManager::RecvUpdateStatus(update_status update_status)
+{
+	if (this->state == GAMESTATE::INGAME)
+	{
+		WinStatus winStatus = update_status.win;
+		if (winStatus == WinStatus::NONE)
+			return;
+
+		PlayerInfo myPlayerInfo = NetworkManager::GetInstance().GetPlayerInfo(player->id);
+		PlayerType playerType = myPlayerInfo.type;
+		if (winStatus == WinStatus::RUNNER_WIN)
+		{
+			if (playerType == PlayerType::RUNNER)
+				this->SetState(GAMESTATE::CLEAR);
+			else
+				this->SetState(GAMESTATE::GAMEOVER);
+		}
+		else if (winStatus == WinStatus::TAGGER_WIN)
+		{
+			if (playerType == PlayerType::TAGGER)
+				this->SetState(GAMESTATE::CLEAR);
+			else
+				this->SetState(GAMESTATE::GAMEOVER);
+		}
 	}
 }

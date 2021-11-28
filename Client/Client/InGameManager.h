@@ -32,8 +32,8 @@ private:
     Object* object;
     ObjData* objData[MAX_VAO_TYPE];
 
-    Player* player;
-    Player* otherPlayer[2];
+    Player* player; // 나
+    Player* otherPlayer[2]; // 상대 두 명
 
     MapLoader* map;
     Bead* bead;
@@ -155,6 +155,7 @@ public:
     void PlayingFxSound(const char* name);
 
     void RecvUpdateObject(object_status obj_info);
+    void RecvUpdateStatus(update_status update_status);
 
     // int GetMyID() const { return myID; }
 protected:
