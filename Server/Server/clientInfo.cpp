@@ -8,7 +8,7 @@ ClientInfo::ClientInfo()
 		m_pos_z(0.0f),
 		m_boundingOffset(0.0f),
 		m_sendMsg({}),
-		m_direction(Direction::DOWN),
+		m_direction(Direction::UP),
 		m_active(false)
 {
 }
@@ -143,8 +143,10 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme, MapInfo& 
 		// 面倒眉农
 		col = MapCollied(map);
 
-		if(col == false)
+		if (col == false)
 			m_pos_z = z;
+		else if(col == true)
+			m_pos_z -= (2*speed);
 	}
 	else if (dir == Direction::DOWN)
 	{
@@ -154,17 +156,10 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme, MapInfo& 
 
 		if (col == false)
 			m_pos_z = z;
+		else if (col == true)
+			m_pos_z += (2 * speed);
 	}
 	else if (dir == Direction::LEFT)
-	{
-		x = x - speed;
-		// 面倒眉农
-		col = MapCollied(map);
-
-		if (col == false)
-			m_pos_x = x;
-	}
-	else if (dir == Direction::RIGHT)
 	{
 		x = x + speed;
 		// 面倒眉农
@@ -172,6 +167,19 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme, MapInfo& 
 
 		if (col == false)
 			m_pos_x = x;
+		else if (col == true)
+			m_pos_x -= (2 * speed);
+	}
+	else if (dir == Direction::RIGHT)
+	{
+		x = x - speed;
+		// 面倒眉农
+		col = MapCollied(map);
+
+		if (col == false)
+			m_pos_x = x;
+		else if (col == true)
+			m_pos_x += (2 * speed);
 	}
 }
 

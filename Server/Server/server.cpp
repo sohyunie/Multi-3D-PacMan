@@ -51,10 +51,10 @@ void Server::LoadMap(const char* filename)
 			m_startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
 
 			object.active = true;
-			object.row = (char)j;
-			object.col = (char)i;
-			object.x = (float)j * m_offset;
-			object.z = (float)i * m_offset;
+			object.row = (char)i;
+			object.col = (char)j;
+			object.x = ((float)i * 7.5f) - 35;
+			object.z = ((float)j * 7.5f) - 35;
 			object.boundingOffset = 1.0;
 
 			if (mapn == '0') {
@@ -70,13 +70,13 @@ void Server::LoadMap(const char* filename)
 				g_map.walls.push_back(object);
 			}
 			else if (mapn == '3') {			// PLAYER_POS
-				m_startGameData.x[player_id] = (float)j * m_offset;
-				m_startGameData.z[player_id++] = (float)i * m_offset;
+				m_startGameData.x[player_id] = ((float)i * 7.5) - 35;
+				m_startGameData.z[player_id++] = ((float)j * 7.5) - 35;
 			}
 			else if (mapn == '4') {			// DOOR
 				g_map.door.active = true;
-				g_map.door.x = (char)j;
-				g_map.door.z = (char)i;
+				g_map.door.x = (char)i;
+				g_map.door.z = (char)j;
 				g_map.door.type = ObjectType::DOOR;
 				g_map.door.boundingOffset = 1.0;
 			}
@@ -97,9 +97,10 @@ void Server::Update()
 
 	while (g_loop)
 	{
+		//lock_guard<mutex> lk(g_timerLock);
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
-		if (g_accum_time >= 1.0f)
+		if (g_accum_time >= 0.2f)
 		{
 			CopySendMsgToAllClients();
 			g_timerCv.notify_all();

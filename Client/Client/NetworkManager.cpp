@@ -84,6 +84,8 @@ void NetworkManager::SendPlayerInput()
     m_sendMsg.Push(reinterpret_cast<char*>(&playerInput), sizeof(playerInput));
     s_socket.Send(m_sendMsg);
 
+    last_input = -1;
+
     m_sendMsg.Clear();
 }
 
