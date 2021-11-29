@@ -1,11 +1,12 @@
 #pragma once
 #include <iostream>
 #include <thread>
-#include <mutex>
 #include <vector>
 #include <array>
 #include <string>
 #include <fstream>
+#include <mutex>
+#include <condition_variable>
 
 #include <WinSock2.h>
 #include <WS2tcpip.h>
@@ -15,8 +16,11 @@
 
 using namespace std;
 
-const short SERVER_PORT = 7777;			// ¼­¹ö Æ÷Æ® ¹øÈ£
-const char* const SERVER_IP = "192.168.122.139";		// ¼­¹ö IP ÁÖ¼Ò
+const short SERVER_PORT = 7776;			
+const char* const SERVER_IP = "127.0.0.1";
+
+const int MaxBufferSize = 1024;
+const int MaxClients = 3;
 
 enum class MsgType : char		// ¸Ş½ÃÁö¸¦ ½Äº°ÇÒ ¼ö ÀÖ´Â ¸Ş½ÃÁö Çü½Ä
 {	
@@ -25,11 +29,8 @@ enum class MsgType : char		// ¸Ş½ÃÁö¸¦ ½Äº°ÇÒ ¼ö ÀÖ´Â ¸Ş½ÃÁö Çü½Ä
 	PLAYER_JOIN,					// ÇÃ·¹ÀÌ¾î ÀÔÀå
 	START_GAME,					// °ÔÀÓ ½ÃÀÛ
 	PLAYER_INPUT,					// ÇÃ·¹ÀÌ¾î Å° ÀÔ·Â
-	UPDATE_PLAYER_POS,		// ÇÃ·¹ÀÌ¾î À§Ä¡
 	UPDATE_PLAYER_INFO,		// ÇÃ·¹ÀÌ¾î Á¤º¸
-	UPDATE_BEAD,					// ºñµå
-	UPDATE_KEY,						// Å°
-	DOOR_OPEN						// ÃÖÁ¾ Å»Ãâ±¸
+	UPDATE_STATUS
 };
 
 enum class PlayerType : char	// ÇÃ·¹ÀÌ¾î Å¸ÀÔ
@@ -43,7 +44,7 @@ enum class ObjectType : char	// ¿ÀºêÁ§Æ® Å¸ÀÔ
 	BEAD,								// ºñµå
 	KEY,									// Å°
 	DOOR,								// Å»Ãâ±¸
-	WALL	,								// º®
+	WALL,								// º®
 	NONE,								// ¾Æ¹«°Íµµ ¾øÀ½
 
 	// Client Only
@@ -105,7 +106,7 @@ struct player_input		//Å¬¶óÀÌ¾ğÆ®´Â Áö¼ÓÀûÀ¸·Î ¼­¹ö¿¡°Ô ÀÔ·Â °ªÀ» º¸³½´Ù. (ÀÔ·ÂÇ
 {
 	short size;
 	MsgType type;
-	char input;
+	char input;	// Left : 0 Right : 1
 	float x;
 	float z;
 };
@@ -119,28 +120,40 @@ struct update_player_info			// ¼­¹ö´Â Áö¼ÓÀûÀ¸·Î Å¬¶óÀÌ¾ğÆ®µéÀÇ À§Ä¡¸¦ °»½ÅÇÏ¿© 
 	float z[3];
 };
 
+struct object_status
+{
+	ObjectType objType;
+	char x, z;
+	bool active;
+};
+
 struct update_status			//¸Ê¿¡ Á¸ÀçÇÏ´Â ¿ÀºêÁ§Æ®µéÀÇ º¯È­µÇ¾î »ç¶óÁ³´ÂÁö, ±× »óÅÂ¸¦ º¸³½´Ù.(Ãæµ¹ÇÒ ¶§ ¸¶´Ù)
 {
 	short size;
 	MsgType type;
 	WinStatus win;
 	char hp;
-	ObjectType objType;
-	char id;
-	bool active;
 };
 #pragma pack(pop)
 
 struct ObjectInfo			// ¿ÀºêÁ§Æ®ÀÇ Á¤º¸¸¦ °ü¸®ÇÏ´Â ±¸Á¶Ã¼
 {
-	int id;										// ¿ÀºêÁ§Æ® ¾ÆÀÌµğ
 	ObjectType type;						// ¿ÀºêÁ§Æ® Å¸ÀÔ
-	float x;									// ¿ÀºêÁ§Æ® x ÁÂÇ¥
-	float z;									// ¿ÀºêÁ§Æ® z ÁÂÇ¥
+	char x, z;									
 	bool active;							// ¿ÀºêÁ§Æ® È°¼ºÈ­ ¿©ºÎ
 	float boundingOffset;				// ¿ÀºêÁ§Æ® ¹Ù¿îµå ¿ÀÇÁ¼Â
 
-	Vector4 GetBoundingBox();		// ¿ÀºêÁ§Æ® ¹Ù¿îµù¹Ú½º »óÀÚ Á¤º¸ ¹İÈ¯
+	Vector4 GetBoundingBox()		// ¿ÀºêÁ§Æ® ¹Ù¿îµù¹Ú½º »óÀÚ Á¤º¸ ¹İÈ¯
+	{
+		Vector4 box =
+		{
+			x + boundingOffset,
+			x - boundingOffset,
+			z + boundingOffset,
+			z - boundingOffset
+		};
+		return box;
+	}
 };
 
 struct MapInfo							// ¸Ê¿¡ Á¸ÀçÇÏ´Â ¸ğµç ¿ÀºêÁ§Æ®¸¦ ´ã°í ÀÖ´Â ±¸Á¶Ã¼

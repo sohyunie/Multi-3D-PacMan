@@ -6,32 +6,29 @@ class ClientInfo : public Socket
 {
 public:
 	ClientInfo();
-	ClientInfo(SOCKET sck, int id);
 	virtual ~ClientInfo();
 
 public:
-	void Send();
-	
+	void Init(SOCKET sck, int id);
+
+	void SendMsg();
+
 	void ProcessMessage();
-	void CheckObjectsStatus();
-	void IsCollided(Vector4& a, Vector4& b);
-	void CreateLoginOkAndMapInfoMsg(start_game& s_game);
+	bool IsCollided(float x, float z, Direction dir, start_game& s_game);
 	
-	pair<float, float> GetNewPosition();
+	void ChangeDirection(player_input& p_input);
+	void SetNewPosition(start_game& s_game, float elapsedTime);
 	Vector4 GetBoundingBox();
 
-	
-private:
+public:
 	int m_id;
-	PlayerType m_type;
-	
+	PlayerType m_type;	
 	int m_hp;
-
 	float m_pos_x;
 	float m_pos_z;
-
 	float m_boundingOffset;
+
 	Message m_sendMsg;
-	char temp_buffer[1024]; // Test
+	mutex m_directionLock;
 	Direction m_direction;
 };

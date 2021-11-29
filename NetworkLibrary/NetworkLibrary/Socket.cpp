@@ -22,7 +22,7 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 
 
 Socket::Socket()
-	: m_socket(), m_recvMessage({})
+	: m_socket(), m_recvBuffer{}
 {
 }
 
@@ -57,13 +57,13 @@ void Socket::Listen()
 		throw Exception("listen failed");
 }
 
-void Socket::Connect(const char* ServerAddress, short ServerPort)
+void Socket::Connect(const char* const ServerAddress, short ServerPort)
 {
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
 	inet_pton(AF_INET, ServerAddress, &serveraddr.sin_addr);
-	serveraddr.sin_port = htons(SERVER_PORT);
+	serveraddr.sin_port = htons(ServerPort);
 	int retval = connect(m_socket, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR)
 		throw Exception("connect failed");
@@ -71,43 +71,45 @@ void Socket::Connect(const char* ServerAddress, short ServerPort)
 
 SOCKET Socket::Accept()
 {
-	SOCKET accept_socket = accept(m_socket, 0, 0);
+	SOCKET accept_socket = accept(m_socket, NULL, 0);
 	if (accept_socket == INVALID_SOCKET)
 		throw Exception("accept failed");
 	return accept_socket;
 }
 
-void Socket::Send(Message& msg) 
+int Socket::Send(Message& msg) 
 {
-	short size = msg.PeekSize();
-	cout << size << endl;
+	short size = msg.GetTotalMsgSize();
+	
 	int retval = send(m_socket, (char*)&size, sizeof(short), 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("send size failed");
+	if (retval == 0)
+		return retval;
 
-	retval = send(m_socket, (char*)&msg.m_buffer, sizeof(msg.m_buffer), 0);
+	retval = send(m_socket, (char*)&msg.m_buffer, size, 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("send buffer failed");
+
+	return retval;
 }
 
-void Socket::Recv()
+int Socket::Recv()
 {
 	int len = 0;
 	int retval = recvn(m_socket, (char*)&len, sizeof(short), 0);
+	if (retval == SOCKET_ERROR) 
+		throw Exception("recv failed");
+	if (retval == 0)
+		return retval;
+
+	retval = recvn(m_socket, m_recvBuffer, len, 0);
 	if (retval == SOCKET_ERROR)
 		throw Exception("recv failed");
 
-	retval = recvn(m_socket, m_recvMessage.m_buffer, len, 0);
-	if (retval == SOCKET_ERROR)
-		throw Exception("recv failed");
-}
-
-SOCKET Socket::GetSocket()
-{
-	return m_socket;
-}
-
-Message Socket::GetRecvMessage()
-{
-	return m_recvMessage;
+	if(retval != 0)
+	{ 
+		m_recvMsg.Push(m_recvBuffer, len);
+	}
+	return retval;
 }
