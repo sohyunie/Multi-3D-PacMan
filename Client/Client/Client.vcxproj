@@ -228,7 +228,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{6c433d5e-1cf3-46eb-8f2e-cbd673b3e649}</ProjectGuid>
     <RootNamespace>Client</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Client</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -297,6 +297,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Standard.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)../NetworkLibrary/NetworkLibrary\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -315,6 +316,7 @@
       <AdditionalOptions>freeglut.lib glew32.lib %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Standard.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)../NetworkLibrary/NetworkLibrary\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -330,7 +332,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\../NetworkLibrary/NetworkLibrary\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../NetworkLibrary/NetworkLibrary\</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Standard.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -351,6 +353,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Standard.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)../NetworkLibrary/NetworkLibrary\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

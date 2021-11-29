@@ -44,7 +44,7 @@ void PrintUpdateInfo(update_status& info)
 void PrintObjectInfo(object_status& obj)
 {
 	std::cout << "obj type: " << (int)obj.objType << endl;
-	std::cout << "obj pos: " << (int)obj.x << " " << (int)obj.z << endl;
+	std::cout << "obj pos: " << (int)obj.row << " " << (int)obj.col << endl;
 	std::cout << "obj active: " << boolalpha << obj.active << endl;
 }
 
@@ -92,7 +92,14 @@ Message CreateInputMsg()
 	player_input inputMsg{};
 	inputMsg.type = MsgType::PLAYER_INPUT;
 	inputMsg.size = sizeof(player_input);
-	inputMsg.input = -1;
+	char a;
+	cin >> a;
+	if (a == 'a')
+		inputMsg.input = 0;
+	else if (a == 'd')
+		inputMsg.input = 1;
+	else
+		inputMsg.input = -1;
 	inputMsg.x = x[ID];
 	inputMsg.z = z[ID];
 	Message retMsg{};
