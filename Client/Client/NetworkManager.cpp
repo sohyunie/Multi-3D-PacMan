@@ -37,8 +37,8 @@ void NetworkManager::Update()
 
             update_status update_info{};
             packets.Pop(reinterpret_cast<char*>(&update_info), sizeof(update_status));
-            InGameManager::GetInstance().RecvUpdateStatus(obj_info);
             // Win 상태에 따라 종료화면 처리
+            InGameManager::GetInstance().RecvUpdateStatus(update_info);
 
             left -= sizeof(update_status);
             while (left > 0)
