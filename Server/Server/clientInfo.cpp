@@ -8,7 +8,8 @@ ClientInfo::ClientInfo()
 		m_pos_z(0.0f),
 		m_boundingOffset(0.0f),
 		m_sendMsg({}),
-		m_direction(Direction::DOWN)
+		m_direction(Direction::DOWN),
+		m_active(false)
 {
 }
 
@@ -20,6 +21,7 @@ void ClientInfo::Init(SOCKET sck, int id)
 {
 	m_id = id;
 	m_socket = sck;
+	m_active = true;
 }
 
 void ClientInfo::SendMsg()
@@ -49,42 +51,36 @@ void ClientInfo::ProcessMessage()
 		{
 		case MsgType::PLAYER_INPUT:
 		{
+			std::cout << "Received input message\n";
 			player_input pi{};
 			m_recvMsg.Pop(reinterpret_cast<char*>(&pi), sizeof(player_input));
-			cout << "1 : " << (int)pi.input << "\n";
-			ChangeDirection(pi);
+			ChangeDirection(pi);			
 			break;
 		}
 		}
 	}
 }
 
-bool ClientInfo::IsCollided(float x, float z, Direction dir, start_game &s_game)
+bool ClientInfo::Collied(const Vector4& a, const Vector4& b)
 {
-	int mapx = 0, mapz = 0;
-	if (dir == Direction::UP || dir == Direction::RIGHT)
-	{
-		mapx = (int)x;
-		mapz = (int)z;
-	}
-	else if (dir == Direction::DOWN)
-	{
-		mapx = (int)x;
-		mapz = (int)(z + 1);
-	}
-	else if (dir == Direction::LEFT)
-	{
-		mapx = (int)(x + 1);
-		mapz = (int)z;
-	}
+	if (a.MinX > b.MaxX || b.MinX > a.MaxX)
+		return false;
+	if(a.MinZ > b.MaxZ || b.MinZ > a.MaxZ)
+		return false;
 
-	if (s_game.mapinfo[mapz][mapx] == 2)		// 벽 충돌시
+	return true;
+}
+
+bool ClientInfo::MapCollied(MapInfo& map)
+{
+	const Vector4& clientBB = GetBoundingBox();
+
+	for (ObjectInfo& wall : map.walls)
 	{
-		return true;
-	}
-	else if (s_game.mapinfo[mapz][mapx] == 4)		// 최종문 체크시
-	{
-		return true;
+		const Vector4& WallBB = wall.GetBoundingBox();
+		if (Collied(clientBB, WallBB)) {
+			return true;
+		}
 	}
 	return false;
 }
@@ -123,11 +119,10 @@ void ClientInfo::ChangeDirection(player_input& p_input)
 			m_direction = Direction::UP;
 		}
 	}
-	cout << m_id << "방향  : " << (int)m_direction << "\n";
 	m_directionLock.unlock();
 }
 
-void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
+void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme, MapInfo& map)
 {
 	// 클라이언트에서 입력값을 계속 받아오고 있음
 	// 받을 때 마다 해당 방향에 충돌하는 물체 있는지 체크
@@ -136,7 +131,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 
 	bool col = false;
 	float x = m_pos_x, z = m_pos_z;
-	float speed = 5000 * elapsedTIme;
+	float speed = 1 * elapsedTIme;
 	
 	m_directionLock.lock();
 	Direction dir = m_direction;
@@ -146,7 +141,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	{
 		z = z + speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::UP, s_game);
+		col = MapCollied(map);
 
 		if(col == false)
 			m_pos_z = z;
@@ -155,7 +150,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	{
 		z = z - speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::DOWN, s_game);
+		col = MapCollied(map);
 
 		if (col == false)
 			m_pos_z = z;
@@ -164,7 +159,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	{
 		x = x - speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::LEFT, s_game);
+		col = MapCollied(map);
 
 		if (col == false)
 			m_pos_x = x;
@@ -173,7 +168,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	{
 		x = x + speed;
 		// 충돌체크
-		col = IsCollided(x, z, Direction::RIGHT, s_game);
+		col = MapCollied(map);
 
 		if (col == false)
 			m_pos_x = x;

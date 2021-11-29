@@ -14,19 +14,23 @@ public:
 	void SendMsg();
 
 	void ProcessMessage();
-	bool IsCollided(float x, float z, Direction dir, start_game& s_game);
+	bool Collied(const Vector4& a, const Vector4& b);
+	bool MapCollied(MapInfo& map);
 	
 	void ChangeDirection(player_input& p_input);
-	void SetNewPosition(start_game& s_game, float elapsedTime);
+	void SetNewPosition(start_game& s_game, float elapsedTime, MapInfo& map);
 	Vector4 GetBoundingBox();
 
 public:
-	int m_id;
+	char m_id;
 	PlayerType m_type;	
 	int m_hp;
 	float m_pos_x;
 	float m_pos_z;
 	float m_boundingOffset;
+	bool m_active;
+
+	std::chrono::high_resolution_clock::time_point hit_time;
 
 	Message m_sendMsg;
 	mutex m_directionLock;

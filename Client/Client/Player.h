@@ -16,7 +16,10 @@ public:
 	float deltaAngle = 0.0f;
 	float deltaMove = 0.0f;
 	float hp = 100.0f;
-	int id = -1;
+
+	int id;
+	PlayerType type;
+	Direction playerDirection;
 };
 
 

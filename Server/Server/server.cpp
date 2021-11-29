@@ -14,9 +14,6 @@ bool Server::g_loop = false;
 
 array<ClientInfo, Server::MaxClients> Server::g_clients;
 
-mutex Server::g_sendMsgLock;
-Message Server::g_sendMsg;
-
 Server::Server()
 {
 	if (WSAStartup(MAKEWORD(2, 2), &m_wsaData) != 0)
@@ -54,8 +51,10 @@ void Server::LoadMap(const char* filename)
 			m_startGameData.mapinfo[i][j] = mapn;	// 게임 시작시 보낼 맵 정보 저장
 
 			object.active = true;
-			object.x = (char)j;
-			object.z = (char)i;
+			object.row = (char)j;
+			object.col = (char)i;
+			object.x = (float)j * m_offset;
+			object.z = (float)i * m_offset;
 			object.boundingOffset = 1.0;
 
 			if (mapn == '0') {
@@ -71,8 +70,8 @@ void Server::LoadMap(const char* filename)
 				g_map.walls.push_back(object);
 			}
 			else if (mapn == '3') {			// PLAYER_POS
-				m_startGameData.x[player_id] = (float)j;
-				m_startGameData.z[player_id++] = (float)i;
+				m_startGameData.x[player_id] = (float)j * m_offset;
+				m_startGameData.z[player_id++] = (float)i * m_offset;
 			}
 			else if (mapn == '4') {			// DOOR
 				g_map.door.active = true;
@@ -87,11 +86,9 @@ void Server::LoadMap(const char* filename)
 	in.close();
 }
 
-
 void Server::Update()
 {
-	int max_clients = MaxClients; // temporary variable
-	for (int i = 0; i < max_clients; i++)
+	for (int i = 0; i < maxClient; i++)
 		AcceptNewPlayer(i);
 
 	GameStart();
@@ -105,7 +102,6 @@ void Server::Update()
 		if (g_accum_time >= 1.0f)
 		{
 			CopySendMsgToAllClients();
-			g_sendMsg.Clear();
 			g_timerCv.notify_all();
 			g_accum_time = 0.0f;
 		}
@@ -126,15 +122,13 @@ void Server::GameStart()
 {
 	InitializeStartGameInfo();
 
-	int temp_size = MaxClients;
-	for (int i = 0; i < temp_size; i++)
+	for (int i = 0; i < maxClient; i++)
 	{
+		Message sendMsg{};
 		m_startGameData.my_id = i;
-		g_sendMsg.Clear();
-		g_sendMsg.Push(reinterpret_cast<char*>(&m_startGameData), sizeof(start_game));
-		g_clients[i].Send(g_sendMsg);
+		sendMsg.Push(reinterpret_cast<char*>(&m_startGameData), sizeof(start_game));
+		g_clients[i].Send(sendMsg);
 	}
-	g_sendMsg.Clear();
 	g_loop = true;
 	g_loopCv.notify_all();
 }
@@ -147,7 +141,7 @@ void Server::InitializeStartGameInfo()
 		m_startGameData.id[i] = (char)i;
 		m_startGameData.playertype[i] = PlayerType::RUNNER;
 
-		g_clients[i].m_id = i;
+		g_clients[i].m_id = (char)i;
 		g_clients[i].m_type = PlayerType::RUNNER;
 		g_clients[i].m_hp = 100;
 		g_clients[i].m_pos_x = m_startGameData.x[i];
@@ -155,9 +149,9 @@ void Server::InitializeStartGameInfo()
 		g_clients[i].m_boundingOffset = 1.5f;
 	}
 
-	int tagger = rand() % g_clients.size();
-	g_clients[tagger].m_type = PlayerType::TAGGER;
-	m_startGameData.playertype[tagger] = PlayerType::TAGGER;
+	m_taggerIndex = rand() % g_clients.size();
+	g_clients[m_taggerIndex].m_type = PlayerType::TAGGER;
+	m_startGameData.playertype[m_taggerIndex] = PlayerType::TAGGER;
 }
 
 void Server::SendAndRecv(int id)
@@ -198,21 +192,11 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 	m_player_info.type = MsgType::UPDATE_PLAYER_INFO;
 	for (int i = 0; i < g_clients.size(); i++)
 	{
-		g_clients[i].SetNewPosition(m_startGameData, elapsedTime);
+		g_clients[i].SetNewPosition(m_startGameData, elapsedTime, g_map);
 		m_player_info.id[i] = g_clients[i].m_id;
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
 	}
-	
-	int temp_size = MaxClients;
-	for (int i = 0; i < temp_size; i++)
-	{
-		g_sendMsg.Clear();
-		g_sendMsg.Push(reinterpret_cast<char*>(&m_player_info), sizeof(m_player_info));
-		g_clients[i].Send(g_sendMsg);
-	}
-	g_sendMsg.Clear();
-	
 }
 
 void Server::CreateUpdateStatusMsg()
@@ -220,19 +204,40 @@ void Server::CreateUpdateStatusMsg()
 	m_update_info.type = MsgType::UPDATE_STATUS;
 	m_update_info.win = WinStatus::NONE;
 
+	int deathCount = 0;
+	const Vector4& taggerBB = g_clients[m_taggerIndex].GetBoundingBox();
 	for (int i = 0; i < g_clients.size(); i++)
 	{
+		if (g_clients[i].m_active == false) continue;
+
 		vector<object_status> stats = UpdateObjectStatus(i);
 		m_object_info.insert(m_object_info.end(), stats.begin(), stats.end());
+		
+		if (i == m_taggerIndex) continue;
 
 		if (CheckWinStatus(i))
+		{
 			m_update_info.win = WinStatus::RUNNER_WIN;
+			break;
+		}
+
+		const Vector4& runnerBB = g_clients[i].GetBoundingBox();
+		if (IsCollided(taggerBB, runnerBB))
+		{
+			g_clients[i].m_hp -= 25;
+
+			if (g_clients[i].m_hp <= 0) {
+				g_clients[i].m_active = false;
+				deathCount += 1;
+			}
+		}
+
+		m_update_info.player_active[i] = g_clients[i].m_active;
 	}
 
-	// TODO: 적과의 충돌 후 hp 감소..
-	// TODO: 모든 플레이어의 사망여부 체크
+	if (deathCount >= MaxClients)
+		m_update_info.win = WinStatus::TAGGER_WIN;
 
-	// TODO: 모든 플레이어에게 메시지 보내기
 	m_update_info.size = sizeof(update_status) + m_object_info.size() * sizeof(object_status);
 }
 
@@ -241,10 +246,12 @@ void Server::CopySendMsgToAllClients()
 	Message sendMsg{};
 	sendMsg.Push(reinterpret_cast<char*>(&m_player_info), sizeof(update_player_info));
 	sendMsg.Push(reinterpret_cast<char*>(&m_update_info), sizeof(update_status));
+	cout << "object size: " << m_object_info.size() << std::endl;
 	sendMsg.Push(reinterpret_cast<char*>(m_object_info.data()), m_object_info.size() * sizeof(object_status));
+	m_object_info.clear();
 
 	for (ClientInfo& client : g_clients)
-		client.m_sendMsg = g_sendMsg;
+		client.m_sendMsg = sendMsg;
 }
 
 vector<object_status> Server::UpdateObjectStatus(int id)
@@ -262,7 +269,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			if (IsCollided(clientBB, beadBB))
 			{
 				bead.active = false;
-				obj_stats.push_back({ bead.type , bead.x, bead.z, bead.active });
+				obj_stats.push_back({ bead.type , bead.row, bead.col, bead.active });
 			}
 		}
 	}
@@ -275,7 +282,7 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			{
 				key.active = false;
 				m_countOfKeyAccquired += 1;
-				obj_stats.push_back({ key.type, key.x, key.z, key.active });
+				obj_stats.push_back({ key.type, key.row, key.col, key.active });
 			}
 		}
 	}
@@ -300,7 +307,7 @@ bool Server::CheckWinStatus(int id)
 
 bool Server::IsCollided(const Vector4& a, const Vector4& b)
 {
-	if (a.MinX > b.MaxX || b.MinX > a.MinX)
+	if (a.MinX > b.MaxX || b.MinX > a.MaxX)
 		return false;
 
 	if (a.MinZ > b.MaxZ || b.MinZ > a.MaxZ)

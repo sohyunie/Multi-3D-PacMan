@@ -31,8 +31,11 @@ private:
     list<GhostCollisionData*> collisionGhost;
     Object* object;
     ObjData* objData[MAX_VAO_TYPE];
-    Player* player;
-    Player* otherPlayer[2];
+
+    Player *players;
+    int myID;
+
+    //Player* otherPlayer[2];
     MapLoader* map;
     Bead* bead;
     PowerBead* powerBead;
@@ -134,7 +137,7 @@ public:
     Ghost* GetGhost();
     // float GetHP();
 
-    Player* GetPlayer() { return this->player; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함
+    Player* GetPlayer() { return this->players; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함
     MapLoader* LoadMap() { return this->map; }
     InGameUI* GetInGameUI() { return this->ingameUI; }
     GLvoid DrawMap(){}
@@ -151,6 +154,8 @@ public:
 
     void PlayingBgm(const char* name);
     void PlayingFxSound(const char* name);
+
+    int GetMyID() const { return myID; }
 protected:
 
 };

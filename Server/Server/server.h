@@ -43,9 +43,6 @@ public:
 	static condition_variable g_loopCv;
 	static bool g_loop;
 
-	static mutex g_sendMsgLock;
-	static Message g_sendMsg;
-
 private:
 	WSAData m_wsaData;
 	Socket m_listenSock;
@@ -57,4 +54,9 @@ private:
 
 	start_game m_startGameData;
 	int m_countOfKeyAccquired = 0;
+
+	int m_taggerIndex = 0;
+	
+	const float m_offset = 7.5f;
+	const int maxClient = 1; // TEST
 };
