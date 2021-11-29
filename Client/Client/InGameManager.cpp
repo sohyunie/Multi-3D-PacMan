@@ -577,7 +577,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 			dObject->isChangeCameraDir = false;
 			dObject->accDir = 0;
 		}
-		return;
+		return; // 여기가 멈추는 로직
 	}
 
 	// 플레이어가 이동 중이야, 근데 이동 중에 키를 눌렀어 다른 방향 키, 다른 방향 키 눌렀다고 해서 바로 반영되면 안되잖아. 왜냐면 도착해서 회전해야 i j 기반으로 움직이는거니까
@@ -997,7 +997,7 @@ GLvoid InGameManager::InitObject()
 	this->objData[(int)ObjectType::BOTTOM] = new ObjData();
 
 	this->player = new Player();
-	for (int i = 0; i < MaxClients; ++i)
+	for (int i = 0; i < MaxClients - 1; ++i)
 	{
 		this->otherPlayer[i] = new Player();
 	}
@@ -1028,10 +1028,13 @@ void InGameManager::GameStart(start_game& startGame)
 	// 타입이 0이면 고스트, 러너 플레이어로 그리기.
 
 	this->player->id = NetworkManager::GetInstance().GetMyID();
+	this->player->SetPlayerType(NetworkManager::GetInstance().GetPlayerInfo(this->player->id).type);
 	int index = 0;
 	for (int i = 0; i < 3; ++i) {
 		if (i == this->player->id) continue;
-		this->otherPlayer[index++]->id = i;
+		this->otherPlayer[index]->id = i;
+		this->otherPlayer[index]->SetPlayerType(NetworkManager::GetInstance().GetPlayerInfo(this->otherPlayer[index]->id).type);
+		index++;
 	}
 	this->map = new MapLoader(startGame.mapinfo);
 	this->PlayingBgm(SOUND_FILE_NAME_INGAME);

@@ -7,6 +7,8 @@ private:
 public:
 	Player();
 
+	void SetPlayerType(PlayerType type);
+
 	virtual void DrawObject(GLuint s_program) override;
 
 	Vector3 GetPlayerPos() { return this->position; }
@@ -17,6 +19,8 @@ public:
 	float deltaMove = 0.0f;
 	float hp = 100.0f;
 	int id = -1;
+
+	PlayerType playerType;
 };
 
 

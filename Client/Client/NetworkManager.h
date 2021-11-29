@@ -29,7 +29,7 @@ private:
     char myID;
 
     mutex inputLock;
-    char last_input;
+    char last_input = -1;
 
     PlayerInfo players[MaxClients];
 

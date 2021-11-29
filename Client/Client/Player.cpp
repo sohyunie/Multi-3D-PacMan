@@ -10,6 +10,21 @@ Player::Player() {
 	this->boundingOffset = 1.5;
 }
 
+void Player::SetPlayerType(PlayerType type)
+{
+	this->playerType = type;
+	if (this->playerType == PlayerType::RUNNER)
+	{
+		this->color = Vector3(1.0, 1.0, 1.0);
+		this->scale = Vector3(1.3, 1.3, 1.3);
+	}
+	else
+	{
+		this->color = Vector3(1.0, 0.0, 0.0);
+		this->scale = Vector3(1.6, 1.6, 1.6);
+	}
+}
+
 void Player::DrawObject(GLuint s_program) {
 	glm::mat4 STR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 R = glm::mat4(1.0f); //--- rotation matrix
@@ -44,7 +59,7 @@ void Player::DrawObject(GLuint s_program) {
 	glUniform3f(lightColorLocation, lightColor.x, lightColor.y, lightColor.z);
 
 	int objColorLocation = glGetUniformLocation(s_program, "g_objectColor"); //--- object Color값 전달: (1.0, 0.5, 0.3)의 색
-	glUniform3f(objColorLocation, 1.0, 1.0, 1.0);
+	glUniform3f(objColorLocation, this->color.x, this->color.y, this->color.z);
 
 	int ViewLocation = glGetUniformLocation(s_program, "g_cameraPos");
 	glUniform3f(ViewLocation, cameraPos.x, cameraPos.y, cameraPos.z);
