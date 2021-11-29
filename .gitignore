@@ -14,10 +14,10 @@ D2DApp/
 *.o
 *.obj
 
-!/bead.obj
-!/block.obj
-!/ghost.obj
-!/key.obj
+!bead.obj
+!block.obj
+!ghost.obj
+!key.obj
 
 # Precompiled Headers
 *.gch
