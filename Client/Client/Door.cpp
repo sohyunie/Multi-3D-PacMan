@@ -1,27 +1,27 @@
 #include "Standard.h"
-#include "Bottom.h"
+#include "Door.h"
 #include "InGameManager.h"
 
-//default_random_engine dreColor_Bottom((size_t)time(NULL));
-//normal_distribution <float>uidColor_Bottom{ 0.0,1.0 };
+//default_random_engine dreColor_block((size_t)time(NULL));
+//normal_distribution <float>uidColor_block{ 0.0,1.0 };
 
-Bottom::Bottom() {
-	this->type = ObjectType::BOTTOM;
+Door::Door() {
+	this->type = ObjectType::DOOR;
 }
 
-Bottom::Bottom(Vector3 pos) {
-	this->type = ObjectType::BOTTOM;
+Door::Door(Vector3 pos) {
+	this->type = ObjectType::DOOR;
 	this->position = pos;	// position도 그냥 생성자에서 인자로 안받아오고 여기서 설정하면 안되나..? ingame에서 만들 때부터 넣어주는 게 아니라
-	this->position.y -= 3;
-	this->scale = Vector3(1000.0, 0.01, 1000.0);
+	this->position.y -= 0;
+	this->scale = Vector3(20.75, 20.75, 20.75);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
-	//this->boundingOffset = 1.5f;//1.8;
-	this->color = glm::vec3(0.1, 0.1, 0.1);
+	this->boundingOffset = 1.5f;//1.8;
+	this->color = glm::vec3(0.3, 0.3, 0.3);
 }
 
-void Bottom::DrawObject(GLuint s_program) {
-	//this->color = glm::vec3(uidColor_Bottom(dreColor_Bottom), uidColor_Bottom(dreColor_Bottom), uidColor_Bottom(dreColor_Bottom));
-	//cout << "DrawObject : Bottom" << endl; 
+void Door::DrawObject(GLuint s_program) {
+	//this->color = glm::vec3(uidColor_block(dreColor_block), uidColor_block(dreColor_block), uidColor_block(dreColor_block));
+	//cout << "DrawObject : Block" << endl; 
 	glm::mat4 STR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 R = glm::mat4(1.0f); //--- rotation matrix
 	glm::mat4 T = glm::mat4(1.0f); //--- transformation matrix
@@ -48,6 +48,9 @@ void Bottom::DrawObject(GLuint s_program) {
 	unsigned int projectionLocation = glGetUniformLocation(s_program, "g_projection");
 	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
+	unsigned int flaglocation = glGetUniformLocation(s_program, "flag");
+	glUniform1i(flaglocation, 2);
+
 	int lightPosLocation = glGetUniformLocation(s_program, "g_lightPos"); //--- lightPos 값 전달: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, lightPos.x, lightPos.y, lightPos.z);
 
@@ -60,11 +63,10 @@ void Bottom::DrawObject(GLuint s_program) {
 	int ViewLocation = glGetUniformLocation(s_program, "g_cameraPos");
 	glUniform3f(ViewLocation, cameraPos.x, cameraPos.y, cameraPos.z);
 
-	unsigned int flaglocation = glGetUniformLocation(s_program, "flag");
-	glUniform1i(flaglocation, 0);
-
 	// 사용할 VAO 불러오기
 	glBindVertexArray(InGameManager::GetInstance().GetVAO(this->type));
 	// 삼각형 그리기
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, InGameManager::GetInstance().GetTexture(TextureType::INGAME));
 	glDrawElements(GL_TRIANGLES, InGameManager::GetInstance().GetObjData(this->type)->indexCount, GL_UNSIGNED_INT, 0);
 }

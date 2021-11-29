@@ -32,10 +32,9 @@ private:
     Object* object;
     ObjData* objData[MAX_VAO_TYPE];
 
-    Player *players;
-    int myID;
+    Player* player; // 나
+    Player* otherPlayer[2]; // 상대 두 명
 
-    //Player* otherPlayer[2];
     MapLoader* map;
     Bead* bead;
     PowerBead* powerBead;
@@ -111,7 +110,7 @@ public:
     bool GetPresence() { return this->isBead; }
     void CalculateTime();
     void CameraSetting(bool isFps);
-    void TimerFunction();
+    //void TimerFunction();
     void CheckDirection(DynamicObject* dObject);
     Vector3 DirToVec3(Direction dir);
     void CreateGhost(int i, int j, Vector3 position);
@@ -119,7 +118,7 @@ public:
     Ghost* FindGhostByID(int id);
     float CountBeadAmount();
     void DecreaseBeadNumber();
-    string GetNearByGhost();
+    //string GetNearByGhost();
 
     void DrawTextureImage();
     GLuint GetTexture(TextureType type);
@@ -137,7 +136,7 @@ public:
     Ghost* GetGhost();
     // float GetHP();
 
-    Player* GetPlayer() { return this->players; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함
+    Player* GetPlayer() { return this->player; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함
     MapLoader* LoadMap() { return this->map; }
     InGameUI* GetInGameUI() { return this->ingameUI; }
     GLvoid DrawMap(){}
@@ -155,7 +154,10 @@ public:
     void PlayingBgm(const char* name);
     void PlayingFxSound(const char* name);
 
-    int GetMyID() const { return myID; }
+    void RecvUpdateObject(object_status obj_info);
+    void RecvUpdateStatus(update_status update_status);
+
+    // int GetMyID() const { return myID; }
 protected:
 
 };

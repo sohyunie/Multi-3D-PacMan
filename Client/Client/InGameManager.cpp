@@ -87,19 +87,19 @@ void InGameManager::CalculateTime() {
 void InGameManager::CameraSetting(bool isFps) {
 	if (this->state == GAMESTATE::INGAME) {
 		if (false) {
-			Vector3 dir = Vector3(this->players[myID].GetPosition().x + this->players[myID].dir.x, -1, this->players[myID].GetPosition().z + this->players[myID].dir.z);
+			Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, -1, this->player->GetPosition().z + this->player->dir.z);
 
 			this->cameraDirection = dir.GetGlmVec3();
-			this->cameraPos = this->players[myID].GetPosition().GetGlmVec3();
+			this->cameraPos = this->player->GetPosition().GetGlmVec3();
 			this->cameraPos.y += 1;
 			//this->cameraPos.y += 1;
 		}
 		else {
-			Vector3 dir = Vector3(this->players[myID].GetPosition().x + this->players[myID].dir.x, 0, this->players[myID].GetPosition().z + this->players[myID].dir.z);
+			Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, 0, this->player->GetPosition().z + this->player->dir.z);
 			this->cameraDirection = dir.GetGlmVec3();
 			this->cameraDirection.y += 5;
-			this->cameraPos = this->players[myID].GetPosition().GetGlmVec3();
-			this->cameraPos.y += 80;
+			this->cameraPos = this->player->GetPosition().GetGlmVec3();
+			this->cameraPos.y += 50;
 		}
 	}
 }
@@ -134,28 +134,28 @@ GLvoid InGameManager::InitBuffer() {
 
 
 	// GHOST
-	glGenVertexArrays(1, &this->VAO[(int)ObjectType::GHOST]);
-	glBindVertexArray(this->VAO[(int)ObjectType::GHOST]);
-	glGenBuffers(3, this->VBO[(int)ObjectType::GHOST]);
+	glGenVertexArrays(1, &this->VAO[(int)ObjectType::DOOR]);
+	glBindVertexArray(this->VAO[(int)ObjectType::DOOR]);
+	glGenBuffers(3, this->VBO[(int)ObjectType::DOOR]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::GHOST][0]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::GHOST]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::GHOST]->vPosData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::DOOR][0]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::DOOR]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::DOOR]->vPosData, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::GHOST][1]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::GHOST]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::GHOST]->vNormalData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::DOOR][1]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::DOOR]->vertexCount * sizeof(float) * 3, this->objData[(int)ObjectType::DOOR]->vNormalData, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::GHOST][2]);
-	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::GHOST]->vertexCount * sizeof(float) * 2, this->objData[(int)ObjectType::GHOST]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[(int)ObjectType::DOOR][2]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[(int)ObjectType::DOOR]->vertexCount * sizeof(float) * 2, this->objData[(int)ObjectType::DOOR]->vTextureCoordinateData, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 	glEnableVertexAttribArray(2);
 
-	glGenBuffers(1, &this->EBO[(int)ObjectType::GHOST]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[(int)ObjectType::GHOST]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[(int)ObjectType::GHOST]->indexCount * sizeof(int), this->objData[(int)ObjectType::GHOST]->indexData, GL_STATIC_DRAW);
+	glGenBuffers(1, &this->EBO[(int)ObjectType::DOOR]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[(int)ObjectType::DOOR]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[(int)ObjectType::DOOR]->indexCount * sizeof(int), this->objData[(int)ObjectType::DOOR]->indexData, GL_STATIC_DRAW);
 
 
 	// BLOCK
@@ -392,9 +392,17 @@ GLvoid InGameManager::DrawScene() {
 		//	it++;
 		//}
 		this->map->DrawMap(s_program);
-		for (int i = 0; i < MaxClients; i++)
+
+		PlayerInfo playerInfo = NetworkManager::GetInstance().GetPlayerInfo(player->id);// 인자로 넘겨준 ID의 플레이어 정보를 가져와서 세팅 (player->id는 내 아이디를 뜻함)
+		Vector3 playerPos(playerInfo.x, 0, playerInfo.z);
+		this->player->SetPosition(playerPos);
+		this->player->DrawObject(s_program);
+		for (int i = 0; i < 2; i++)
 		{
-			players[i].DrawObject(s_program);
+			PlayerInfo playerInfo = NetworkManager::GetInstance().GetPlayerInfo(otherPlayer[i]->id);
+			Vector3 pos(playerInfo.x, 0, playerInfo.z);
+			otherPlayer[i]->SetPosition(pos);
+			otherPlayer[i]->DrawObject(s_program);
 		}
 		this->bottom->DrawObject(s_program);
 		break;
@@ -488,7 +496,7 @@ void InGameManager::SetState(GAMESTATE state) {
 }
 
 void InGameManager::InitGame() {
-	delete[] this->players;
+	delete this->player;
 	delete this->map;
 	delete this->bead;
 	delete this->powerBead;
@@ -496,7 +504,7 @@ void InGameManager::InitGame() {
 	delete this->bottom;
 	this->beadNumber = 0;
 	this->inGameTime = 0;
-	//this->player->hp = 100.0;
+	this->player->hp = 100.0;
 
 	this->InitObject();
 }
@@ -534,16 +542,16 @@ string InGameManager::GetBestRecord() { //[TODO] 계속 불리지 않도록 수정
 	return to_string(bestRecord);
 }
 
-string InGameManager::GetNearByGhost() {
-	int count = 0;
-	for (Ghost* ghost : this->vGhost) {
-		int distance_i = abs(this->players[myID].board_i - ghost->board_i);
-		int distance_j = abs(this->players[myID].board_j - ghost->board_j);
-		if (distance_i < 4 && distance_j < 4)
-			count++;
-	}
-	return to_string(count);
-}
+//string InGameManager::GetNearByGhost() {
+//	int count = 0;
+//	for (Ghost* ghost : this->vGhost) {
+//		int distance_i = abs(this->player->board_i - ghost->board_i);
+//		int distance_j = abs(this->player->board_j - ghost->board_j);
+//		if (distance_i < 4 && distance_j < 4)
+//			count++;
+//	}
+//	return to_string(count);
+//}
 
 
 Vector3 Lerp(Vector3 value1, Vector3 value2, float amount)
@@ -554,7 +562,7 @@ Vector3 Lerp(Vector3 value1, Vector3 value2, float amount)
 }
 
 void InGameManager::CheckDirection(DynamicObject *dObject) {
-	float speed = (dObject->GetType() == ObjectType::GHOST) ? GHOST_SPEED : this->speed;
+	float speed = (dObject->GetType() == ObjectType::DOOR) ? GHOST_SPEED : this->speed;
 
 	// 회전 관련 코드
 	if (dObject->isChangeCameraDir) {
@@ -621,7 +629,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 		}
 
 		if (target->GetType() == ObjectType::WALL) {
-			if (dObject->GetType() == ObjectType::GHOST) {
+			if (dObject->GetType() == ObjectType::DOOR) {
 				Ghost* temp = (Ghost*)dObject;
 				temp->SetRandomDirection();
 			}
@@ -663,7 +671,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 			dObject->SetPlayerPos(Lerp(startPos, target->GetPosition(), dObject->acc));
 		}
 		else {
-			if (dObject->GetType() == ObjectType::GHOST) {
+			if (dObject->GetType() == ObjectType::DOOR) {
 				Ghost* temp = (Ghost*)dObject;
 				temp->SetRandomDirection();
 			}
@@ -702,7 +710,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 			dObject->SetPlayerPos(Lerp(startPos, target->GetPosition(), dObject->acc));
 		}
 		else {
-			if (dObject->GetType() == ObjectType::GHOST) {
+			if (dObject->GetType() == ObjectType::DOOR) {
 				Ghost* temp = (Ghost*)dObject;
 				temp->SetRandomDirection();
 			}
@@ -712,7 +720,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 		break;
 
 	case Direction::RIGHT:
-		if (players[myID].board_j + 1 > 31) // 아에 빈 보드판으로 가지 않도록
+		if (player->board_j + 1 > 31) // 아에 빈 보드판으로 가지 않도록
 			break;
 		dObject->acc += this->deltaTime * speed;
 
@@ -734,12 +742,11 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 			}
 		}
 
-		//cout << target->GetType() << endl;
 		if (!(target->GetType() == ObjectType::WALL)) {
 			dObject->SetPlayerPos(Lerp(startPos, target->GetPosition(), dObject->acc));
 		}
 		else {
-			if (dObject->GetType() == ObjectType::GHOST) {
+			if (dObject->GetType() == ObjectType::DOOR) {
 				Ghost* temp = (Ghost*)dObject;
 				temp->SetRandomDirection();
 			}
@@ -784,175 +791,175 @@ default_random_engine dreColor_light((size_t)time(NULL));
 normal_distribution <float>uidColor_light{ 0.0,1.0 };
 int cycleCounter = 0;
 
-void InGameManager::TimerFunction() {
-	//if (this->state != GAMESTATE::INGAME)
-	//	return;
-	//ghostSpawnRunningTime += this->GetDeltaTime();
-	//if (ghostSpawnRunningTime > GHOST_SPAWN_TIME) {
-	//	ghostSpawnRunningTime = 0;
-	//	for (Ghost* g : this->vGhost) {
-	//		if (!g->GetIsActive()) {
-	//			g->SetIsActive(true);
-	//			break;
-	//		}
-	//	}
-	//}
-	//if (this->EatPowerBead == true) {
-	//	this->powerBeadTime += this->deltaTime;
-	//	cycleCounter++;
-	//	if (cycleCounter % 5 == 0) {
-	//		if (lightColor == lightColor_white) {
-	//			lightColor = lightColor_black;
-	//		}
-	//		else {
-	//			lightColor = lightColor_white;
-	//		}
-	//	}
-	//	/*lightColor.x = uidColor_light(dreColor_light);
-	//	lightColor.y = uidColor_light(dreColor_light);
-	//	lightColor.z = uidColor_light(dreColor_light);*/
-	//	if (this->powerBeadTime > POWER_BEAD_TIME) {
-	//		cout << this->powerBeadTime << endl;
-	//		lightColor = lightColor_white;
-	//		this->EatPowerBead = false;
-	//		this->ChangeSpeed(NORMAL_SPEED);
-	//	}
-	//}
-
-	//for (int i = 0; i < MAP_SIZE; ++i) {
-	//	for (int j = 0; j < MAP_SIZE; ++j) {
-	//		Object obj = *this->map->boardShape[i][j];
-
-	//		// Player
-	//		bool isCollision = this->player->CollisionCheck(obj);
-	//		if (isCollision) {
-	//			//cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
-	//			switch (obj.GetType()) {
-	//			case ObjectType::WALL:
-	//				break;
-	//			case ObjectType::BEAD:
-	//				// isMapCollision : <딱 부딪친 순간만> 체크하는 bool이에요!
-	//				// player boar i j  // 새롭게 부딪친 i j
-	//				this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j)); // 출발점이 
-	//				//cout << "BEAD" << endl;
-	//				this->player->temp_i = i;
-	//				this->player->temp_j = j;
-	//				this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
-	//				this->DecreaseBeadNumber();
-	//				this->PlayingFxSound(SOUND_FILE_NAME_BEAD);
-	//				//PlaySound(TEXT(SOUND_FILE_NAME_BEAD), NULL, SND_ASYNC | SND_SYNC); // 반응 느린건 일단 이따 생각할게유! 
-	//				if(this->GetBeadCount() <= 0)
-	//					this->SetState(GAMESTATE::CLEAR);
-	//				// cout << "beadNumber: " << this->beadNumber << endl;
-	//				break;
-	//			case ObjectType::POWERBEAD:
-	//				this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
-	//				this->player->temp_i = i;
-	//				this->player->temp_j = j;
-	//				this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
-	//				this->key++;
-	//				//this->EatPowerBead = true;
-	//				//this->ChangeSpeed(POWER_SPEED);
-	//				// n초 동안 무적 상태
-	//				break;
-	//			case ObjectType::ROAD:
-	//				this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
-	//				//cout << "ROAD" << endl;
-	//				this->player->temp_i = i;
-	//				this->player->temp_j = j;
-	//				break;
-	//			}
-	//		}
-
-	//		// Ghost
-	//		//for (Ghost* g : this->vGhost) {
-	//		//	bool isCollision = g->CollisionCheck(obj);
-	//		//	if (isCollision) {
-	//		//		//cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
-	//		//		switch (obj.GetType()) {
-	//		//		case ObjectType::WALL:
-	//		//			break;
-	//		//		case ObjectType::BEAD:
-	//		//			g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
-	//		//			g->temp_i = i;
-	//		//			g->temp_j = j;
-	//		//			break;
-	//		//		case ObjectType::POWERBEAD:
-	//		//			g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
-	//		//			g->temp_i = i;
-	//		//			g->temp_j = j;
-	//		//			break;
-	//		//		case ObjectType::ROAD:
-	//		//			g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
-	//		//			//cout << "ROAD" << endl;
-	//		//			g->temp_i = i;
-	//		//			g->temp_j = j;
-	//		//			break;
-	//		//		}
-	//		//	}
-	//		//}
-	//	}
-	//}
-
-	// Player to Ghost
-	//std::list<Ghost*>::iterator it;
-	//it = vGhost.begin();
-	//Ghost* ghost = nullptr;
-	//while (it != vGhost.end())
-	//{
-	//	bool isCollision = (*it)->CollisionCheck(*this->player);	// (*it)로 쓰면, n번째 값에 접근하는 형태 | 엄청중요! STL은 이게 다다!!
-	//	if (isCollision) {
-	//		if (this->EatPowerBead) {
-	//			ghost = (*it);
-	//		}
-	//		else {
-	//			bool isCollisionGhost = false;
-
-	//			// 충돌했던 고스트인지 확인, 이미 충돌되어 있으면 isCollisionGhost를 true로 만들어서 2초동안 체력 안깎이게
-	//			for (GhostCollisionData* ghost : this->collisionGhost) {
-	//				if ((*it)->GetID() == ghost->ghost->GetID()) {
-	//					isCollisionGhost = true;
-	//					break;
-	//				}
-	//			}
-
-	//			if (!isCollisionGhost) {
-	//				this->GetPlayer()->hp -= 5;
-	//				this->collisionGhost.push_back(new GhostCollisionData((*it), COLLISION_TIME));
-	//				cout << this->GetPlayer()->hp << endl;
-	//				if (this->GetPlayer()->hp <= 0)
-	//					this->SetState(GAMESTATE::GAMEOVER);
-	//			}
-
-	//		}
-	//	}
-	//	it++;
-	//}
-
-	//GhostCollisionData* TimeOutGhost = nullptr;	// 충돌하고 2초 지난 ghost
-	//for (GhostCollisionData *ghost : this->collisionGhost) {
-	//	ghost->time -= this->GetDeltaTime();
-	//	if (ghost->time < 0) {
-	//		TimeOutGhost = ghost;
-	//		break;
-	//	}
-	//}
-
-	//// 무적 상태일 때 ghost 지우기
-	//if (ghost != nullptr)
-	//	this->DeleteGhost(ghost);
-
-	//// 시간 끝난 ghost 지우기 ; 게임 내에서 삭제하는 게 아니라 2초 다시 셋팅해준다고 생각하면 됨
-	//if (TimeOutGhost != nullptr)
-	//	this->collisionGhost.remove(TimeOutGhost);
-
-	//this->GetTime();
-	//this->CalculateTime();
-	//for (Ghost* g : this->vGhost) {
-	//	this->CheckDirection(g);
-	//}
-	//this->CheckDirection(this->player);
-}
+//void InGameManager::TimerFunction() {
+//	if (this->state != GAMESTATE::INGAME)
+//		return;
+//	ghostSpawnRunningTime += this->GetDeltaTime();
+//	if (ghostSpawnRunningTime > GHOST_SPAWN_TIME) {
+//		ghostSpawnRunningTime = 0;
+//		for (Ghost* g : this->vGhost) {
+//			if (!g->GetIsActive()) {
+//				g->SetIsActive(true);
+//				break;
+//			}
+//		}
+//	}
+//	if (this->EatPowerBead == true) {
+//		this->powerBeadTime += this->deltaTime;
+//		cycleCounter++;
+//		if (cycleCounter % 5 == 0) {
+//			if (lightColor == lightColor_white) {
+//				lightColor = lightColor_black;
+//			}
+//			else {
+//				lightColor = lightColor_white;
+//			}
+//		}
+//		/*lightColor.x = uidColor_light(dreColor_light);
+//		lightColor.y = uidColor_light(dreColor_light);
+//		lightColor.z = uidColor_light(dreColor_light);*/
+//		if (this->powerBeadTime > POWER_BEAD_TIME) {
+//			cout << this->powerBeadTime << endl;
+//			lightColor = lightColor_white;
+//			this->EatPowerBead = false;
+//			this->ChangeSpeed(NORMAL_SPEED);
+//		}
+//	}
+//
+//	for (int i = 0; i < MAP_SIZE; ++i) {
+//		for (int j = 0; j < MAP_SIZE; ++j) {
+//			Object obj = *this->map->boardShape[i][j];
+//
+//			// Player
+//			bool isCollision = this->player->CollisionCheck(obj);
+//			if (isCollision) {
+//				//cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
+//				switch (obj.GetType()) {
+//				case ObjectType::WALL:
+//					break;
+//				case ObjectType::BEAD:
+//					// isMapCollision : <딱 부딪친 순간만> 체크하는 bool이에요!
+//					// player boar i j  // 새롭게 부딪친 i j
+//					this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j)); // 출발점이 
+//					//cout << "BEAD" << endl;
+//					this->player->temp_i = i;
+//					this->player->temp_j = j;
+//					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
+//					this->DecreaseBeadNumber();
+//					this->PlayingFxSound(SOUND_FILE_NAME_BEAD);
+//					//PlaySound(TEXT(SOUND_FILE_NAME_BEAD), NULL, SND_ASYNC | SND_SYNC); // 반응 느린건 일단 이따 생각할게유! 
+//					if(this->GetBeadCount() <= 0)
+//						this->SetState(GAMESTATE::CLEAR);
+//					// cout << "beadNumber: " << this->beadNumber << endl;
+//					break;
+//				case ObjectType::POWERBEAD:
+//					this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
+//					this->player->temp_i = i;
+//					this->player->temp_j = j;
+//					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
+//					this->key++;
+//					//this->EatPowerBead = true;
+//					//this->ChangeSpeed(POWER_SPEED);
+//					// n초 동안 무적 상태
+//					break;
+//				case ObjectType::ROAD:
+//					this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
+//					//cout << "ROAD" << endl;
+//					this->player->temp_i = i;
+//					this->player->temp_j = j;
+//					break;
+//				}
+//			}
+//
+//			// Ghost
+//			//for (Ghost* g : this->vGhost) {
+//			//	bool isCollision = g->CollisionCheck(obj);
+//			//	if (isCollision) {
+//			//		//cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
+//			//		switch (obj.GetType()) {
+//			//		case ObjectType::WALL:
+//			//			break;
+//			//		case ObjectType::BEAD:
+//			//			g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
+//			//			g->temp_i = i;
+//			//			g->temp_j = j;
+//			//			break;
+//			//		case ObjectType::POWERBEAD:
+//			//			g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
+//			//			g->temp_i = i;
+//			//			g->temp_j = j;
+//			//			break;
+//			//		case ObjectType::ROAD:
+//			//			g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
+//			//			//cout << "ROAD" << endl;
+//			//			g->temp_i = i;
+//			//			g->temp_j = j;
+//			//			break;
+//			//		}
+//			//	}
+//			//}
+//		}
+//	}
+//
+//	 Player to Ghost
+//	std::list<Ghost*>::iterator it;
+//	it = vGhost.begin();
+//	Ghost* ghost = nullptr;
+//	while (it != vGhost.end())
+//	{
+//		bool isCollision = (*it)->CollisionCheck(*this->player);	// (*it)로 쓰면, n번째 값에 접근하는 형태 | 엄청중요! STL은 이게 다다!!
+//		if (isCollision) {
+//			if (this->EatPowerBead) {
+//				ghost = (*it);
+//			}
+//			else {
+//				bool isCollisionGhost = false;
+//
+//				// 충돌했던 고스트인지 확인, 이미 충돌되어 있으면 isCollisionGhost를 true로 만들어서 2초동안 체력 안깎이게
+//				for (GhostCollisionData* ghost : this->collisionGhost) {
+//					if ((*it)->GetID() == ghost->ghost->GetID()) {
+//						isCollisionGhost = true;
+//						break;
+//					}
+//				}
+//
+//				if (!isCollisionGhost) {
+//					this->GetPlayer()->hp -= 5;
+//					this->collisionGhost.push_back(new GhostCollisionData((*it), COLLISION_TIME));
+//					cout << this->GetPlayer()->hp << endl;
+//					if (this->GetPlayer()->hp <= 0)
+//						this->SetState(GAMESTATE::GAMEOVER);
+//				}
+//
+//			}
+//		}
+//		it++;
+//	}
+//
+//	GhostCollisionData* TimeOutGhost = nullptr;	// 충돌하고 2초 지난 ghost
+//	for (GhostCollisionData *ghost : this->collisionGhost) {
+//		ghost->time -= this->GetDeltaTime();
+//		if (ghost->time < 0) {
+//			TimeOutGhost = ghost;
+//			break;
+//		}
+//	}
+//
+//	// 무적 상태일 때 ghost 지우기
+//	if (ghost != nullptr)
+//		this->DeleteGhost(ghost);
+//
+//	// 시간 끝난 ghost 지우기 ; 게임 내에서 삭제하는 게 아니라 2초 다시 셋팅해준다고 생각하면 됨
+//	if (TimeOutGhost != nullptr)
+//		this->collisionGhost.remove(TimeOutGhost);
+//
+//	this->GetTime();
+//	this->CalculateTime();
+//	for (Ghost* g : this->vGhost) {
+//		this->CheckDirection(g);
+//	}
+//	this->CheckDirection(this->player);
+//}
 
 GLvoid InGameManager::InitShader() {
 	cout << "InitShader GameManager" << endl;
@@ -985,19 +992,26 @@ GLvoid InGameManager::InitObject()
 	this->objData[(int)ObjectType::PLAYER] = new ObjData();
 	this->objData[(int)ObjectType::WALL] = new ObjData();
 	this->objData[(int)ObjectType::BEAD] = new ObjData();
-	this->objData[(int)ObjectType::GHOST] = new ObjData();
+	this->objData[(int)ObjectType::DOOR] = new ObjData();
 	this->objData[(int)ObjectType::POWERBEAD] = new ObjData();
 	this->objData[(int)ObjectType::BOTTOM] = new ObjData();
+
+	this->player = new Player();
+	for (int i = 0; i < MaxClients; ++i)
+	{
+		this->otherPlayer[i] = new Player();
+	}
+
 	this->bead = new Bead();
 	this->powerBead = new PowerBead();
 	this->ingameUI = new InGameUI();
-	this->bottom = new Bottom(Vector3(75,0,75));\
+	this->bottom = new Bottom(Vector3(75,0,75));
 
-	players = new Player[MaxClients];
-	//this->player->SetPlayerPos(this->map->boardShape[this->player->board_i][this->player->board_i]->GetPosition().GetGlmVec3());
-	//this->SetCameraPos(this->players[myID]->GetPlayerPos().GetGlmVec3());
+	
+	// this->player->SetPlayerPos(this->map->boardShape[this->player->board_i][this->player->board_i]->GetPosition().GetGlmVec3());
+	this->SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
 	this->CameraSetting(false);
-	ReadObj(FILE_NAME, this->objData[(int)ObjectType::GHOST]->vPosData, this->objData[(int)ObjectType::GHOST]->vNormalData, this->objData[(int)ObjectType::GHOST]->vTextureCoordinateData, this->objData[(int)ObjectType::GHOST]->indexData, this->objData[(int)ObjectType::GHOST]->vertexCount, this->objData[(int)ObjectType::GHOST]->indexCount);
+	ReadObj(DOOR_FILE_NAME, this->objData[(int)ObjectType::DOOR]->vPosData, this->objData[(int)ObjectType::DOOR]->vNormalData, this->objData[(int)ObjectType::DOOR]->vTextureCoordinateData, this->objData[(int)ObjectType::DOOR]->indexData, this->objData[(int)ObjectType::DOOR]->vertexCount, this->objData[(int)ObjectType::DOOR]->indexCount);
 	ReadObj(BEAD_FILE_NAME, this->objData[(int)ObjectType::BEAD]->vPosData, this->objData[(int)ObjectType::BEAD]->vNormalData, this->objData[(int)ObjectType::BEAD]->vTextureCoordinateData, this->objData[(int)ObjectType::BEAD]->indexData, this->objData[(int)ObjectType::BEAD]->vertexCount, this->objData[(int)ObjectType::BEAD]->indexCount);
 	ReadObj(KEY_ITEM_FILE_NAME, this->objData[(int)ObjectType::POWERBEAD]->vPosData, this->objData[(int)ObjectType::POWERBEAD]->vNormalData, this->objData[(int)ObjectType::POWERBEAD]->vTextureCoordinateData, this->objData[(int)ObjectType::POWERBEAD]->indexData, this->objData[(int)ObjectType::POWERBEAD]->vertexCount, this->objData[(int)ObjectType::POWERBEAD]->indexCount);
 	ReadObj(CUBE_FILE_NAME, this->objData[(int)ObjectType::WALL]->vPosData, this->objData[(int)ObjectType::WALL]->vNormalData, this->objData[(int)ObjectType::WALL]->vTextureCoordinateData, this->objData[(int)ObjectType::WALL]->indexData, this->objData[(int)ObjectType::WALL]->vertexCount, this->objData[(int)ObjectType::WALL]->indexCount);
@@ -1010,20 +1024,64 @@ GLvoid InGameManager::InitObject()
 
 void InGameManager::GameStart(start_game& startGame)
 {
-	if (this->state == GAMESTATE::NONE)
+	// 플레이어 배열에 위치와 아이디, 타입까지 결정.
+	// 타입이 0이면 고스트, 러너 플레이어로 그리기.
+
+	this->player->id = NetworkManager::GetInstance().GetMyID();
+	int index = 0;
+	for (int i = 0; i < 3; ++i) {
+		if (i == this->player->id) continue;
+		this->otherPlayer[index++]->id = i;
+	}
+	this->map = new MapLoader(startGame.mapinfo);
+	this->PlayingBgm(SOUND_FILE_NAME_INGAME);
+	this->SetState(GAMESTATE::INGAME);
+}
+
+void InGameManager::RecvUpdateObject(object_status obj_info)
+{
+	Object obj = *this->map->boardShape[obj_info.col][obj_info.row];
+
+	switch (obj.GetType()) {
+	case ObjectType::WALL:
+		break;
+	case ObjectType::BEAD:
+		this->map->boardShape[obj_info.col][obj_info.row] = new StaticObject(this->map->boardShape[obj_info.col][obj_info.row]->GetPosition());
+		// this->DecreaseBeadNumber();
+		this->PlayingFxSound(SOUND_FILE_NAME_BEAD);
+		break;
+	case ObjectType::KEY:
+		this->map->boardShape[obj_info.col][obj_info.row] = new StaticObject(this->map->boardShape[obj_info.col][obj_info.row]->GetPosition());
+		// this->key++;
+		break;
+	case ObjectType::ROAD:
+		break;
+	}
+}
+
+void InGameManager::RecvUpdateStatus(update_status update_status)
+{
+	if (this->state == GAMESTATE::INGAME)
 	{
-		// 플레이어 배열에 위치와 아이디, 타입까지 결정.
-		// 타입이 0이면 고스트, 러너 플레이어로 그리기.
-		this->myID = startGame.my_id;
-		
-		for (int i = 0; i < MaxClients; i++) {
-			this->players[i].id = startGame.id[i];
-			this->players[i].type = startGame.playertype[i];
-			this->players[i].SetPosition(Vector3(startGame.x[i], 0.0f, startGame.z[i]));
+		WinStatus winStatus = update_status.win;
+		if (winStatus == WinStatus::NONE)
+			return;
+
+		PlayerInfo myPlayerInfo = NetworkManager::GetInstance().GetPlayerInfo(player->id);
+		PlayerType playerType = myPlayerInfo.type;
+		if (winStatus == WinStatus::RUNNER_WIN)
+		{
+			if (playerType == PlayerType::RUNNER)
+				this->SetState(GAMESTATE::CLEAR);
+			else
+				this->SetState(GAMESTATE::GAMEOVER);
 		}
-		this->SetCameraPos(players[myID].GetPosition().GetGlmVec3());
-		this->map = new MapLoader(startGame.mapinfo);
-		this->PlayingBgm(SOUND_FILE_NAME_INGAME);
-		this->SetState(GAMESTATE::INGAME);
+		else if (winStatus == WinStatus::TAGGER_WIN)
+		{
+			if (playerType == PlayerType::TAGGER)
+				this->SetState(GAMESTATE::CLEAR);
+			else
+				this->SetState(GAMESTATE::GAMEOVER);
+		}
 	}
 }

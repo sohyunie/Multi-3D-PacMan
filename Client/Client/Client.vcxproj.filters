@@ -87,6 +87,9 @@
     <ClInclude Include="GameManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Door.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Block.cpp">
@@ -139,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="NetworkManager.cpp">
       <Filter>소스 파일\01.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Door.cpp">
+      <Filter>소스 파일\03.Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

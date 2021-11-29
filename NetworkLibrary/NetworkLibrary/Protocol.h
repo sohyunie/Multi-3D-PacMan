@@ -50,7 +50,6 @@ enum class ObjectType : char	// 오브젝트 타입
 
 	// Client Only
 	PLAYER,
-	GHOST,
 	TEXTURE,
 	POWERBEAD,
 	BOTTOM,

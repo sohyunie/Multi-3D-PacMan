@@ -44,15 +44,15 @@ void InGameUI::PrintInGameUI(GLuint s_program) {
              }
 
              // nearby Ghost UI
-             string nearbyText = "nearby ghost: " + InGameManager::GetInstance().GetNearByGhost().substr(0, 6);
-             const char* nearby = nearbyText.data();
-             glColor3f(1.0f, 1.0f, 1.0f);
-             glRasterPos2f(-0.9, -0.33);  // 문자 출력할 위치 설정
+             //string nearbyText = "nearby ghost: " + InGameManager::GetInstance().GetNearByGhost().substr(0, 6);
+             //const char* nearby = nearbyText.data();
+             //glColor3f(1.0f, 1.0f, 1.0f);
+             //glRasterPos2f(-0.9, -0.33);  // 문자 출력할 위치 설정
 
-             len = (int)strlen(nearby);
-             for (int i = 0; i < len; i++) {
-                 glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, nearby[i]);
-             }
+             //len = (int)strlen(nearby);
+             //for (int i = 0; i < len; i++) {
+             //    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, nearby[i]);
+             //}
 
              // BestRecord UI
              string recordText = "Best Record : " + InGameManager::GetInstance().GetBestRecord().substr(0, 6);
