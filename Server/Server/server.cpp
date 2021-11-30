@@ -71,7 +71,7 @@ void Server::LoadMap(const char* filename)
 			}
 			else if (mapn == '3') {			// PLAYER_POS
 				m_startGameData.x[player_id] = ((float)i * 7.5) - 35;
-				m_startGameData.z[player_id++] = ((float)j * 7.5) - 35;
+				m_startGameData.z[player_id] = ((float)j * 7.5) - 35;
 			}
 			else if (mapn == '4') {			// DOOR
 				g_map.door.active = true;
@@ -168,7 +168,7 @@ void Server::SendAndRecv(int id)
 				unique_lock<mutex> timer_lock(g_timerLock);
 				g_timerCv.wait(timer_lock);
 			}
-			std::cout << "[" << id << "] Tick!" << std::endl;
+			//std::cout << "[" << id << "] Tick!" << std::endl;
 			g_clients[id].Recv();
 			g_clients[id].ProcessMessage();
 			g_clients[id].SendMsg();
@@ -192,7 +192,7 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 	m_player_info.type = MsgType::UPDATE_PLAYER_INFO;
 	for (int i = 0; i < g_clients.size(); i++)
 	{
-		g_clients[i].SetNewPosition(m_startGameData, elapsedTime, g_map);
+		g_clients[i].SetNewPosition(m_startGameData, elapsedTime);
 		m_player_info.id[i] = g_clients[i].m_id;
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
@@ -246,7 +246,7 @@ void Server::CopySendMsgToAllClients()
 	Message sendMsg{};
 	sendMsg.Push(reinterpret_cast<char*>(&m_player_info), sizeof(update_player_info));
 	sendMsg.Push(reinterpret_cast<char*>(&m_update_info), sizeof(update_status));
-	cout << "object size: " << m_object_info.size() << std::endl;
+	//cout << "object size: " << m_object_info.size() << std::endl;
 	sendMsg.Push(reinterpret_cast<char*>(m_object_info.data()), m_object_info.size() * sizeof(object_status));
 	m_object_info.clear();
 
