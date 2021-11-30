@@ -148,6 +148,7 @@ void processSpecialKeys(int key, int x, int y)
 {
 	int dirNumber = (key == GLUT_KEY_RIGHT) ? 1 : 0;
 
+
 	NetworkManager::GetInstance().SetLastInput(dirNumber);
 
 	// 1 : 0 -> rotate 클라이언트에서 알아서 하는 것

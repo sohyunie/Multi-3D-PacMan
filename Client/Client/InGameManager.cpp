@@ -1043,18 +1043,18 @@ void InGameManager::GameStart(start_game& startGame)
 
 void InGameManager::RecvUpdateObject(object_status obj_info)
 {
-	Object obj = *this->map->boardShape[obj_info.col][obj_info.row];
+	Object obj = *this->map->boardShape[obj_info.row][obj_info.col];
 
 	switch (obj.GetType()) {
 	case ObjectType::WALL:
 		break;
 	case ObjectType::BEAD:
-		this->map->boardShape[obj_info.col][obj_info.row] = new StaticObject(this->map->boardShape[obj_info.col][obj_info.row]->GetPosition());
+		this->map->boardShape[obj_info.row][obj_info.col] = new StaticObject(this->map->boardShape[obj_info.row][obj_info.col]->GetPosition());
 		// this->DecreaseBeadNumber();
 		this->PlayingFxSound(SOUND_FILE_NAME_BEAD);
 		break;
 	case ObjectType::KEY:
-		this->map->boardShape[obj_info.col][obj_info.row] = new StaticObject(this->map->boardShape[obj_info.col][obj_info.row]->GetPosition());
+		this->map->boardShape[obj_info.row][obj_info.col] = new StaticObject(this->map->boardShape[obj_info.row][obj_info.col]->GetPosition());
 		// this->key++;
 		break;
 	case ObjectType::ROAD:
