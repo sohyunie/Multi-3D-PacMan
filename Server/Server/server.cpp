@@ -74,9 +74,9 @@ void Server::LoadMap(const char* filename)
 				m_startGameData.z[player_id++] = ((float)j * 7.5) - 35;
 			}
 			else if (mapn == '4') {			// DOOR
-				g_map.door.active = true;
-				g_map.door.x = (char)i;
-				g_map.door.z = (char)j;
+				g_map.door.active = false;
+				g_map.door.x = (char)j;
+				g_map.door.z = (char)i;
 				g_map.door.type = ObjectType::DOOR;
 				g_map.door.boundingOffset = 1.0;
 			}
@@ -285,6 +285,10 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 				obj_stats.push_back({ key.type, key.row, key.col, key.active });
 			}
 		}
+	}
+	if (m_countOfKeyAccquired >= 3) {
+		g_map.door.active = true;
+		obj_stats.push_back({ g_map.door.type, g_map.door.row, g_map.door.col, g_map.door.active });
 	}
 	//g_mapInfoLock.unlock();
 	
