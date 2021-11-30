@@ -55,18 +55,20 @@ void Server::LoadMap(const char* filename)
 			object.col = (char)j;
 			object.x = ((float)i * 7.5f) - 35;
 			object.z = ((float)j * 7.5f) - 35;
-			object.boundingOffset = 1.0;
 
 			if (mapn == '0') {
 				object.type = ObjectType::BEAD;
+				object.boundingOffset = 0.5f;
 				g_map.beads.push_back(object);
 			}
 			else if (mapn == '1') {
 				object.type = ObjectType::KEY;
+				object.boundingOffset = 0.5f;
 				g_map.keys.push_back(object);
 			}
 			else if (mapn == '2') {
 				object.type = ObjectType::WALL;
+				object.boundingOffset = 1.375f;
 				g_map.walls.push_back(object);
 			}
 			else if (mapn == '3') {			// PLAYER_POS
@@ -74,11 +76,11 @@ void Server::LoadMap(const char* filename)
 				m_startGameData.z[player_id++] = ((float)j * 7.5) - 35;
 			}
 			else if (mapn == '4') {			// DOOR
-				g_map.door.active = true;
-				g_map.door.x = (char)i;
-				g_map.door.z = (char)j;
+				g_map.door.active = false;
+				g_map.door.x = (char)j;
+				g_map.door.z = (char)i;
 				g_map.door.type = ObjectType::DOOR;
-				g_map.door.boundingOffset = 1.0;
+				g_map.door.boundingOffset = 1.375f;
 			}
 		}
 	}
@@ -99,7 +101,7 @@ void Server::Update()
 	{
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
-		if (g_accum_time >= 0.1f)
+		if (g_accum_time >= 0.016f)
 		{
 			CopySendMsgToAllClients();
 			g_timerCv.notify_all();
@@ -168,7 +170,7 @@ void Server::SendAndRecv(int id)
 				unique_lock<mutex> timer_lock(g_timerLock);
 				g_timerCv.wait(timer_lock);
 			}
-			std::cout << "[" << id << "] Tick!" << std::endl;
+			//std::cout << "[" << id << "] Tick!" << std::endl;
 			g_clients[id].Recv();
 			g_clients[id].ProcessMessage();
 			g_clients[id].SendMsg();
@@ -246,6 +248,10 @@ void Server::CopySendMsgToAllClients()
 	Message sendMsg{};
 	sendMsg.Push(reinterpret_cast<char*>(&m_player_info), sizeof(update_player_info));
 	sendMsg.Push(reinterpret_cast<char*>(&m_update_info), sizeof(update_status));
+	
+	if(m_object_info.size() > 0)
+		cout << "object: " << m_object_info.size() << endl;
+	
 	sendMsg.Push(reinterpret_cast<char*>(m_object_info.data()), m_object_info.size() * sizeof(object_status));
 	m_object_info.clear();
 
@@ -284,6 +290,10 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 				obj_stats.push_back({ key.type, key.row, key.col, key.active });
 			}
 		}
+	}
+	if (m_countOfKeyAccquired >= 3) {
+		g_map.door.active = true;
+		obj_stats.push_back({ g_map.door.type, g_map.door.row, g_map.door.col, g_map.door.active });
 	}
 	//g_mapInfoLock.unlock();
 	
