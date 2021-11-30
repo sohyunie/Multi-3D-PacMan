@@ -51,7 +51,6 @@ void ClientInfo::ProcessMessage()
 		{
 		case MsgType::PLAYER_INPUT:
 		{
-			std::cout << "Received input message\n";
 			player_input pi{};
 			m_recvMsg.Pop(reinterpret_cast<char*>(&pi), sizeof(player_input));
 			ChangeDirection(pi);			
@@ -131,7 +130,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme, MapInfo& 
 
 	bool col = false;
 	float x = m_pos_x, z = m_pos_z;
-	float speed = 1 * elapsedTIme;
+	float speed = 10 * elapsedTIme;
 	
 	m_directionLock.lock();
 	Direction dir = m_direction;
