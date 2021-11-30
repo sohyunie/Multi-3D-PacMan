@@ -85,7 +85,8 @@ bool Message::IsFull()
 MsgType Message::GetMsgType()
 {
 	MsgType type{};
-	std::memcpy(reinterpret_cast<void*>(&type), m_buffer + m_readIndex + 2, sizeof(MsgType));
+	int msgTypeIndex = (m_readIndex + 2) % MaxBufferSize;
+	std::memcpy(reinterpret_cast<void*>(&type), m_buffer + msgTypeIndex, sizeof(MsgType));
 	return type;
 }
 
