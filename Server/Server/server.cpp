@@ -53,8 +53,8 @@ void Server::LoadMap(const char* filename)
 			object.active = true;
 			object.row = (char)i;
 			object.col = (char)j;
-			object.x = ((float)i * 7.5f) - 35;
-			object.z = ((float)j * 7.5f) - 35;
+			object.x = ((float)(29-j) * 7.5f) - 35;
+			object.z = ((float)(29-i) * 7.5f) - 35;
 			object.boundingOffset = 1.0;
 
 			if (mapn == '0') {
@@ -70,8 +70,8 @@ void Server::LoadMap(const char* filename)
 				g_map.walls.push_back(object);
 			}
 			else if (mapn == '3') {			// PLAYER_POS
-				m_startGameData.x[player_id] = ((float)i * 7.5) - 35;
-				m_startGameData.z[player_id] = ((float)j * 7.5) - 35;
+				m_startGameData.x[player_id] = ((float)(29-j) * 7.5) - 35;
+				m_startGameData.z[player_id++] = ((float)(29-i) * 7.5) - 35;
 			}
 			else if (mapn == '4') {			// DOOR
 				g_map.door.active = true;
@@ -99,7 +99,7 @@ void Server::Update()
 	{
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
-		if (g_accum_time >= 0.1f)
+		if (g_accum_time >= 0.016f)
 		{
 			CopySendMsgToAllClients();
 			g_timerCv.notify_all();
@@ -196,6 +196,7 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 		m_player_info.id[i] = g_clients[i].m_id;
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
+		cout << (m_player_info.x[0] + 35)/7.5f << ", " << (m_player_info.z[0]+35)/7.5f << "\n";
 	}
 }
 

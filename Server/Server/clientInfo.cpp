@@ -8,7 +8,7 @@ ClientInfo::ClientInfo()
 		m_pos_z(0.0f),
 		m_boundingOffset(0.0f),
 		m_sendMsg({}),
-		m_direction(Direction::DOWN),
+		m_direction(Direction::UP),
 		m_active(false)
 {
 }
@@ -87,8 +87,9 @@ bool ClientInfo::MapCollied(MapInfo& map)
 
 bool ClientInfo::IsCollied(int r, int c, start_game& s_game)
 {
-	if (s_game.mapinfo[r][c] == '2')
+	if (s_game.mapinfo[29-r][29-c] == '2') {
 		return true;
+	}
 	return false;
 }
 
@@ -137,12 +138,10 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	// 충돌하지 않을 경우 이동
 
 	bool collied = false;
-	float speed = 1 * elapsedTIme;
-	int row = (m_pos_x + 35) / 7.5f;
-	int col = (m_pos_z + 35) / 7.5f;
+	float speed = 3 * elapsedTIme;
 
-	cout << "m_pox_x : " << m_pos_x << "m_pos_z : " << m_pos_z << "\n";
-	cout << "row : " << row << "col : " << col << "\n";
+	int row = (m_pos_z + 35) / 7.5f;
+	int col = (m_pos_x + 35) / 7.5f;
 
 	m_directionLock.lock();
 	Direction dir = m_direction;
@@ -150,27 +149,36 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 
 	if (dir == Direction::UP)
 	{
-		collied = IsCollied(row - 1, col, s_game);
+		collied = IsCollied(row, col, s_game);
 		if (collied == false)
 			m_pos_z -= speed;
+		if (collied == true)
+			m_pos_z = (row+1) * 7.5 - 35;
 	}
 	else if (dir == Direction::DOWN)
 	{
 		collied = IsCollied(row + 1, col, s_game);
 		if (collied == false)
 			m_pos_z += speed;
+		if (collied == true)
+			m_pos_z = row * 7.5 - 35;
 	}
 	else if (dir == Direction::LEFT)
 	{
-		collied = IsCollied(row, col - 1, s_game);
+		collied = IsCollied(row, col, s_game);
 		if (collied == false)
 			m_pos_x -= speed;
+		if (collied == true)
+			m_pos_x = (col+1) * 7.5 - 35;
 	}
 	else if (dir == Direction::RIGHT)
 	{
+
 		collied = IsCollied(row, col + 1, s_game);
 		if (collied == false)
 			m_pos_x += speed;
+		if (collied == true)
+			m_pos_x = col * 7.5 - 35;
 	}
 }
 
