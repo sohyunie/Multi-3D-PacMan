@@ -110,7 +110,8 @@ public:
     bool GetPresence() { return this->isBead; }
     void CalculateTime();
     void CameraSetting(bool isFps);
-    //void TimerFunction();
+    void TimerFunction();
+    void SetNewPlayerDirection(int dir);
     void CheckDirection(DynamicObject* dObject);
     Vector3 DirToVec3(Direction dir);
     void CreateGhost(int i, int j, Vector3 position);

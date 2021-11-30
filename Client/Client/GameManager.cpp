@@ -146,6 +146,8 @@ void releaseKey(int key, int x, int y) {
 
 void processSpecialKeys(int key, int x, int y)
 {
+	if (InGameManager::GetInstance().GetPlayer()->isChangeCameraDir)
+		return;
 	int dirNumber = -1;
 	/*if (key == GLUT_KEY_RIGHT) {
 		dirNumber = 1;
@@ -156,13 +158,13 @@ void processSpecialKeys(int key, int x, int y)
 	switch (key) {
 	case GLUT_KEY_RIGHT:
 		dirNumber = 1;
-		// InGameManager::GetInstance().CheckDirection(InGameManager::GetInstance().GetPlayer());
 		break;
 	case GLUT_KEY_LEFT:
 		dirNumber = 0;
 		// InGameManager::GetInstance().CheckDirection(InGameManager::GetInstance().GetPlayer());
 		break;
 	}
+	InGameManager::GetInstance().SetNewPlayerDirection(dirNumber);
 	//int dirNumber = (key == GLUT_KEY_RIGHT) ? 1 : 0;
 
 
@@ -233,6 +235,8 @@ void TimerFunction(int value) {
 			InGameManager::GetInstance().SetState(GAMESTATE::LOBBY);
 		}
 		break;
+	case GAMESTATE::INGAME:
+		InGameManager::GetInstance().TimerFunction();
 	}
 
 	glutTimerFunc(10, TimerFunction, 1);
@@ -264,7 +268,7 @@ int main(int argc, char** argv)
 	InitBuffer();
 
 	// Network Thread
-	thread networkTherad(&NetworkManager::Network, &NetworkManager::GetInstance());	// 우리가 쓸 함수, 우리가 쓸 함수가 어떤 애의 건지 객체를 보여줌. 
+	thread networkTherad(&NetworkManager::Network, &NetworkManager::GetInstance());	// 우리가 쓸 함수, 우리가 쓸 함수가 어떤 애의 건지 객체를 보여줌.
 
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
