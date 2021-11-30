@@ -53,8 +53,8 @@ void Server::LoadMap(const char* filename)
 			object.active = true;
 			object.row = (char)i;
 			object.col = (char)j;
-			object.x = ((float)i * 7.5f) - 35;
-			object.z = ((float)j * 7.5f) - 35;
+			object.z = ((float)i * 7.5f) - 35;
+			object.x = ((float)j * 7.5f) - 35;
 			object.boundingOffset = 1.0;
 
 			if (mapn == '0') {
@@ -99,7 +99,7 @@ void Server::Update()
 	{
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
-		if (g_accum_time >= 0.1f)
+		if (g_accum_time >= 0.016f)
 		{
 			CopySendMsgToAllClients();
 			g_timerCv.notify_all();

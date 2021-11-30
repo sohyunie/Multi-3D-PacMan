@@ -146,8 +146,23 @@ void releaseKey(int key, int x, int y) {
 
 void processSpecialKeys(int key, int x, int y)
 {
-	int dirNumber = (key == GLUT_KEY_RIGHT) ? 1 : 0;
-
+	int dirNumber = -1;
+	/*if (key == GLUT_KEY_RIGHT) {
+		dirNumber = 1;
+	}
+	else if (key == GLUT_KEY_LEFT) {
+		dirNumber = 0;
+	}*/
+	switch (key) {
+	case GLUT_KEY_RIGHT:
+		dirNumber = 1;
+		// InGameManager::GetInstance().CheckDirection(InGameManager::GetInstance().GetPlayer());
+		break;
+	case GLUT_KEY_LEFT:
+		dirNumber = 0;
+		// InGameManager::GetInstance().CheckDirection(InGameManager::GetInstance().GetPlayer());
+		break;
+	}
 	NetworkManager::GetInstance().SetLastInput(dirNumber);
 
 	// 1 : 0 -> rotate 클라이언트에서 알아서 하는 것

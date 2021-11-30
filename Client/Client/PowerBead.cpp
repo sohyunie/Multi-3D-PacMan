@@ -10,7 +10,7 @@ PowerBead::PowerBead() {
 PowerBead::PowerBead(Vector3 position) {
 	this->type = ObjectType::POWERBEAD;
 	this->position = position;
-	this->scale = Vector3(10.0, 10.0, 10.0);
+	this->scale = Vector3(3.0,3.0, 3.0);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
 	this->color = Vector3(1.0, 1.0, 0.0);
 	this->boundingOffset = 1.5;
