@@ -194,7 +194,7 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 	m_player_info.type = MsgType::UPDATE_PLAYER_INFO;
 	for (int i = 0; i < g_clients.size(); i++)
 	{
-		g_clients[i].SetNewPosition(m_startGameData, elapsedTime, g_map);
+		g_clients[i].SetNewPosition(m_startGameData, elapsedTime);
 		m_player_info.id[i] = g_clients[i].m_id;
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
