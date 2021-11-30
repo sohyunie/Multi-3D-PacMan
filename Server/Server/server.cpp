@@ -97,10 +97,9 @@ void Server::Update()
 
 	while (g_loop)
 	{
-		//lock_guard<mutex> lk(g_timerLock);
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
-		if (g_accum_time >= 0.2f)
+		if (g_accum_time >= 0.1f)
 		{
 			CopySendMsgToAllClients();
 			g_timerCv.notify_all();
@@ -169,7 +168,7 @@ void Server::SendAndRecv(int id)
 				unique_lock<mutex> timer_lock(g_timerLock);
 				g_timerCv.wait(timer_lock);
 			}
-			//std::cout << "[" << id << "] Tick!" << std::endl;
+			std::cout << "[" << id << "] Tick!" << std::endl;
 			g_clients[id].Recv();
 			g_clients[id].ProcessMessage();
 			g_clients[id].SendMsg();
