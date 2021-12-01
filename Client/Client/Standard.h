@@ -70,7 +70,7 @@ static MCI_PLAY_PARMS playFxSound;
 #define COLLISION_TIME 0.5 * 60 * 60
 
 #define GHOST_SPEED 0.002
-#define NORMAL_SPEED 0.001
+#define NORMAL_SPEED 0.002
 #define POWER_SPEED 0.004
 struct ObjData {
 	float* vPosData;	// 값이 하나만 있어도 되는 건 그냥 변수로/ 아니고 여러개가 나열되고 필요한 것들은 *로 받는다.

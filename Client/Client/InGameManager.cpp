@@ -462,22 +462,26 @@ Vector3 InGameManager::DirToVec3(Direction dir) {
 
 void InGameManager::SetNewPlayerDirection(int dir)
 {
-	if (dir == 0)
+	if (dir == 1)
 	{
 		if (this->player->priorDirection == Direction::UP) {
+			cout << "UP to LEFT" << endl;
 			this->player->progressDirection = Direction::LEFT;
 		}
 		else if (this->player->priorDirection == Direction::DOWN) {
+			cout << "DOWN to RIGHT" << endl;
 			this->player->progressDirection = Direction::RIGHT;
 		}
 		else if (this->player->priorDirection == Direction::RIGHT) {
+			cout << "RIGHT to UP" << endl;
 			this->player->progressDirection = Direction::UP;
 		}
 		else if (this->player->priorDirection == Direction::LEFT) {
+			cout << "LEFT to DOWN" << endl;
 			this->player->progressDirection = Direction::DOWN;
 		}
 	}
-	else if (dir == 1)
+	else if (dir == 0)
 	{
 		if (this->player->priorDirection == Direction::UP) {
 			this->player->progressDirection = Direction::RIGHT;
@@ -606,12 +610,14 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 	if (dObject->isChangeCameraDir) {
 		dObject->accDir += this->deltaTime * this->speed;
 		dObject->dir = Lerp(this->DirToVec3(dObject->priorDirection), this->DirToVec3(dObject->progressDirection), dObject->accDir).GetGlmVec3();
+		cout << dObject->dir.x << ", " << dObject->dir.y << ", " << dObject->dir.z << endl;
 		// 회전 중!
 		if (dObject->accDir > 1) { // 회전이 끝났을 때
 			//cout << "fin" << endl;
 
 			//cout << "Start : " << dObjectDirToVec3(this->player->priorDirection).x << ", " << this->DirToVec3(this->player->priorDirection).z << endl;
 			//cout << "End : " << this->DirToVec3(this->player->progressDirection).x << ", " << this->DirToVec3(this->player->progressDirection).z << endl << endl;
+			dObject->priorDirection = dObject->progressDirection;
 			dObject->isChangeCameraDir = false;
 			dObject->accDir = 0;
 		}
