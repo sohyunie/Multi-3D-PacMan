@@ -88,7 +88,6 @@ void InGameManager::CameraSetting(bool isFps) {
 	if (this->state == GAMESTATE::INGAME) {
 		if (false) {
 			Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, -1, this->player->GetPosition().z + this->player->dir.z);
-
 			this->cameraDirection = dir.GetGlmVec3();
 			this->cameraPos = this->player->GetPosition().GetGlmVec3();
 			this->cameraPos.y += 1;
@@ -450,13 +449,13 @@ GLvoid InGameManager::DrawSubScene() {
 Vector3 InGameManager::DirToVec3(Direction dir) {
 	switch (dir) {
 	case Direction::LEFT:
-		return Vector3(0, 0, -7.5);
-	case Direction::RIGHT:
-		return Vector3(0, 0, 7.5);
-	case Direction::UP:
-		return Vector3(-7.5, 0, 0);
-	case Direction::DOWN:
 		return Vector3(7.5, 0, 0);
+	case Direction::RIGHT:
+		return Vector3(-7.5, 0, 0);
+	case Direction::UP:
+		return Vector3(0, 0, -7.5);
+	case Direction::DOWN:
+		return Vector3(0, 0, 7.5);
 	}
 }
 
@@ -480,6 +479,7 @@ void InGameManager::SetNewPlayerDirection(int dir)
 			cout << "LEFT to DOWN" << endl;
 			this->player->progressDirection = Direction::DOWN;
 		}
+		this->player->isChangeCameraDir = true;
 	}
 	else if (dir == 0)
 	{
@@ -495,9 +495,9 @@ void InGameManager::SetNewPlayerDirection(int dir)
 		else if (this->player->priorDirection == Direction::LEFT) {
 			this->player->progressDirection = Direction::UP;
 		}
+		this->player->isChangeCameraDir = true;
 	}
 
-	this->player->isChangeCameraDir = true;
 }
 
 float InGameManager::CountBeadAmount() {

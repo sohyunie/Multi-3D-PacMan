@@ -149,12 +149,6 @@ void processSpecialKeys(int key, int x, int y)
 	if (InGameManager::GetInstance().GetPlayer()->isChangeCameraDir)
 		return;
 	int dirNumber = -1;
-	/*if (key == GLUT_KEY_RIGHT) {
-		dirNumber = 1;
-	}
-	else if (key == GLUT_KEY_LEFT) {
-		dirNumber = 0;
-	}*/
 	switch (key) {
 	case GLUT_KEY_RIGHT:
 		dirNumber = 1;
