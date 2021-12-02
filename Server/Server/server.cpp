@@ -53,34 +53,32 @@ void Server::LoadMap(const char* filename)
 			object.active = true;
 			object.row = (char)i;
 			object.col = (char)j;
-			object.x = ((float)i * 7.5f) - 35;
-			object.z = ((float)j * 7.5f) - 35;
+			object.x = ((float)(29 - j) * 7.5f) - 35;
+			object.z = ((float)(29 - i) * 7.5f) - 35;
+			object.boundingOffset = 1.0;
 
 			if (mapn == '0') {
 				object.type = ObjectType::BEAD;
-				object.boundingOffset = 0.5f;
 				g_map.beads.push_back(object);
 			}
 			else if (mapn == '1') {
 				object.type = ObjectType::KEY;
-				object.boundingOffset = 0.5f;
 				g_map.keys.push_back(object);
 			}
 			else if (mapn == '2') {
 				object.type = ObjectType::WALL;
-				object.boundingOffset = 1.375f;
 				g_map.walls.push_back(object);
 			}
 			else if (mapn == '3') {			// PLAYER_POS
-				m_startGameData.x[player_id] = ((float)i * 7.5) - 35;
-				m_startGameData.z[player_id++] = ((float)j * 7.5) - 35;
+				m_startGameData.x[player_id] = ((float)(29 - j) * 7.5) - 35;
+				m_startGameData.z[player_id++] = ((float)(29 - i) * 7.5) - 35;
 			}
 			else if (mapn == '4') {			// DOOR
-				g_map.door.active = false;
-				g_map.door.x = (char)j;
-				g_map.door.z = (char)i;
+				g_map.door.active = true;
+				g_map.door.x = (char)i;
+				g_map.door.z = (char)j;
 				g_map.door.type = ObjectType::DOOR;
-				g_map.door.boundingOffset = 1.375f;
+				g_map.door.boundingOffset = 1.0;
 			}
 		}
 	}
@@ -161,7 +159,7 @@ void Server::SendAndRecv(int id)
 	try {
 		{
 			unique_lock<mutex> loop_lock(g_loopLock);
-			g_loopCv.wait(loop_lock, [](){ return g_loop; });
+			g_loopCv.wait(loop_lock, []() { return g_loop; });
 		}
 
 		while (g_loop)
@@ -180,7 +178,7 @@ void Server::SendAndRecv(int id)
 	{
 		cout << "[" << id << "] " << ex.what() << endl;
 		return;
-	}	
+	}
 }
 
 void Server::CreatePlayerJoinMsg()
@@ -198,6 +196,7 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 		m_player_info.id[i] = g_clients[i].m_id;
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
+		cout << (m_player_info.x[0] + 35) / 7.5f << ", " << (m_player_info.z[0] + 35) / 7.5f << "\n";
 	}
 }
 
@@ -214,7 +213,7 @@ void Server::CreateUpdateStatusMsg()
 
 		vector<object_status> stats = UpdateObjectStatus(i);
 		m_object_info.insert(m_object_info.end(), stats.begin(), stats.end());
-		
+
 		if (i == m_taggerIndex) continue;
 
 		if (CheckWinStatus(i))
@@ -248,10 +247,7 @@ void Server::CopySendMsgToAllClients()
 	Message sendMsg{};
 	sendMsg.Push(reinterpret_cast<char*>(&m_player_info), sizeof(update_player_info));
 	sendMsg.Push(reinterpret_cast<char*>(&m_update_info), sizeof(update_status));
-	
-	if(m_object_info.size() > 0)
-		cout << "object: " << m_object_info.size() << endl;
-	
+	//cout << "object size: " << m_object_info.size() << std::endl;
 	sendMsg.Push(reinterpret_cast<char*>(m_object_info.data()), m_object_info.size() * sizeof(object_status));
 	m_object_info.clear();
 
@@ -291,12 +287,8 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			}
 		}
 	}
-	if (m_countOfKeyAccquired >= 3) {
-		g_map.door.active = true;
-		obj_stats.push_back({ g_map.door.type, g_map.door.row, g_map.door.col, g_map.door.active });
-	}
 	//g_mapInfoLock.unlock();
-	
+
 	return obj_stats;
 }
 

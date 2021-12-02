@@ -19,7 +19,7 @@ public:
 	bool IsCollied(int x, int y, start_game& s_game);
 	
 	void ChangeDirection(player_input& p_input);
-	void SetNewPosition(start_game& s_game, float elapsedTIme);
+	void SetNewPosition(start_game& s_game, float elapsedTime);
 	Vector4 GetBoundingBox();
 
 public:
