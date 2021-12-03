@@ -196,7 +196,7 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 		m_player_info.id[i] = g_clients[i].m_id;
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
-		cout << (m_player_info.x[0] + 35) / 7.5f << ", " << (m_player_info.z[0] + 35) / 7.5f << "\n";
+		cout << ((m_player_info.x[0] + 35) / 7.5f) << ", " << ((m_player_info.z[0] + 35) / 7.5f) << "\n";
 	}
 }
 

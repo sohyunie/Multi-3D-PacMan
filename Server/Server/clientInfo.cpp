@@ -9,6 +9,7 @@ ClientInfo::ClientInfo()
 	m_boundingOffset(0.0f),
 	m_sendMsg({}),
 	m_direction(Direction::UP),
+	pre_direction(Direction::NONE),
 	m_active(false)
 {
 }
@@ -99,31 +100,31 @@ void ClientInfo::ChangeDirection(player_input& p_input)
 	m_directionLock.lock();
 	if (p_input.input == 0)
 	{
-		if (m_direction == Direction::UP) {
+		if (m_direction == Direction::UP || (m_direction == Direction::NONE && pre_direction == Direction::UP)) {
 			m_direction = Direction::LEFT;
 		}
-		else if (m_direction == Direction::DOWN) {
+		else if (m_direction == Direction::DOWN || (m_direction == Direction::NONE && pre_direction == Direction::DOWN)) {
 			m_direction = Direction::RIGHT;
 		}
-		else if (m_direction == Direction::RIGHT) {
+		else if (m_direction == Direction::RIGHT || (m_direction == Direction::NONE && pre_direction == Direction::RIGHT)) {
 			m_direction = Direction::UP;
 		}
-		else if (m_direction == Direction::LEFT) {
+		else if (m_direction == Direction::LEFT || (m_direction == Direction::NONE && pre_direction == Direction::LEFT)) {
 			m_direction = Direction::DOWN;
 		}
 	}
 	else if (p_input.input == 1)
 	{
-		if (m_direction == Direction::UP) {
+		if (m_direction == Direction::UP || (m_direction == Direction::NONE && pre_direction == Direction::UP)) {
 			m_direction = Direction::RIGHT;
 		}
-		else if (m_direction == Direction::DOWN) {
+		else if (m_direction == Direction::DOWN || (m_direction == Direction::NONE && pre_direction == Direction::DOWN)) {
 			m_direction = Direction::LEFT;
 		}
-		else if (m_direction == Direction::RIGHT) {
+		else if (m_direction == Direction::RIGHT || (m_direction == Direction::NONE && pre_direction == Direction::RIGHT)) {
 			m_direction = Direction::DOWN;
 		}
-		else if (m_direction == Direction::LEFT) {
+		else if (m_direction == Direction::LEFT || (m_direction == Direction::NONE && pre_direction == Direction::LEFT)) {
 			m_direction = Direction::UP;
 		}
 	}
@@ -140,8 +141,16 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	bool collied = false;
 	float speed = 3 * elapsedTIme;
 
-	int row = (m_pos_z + 35) / 7.5f;
-	int col = (m_pos_x + 35) / 7.5f;
+	float row1 = (m_pos_z + 35) / 7.5f;
+	float col1 = (m_pos_x + 35) / 7.5f;
+	int row = row1;
+	int col = col1;
+	float row_result = row1 - row;
+	float col_result = col1 - col;
+	if (row_result >= 0.5f)
+		row -= 1;
+	if (col_result >= 0.5f)
+		col -= 1;
 
 	m_directionLock.lock();
 	Direction dir = m_direction;
@@ -149,36 +158,59 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 
 	if (dir == Direction::UP)
 	{
-		collied = IsCollied(row, col, s_game);
-		if (collied == false)
-			m_pos_z -= speed;
-		if (collied == true)
-			m_pos_z = (row + 1) * 7.5 - 35;
-	}
-	else if (dir == Direction::DOWN)
-	{
 		collied = IsCollied(row + 1, col, s_game);
 		if (collied == false)
 			m_pos_z += speed;
-		if (collied == true)
-			m_pos_z = row * 7.5 - 35;
+		if (collied == true) {
+			if(row_result >=0.5f)
+				m_pos_z = ((row+1)*7.5)-35;
+			else
+				m_pos_z = (row * 7.5) - 35;
+			pre_direction = Direction::UP;
+			m_direction = Direction::NONE;
+		}
+	}
+	else if (dir == Direction::DOWN)
+	{
+		collied = IsCollied(row, col, s_game);
+		if (collied == false)
+			m_pos_z -= speed;
+		if (collied == true) {
+			if (row_result >= 0.5f)
+				m_pos_z = ((row + 2) * 7.5) - 35;
+			else
+				m_pos_z = ((row+1) * 7.5) - 35;
+			pre_direction = Direction::DOWN;
+			m_direction = Direction::NONE;
+		}
 	}
 	else if (dir == Direction::LEFT)
+	{
+		collied = IsCollied(row, col + 1, s_game);
+		if (collied == false)
+			m_pos_x += speed;
+		if (collied == true) {
+			if (col_result >= 0.5f)
+				m_pos_x = ((col + 1) * 7.5) - 35;
+			else
+				m_pos_x = (col * 7.5) - 35;
+			pre_direction = Direction::LEFT;
+			m_direction = Direction::NONE;
+		}
+	}
+	else if (dir == Direction::RIGHT)
 	{
 		collied = IsCollied(row, col, s_game);
 		if (collied == false)
 			m_pos_x -= speed;
-		if (collied == true)
-			m_pos_x = (col + 1) * 7.5 - 35;
-	}
-	else if (dir == Direction::RIGHT)
-	{
-
-		collied = IsCollied(row, col + 1, s_game);
-		if (collied == false)
-			m_pos_x += speed;
-		if (collied == true)
-			m_pos_x = col * 7.5 - 35;
+		if (collied == true) {
+			if (col_result >= 0.5f)
+				m_pos_x = ((col + 2) * 7.5) - 35;
+			else
+				m_pos_x = ((col+1) * 7.5) - 35;
+			pre_direction = Direction::RIGHT;
+			m_direction = Direction::NONE;
+		}
 	}
 }
 

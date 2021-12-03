@@ -453,9 +453,9 @@ Vector3 InGameManager::DirToVec3(Direction dir) {
 	case Direction::RIGHT:
 		return Vector3(-7.5, 0, 0);
 	case Direction::UP:
-		return Vector3(0, 0, -7.5);
-	case Direction::DOWN:
 		return Vector3(0, 0, 7.5);
+	case Direction::DOWN:
+		return Vector3(0, 0, -7.5);
 	}
 }
 
@@ -465,35 +465,35 @@ void InGameManager::SetNewPlayerDirection(int dir)
 	{
 		if (this->player->priorDirection == Direction::UP) {
 			cout << "UP to LEFT" << endl;
-			this->player->progressDirection = Direction::LEFT;
+			this->player->progressDirection = Direction::RIGHT;
 		}
 		else if (this->player->priorDirection == Direction::DOWN) {
 			cout << "DOWN to RIGHT" << endl;
-			this->player->progressDirection = Direction::RIGHT;
+			this->player->progressDirection = Direction::LEFT;
 		}
 		else if (this->player->priorDirection == Direction::RIGHT) {
 			cout << "RIGHT to UP" << endl;
-			this->player->progressDirection = Direction::UP;
+			this->player->progressDirection = Direction::DOWN;
 		}
 		else if (this->player->priorDirection == Direction::LEFT) {
 			cout << "LEFT to DOWN" << endl;
-			this->player->progressDirection = Direction::DOWN;
+			this->player->progressDirection = Direction::UP;
 		}
 		this->player->isChangeCameraDir = true;
 	}
 	else if (dir == 0)
 	{
 		if (this->player->priorDirection == Direction::UP) {
-			this->player->progressDirection = Direction::RIGHT;
-		}
-		else if (this->player->priorDirection == Direction::DOWN) {
 			this->player->progressDirection = Direction::LEFT;
 		}
+		else if (this->player->priorDirection == Direction::DOWN) {
+			this->player->progressDirection = Direction::RIGHT;
+		}
 		else if (this->player->priorDirection == Direction::RIGHT) {
-			this->player->progressDirection = Direction::DOWN;
+			this->player->progressDirection = Direction::UP;
 		}
 		else if (this->player->priorDirection == Direction::LEFT) {
-			this->player->progressDirection = Direction::UP;
+			this->player->progressDirection = Direction::DOWN;
 		}
 		this->player->isChangeCameraDir = true;
 	}

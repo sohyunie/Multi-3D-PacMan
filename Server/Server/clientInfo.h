@@ -35,5 +35,6 @@ public:
 
 	Message m_sendMsg;
 	mutex m_directionLock;
+	Direction pre_direction;
 	Direction m_direction;
 };
