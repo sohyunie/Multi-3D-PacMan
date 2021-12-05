@@ -100,7 +100,7 @@ void Server::Update()
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
 		//std::cout << g_timer.GetElapsedTime() << std::endl;
-		if (g_accum_time >= 0.016f)
+		if (g_accum_time >= 0.1f)
 		{
 			CopySendMsgToAllClients();
 			g_timerCv.notify_all();
@@ -170,7 +170,7 @@ void Server::SendAndRecv(int id)
 				g_timerCv.wait(timer_lock);
 			}
 			//std::cout << "[" << id << "] Tick!" << std::endl;
-			g_clients[id].Recv();
+			if (g_clients[id].Recv() == 0) break;
 			g_clients[id].ProcessMessage();
 			g_clients[id].SendMsg();
 		}
@@ -197,7 +197,7 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 		m_player_info.id[i] = g_clients[i].m_id;
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
-		cout << ((m_player_info.x[0]) / 7.5f) << ", " << ((m_player_info.z[0]) / 7.5f) << "\n";
+		//cout << ((m_player_info.x[0]) / 7.5f) << ", " << ((m_player_info.z[0]) / 7.5f) << "\n";
 	}
 }
 
@@ -262,9 +262,12 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 
 	const Vector4& clientBB = g_clients[id].GetBoundingBox();
 
-	//g_mapInfoLock.lock();
 	for (ObjectInfo& bead : g_map.beads)
 	{
+		if (fabs(bead.x - g_clients[id].m_pos_x) > 10.0f
+			|| fabs(bead.z - g_clients[id].m_pos_z) > 10.0f)
+			continue;
+
 		if (bead.active)
 		{
 			const Vector4& beadBB = bead.GetBoundingBox();
@@ -277,6 +280,10 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 	}
 	for (ObjectInfo& key : g_map.keys)
 	{
+		if (fabs(key.x - g_clients[id].m_pos_x) > 10.0f
+			|| fabs(key.z - g_clients[id].m_pos_z) > 10.0f)
+			continue;
+
 		if (key.active)
 		{
 			const Vector4& keyBB = key.GetBoundingBox();
@@ -288,7 +295,6 @@ vector<object_status> Server::UpdateObjectStatus(int id)
 			}
 		}
 	}
-	//g_mapInfoLock.unlock();
 
 	return obj_stats;
 }
