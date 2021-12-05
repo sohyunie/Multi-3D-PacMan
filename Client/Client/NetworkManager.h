@@ -33,6 +33,10 @@ private:
 
     PlayerInfo players[MaxClients];
 
+    std::chrono::system_clock::time_point send_time;
+
+    float duration_time = 0.0f;
+
 public:
     static NetworkManager& GetInstance() {
         if (instance == NULL) {
@@ -48,6 +52,7 @@ public:
     void SendPlayerInput();
 
     PlayerInfo GetPlayerInfo(int id);
+    float GetDurationTime() const { return duration_time; }
 
     void SetLastInput(char input);
 };

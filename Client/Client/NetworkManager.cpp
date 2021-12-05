@@ -22,6 +22,10 @@ void NetworkManager::Update()
         {
         case MsgType::UPDATE_PLAYER_INFO:
         {
+            auto recv_time = std::chrono::system_clock::now();
+
+            duration_time = std::chrono::duration<float>(recv_time - send_time).count();
+
             update_player_info player_info{};
             packets.Pop(reinterpret_cast<char*>(&player_info), sizeof(update_player_info));
             // 플레이어의 아이디에 따라 위치 갱신
@@ -45,12 +49,18 @@ void NetworkManager::Update()
             {
                 object_status obj_info{};
                 packets.Pop(reinterpret_cast<char*>(&obj_info), sizeof(object_status));
-                // 오브젝트: 비드, 키 그리지 않기(active=false)            
+                // 오브젝트: 비드, 키 그리지 않기(active=false)
                 InGameManager::GetInstance().RecvUpdateObject(obj_info);
-                
+
                 // 문
                 left -= sizeof(object_status);
             }
+            break;
+        }
+        default:
+        {
+            std::cout << "Unkown packet\n";
+            break;
         }
         }
     }
@@ -77,12 +87,13 @@ void NetworkManager::SendPlayerInput()
     playerInput.x = players[myID].x;
     playerInput.z = players[myID].z;
 
-    inputLock.lock();
+    //inputLock.lock();
     playerInput.input = last_input;
-    inputLock.unlock();
+    //inputLock.unlock();
 
     m_sendMsg.Push(reinterpret_cast<char*>(&playerInput), sizeof(playerInput));
     s_socket.Send(m_sendMsg);
+    send_time = std::chrono::system_clock::now(); // test
     last_input = -1;
 
     m_sendMsg.Clear();
@@ -95,9 +106,9 @@ PlayerInfo NetworkManager::GetPlayerInfo(int id)
 
 void NetworkManager::SetLastInput(char input)
 {
-    inputLock.lock();
+    //inputLock.lock();
     last_input = input;
-    inputLock.unlock();
+   // inputLock.unlock();
 }
 
 void NetworkManager::Network()
@@ -125,8 +136,6 @@ void NetworkManager::Network()
             players[i].x = game_info.x[i] - 35;
             players[i].z = game_info.z[i] - 35;
         }
-        std::cout << (players[0].x + 35) / 7.5f << " "
-            << (players[0].z + 35) / 7.5f << "\n";
 
         InGameManager::GetInstance().GameStart(game_info);
 

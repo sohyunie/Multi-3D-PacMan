@@ -395,8 +395,16 @@ GLvoid InGameManager::DrawScene() {
 		this->map->DrawMap(s_program);
 
 		PlayerInfo playerInfo = NetworkManager::GetInstance().GetPlayerInfo(player->id);// 인자로 넘겨준 ID의 플레이어 정보를 가져와서 세팅 (player->id는 내 아이디를 뜻함)
-		Vector3 playerPos(playerInfo.x, 0, playerInfo.z);
-		this->player->SetPosition(playerPos);
+		//float dt = NetworkManager::GetInstance().GetDurationTime();
+
+		Vector3 prevPlayerPos = player->GetPosition();
+		Vector3 newPlayerPos(playerInfo.x, 0, playerInfo.z);
+		Vector3 direction = newPlayerPos - prevPlayerPos;
+		if (fabs(direction.x) < 0.01f) direction.x = 0.0f;
+		if (fabs(direction.z) < 0.01f) direction.z = 0.0f;
+		Vector3 currentPlayerPos = prevPlayerPos + direction * 10.0f * deltaTime * 0.001f;
+
+		this->player->SetPosition(currentPlayerPos);
 		this->player->DrawObject(s_program);
 		// CheckDirection(this->player);
 		for (int i = 0; i < 2; i++)
@@ -838,6 +846,7 @@ void InGameManager::TimerFunction() {
 	this->GetTime();
 	this->CalculateTime();
 	this->CheckDirection(this->player);
+	// 
 }
 
 GLvoid InGameManager::InitShader() {
