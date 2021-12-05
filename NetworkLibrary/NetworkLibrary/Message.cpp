@@ -98,6 +98,12 @@ short Message::GetTotalMsgSize()
 short Message::PeekNextPacketSize()
 {
 	short size = 0;
-	std::memcpy(reinterpret_cast<void*>(&size), m_buffer + m_readIndex, sizeof(size));
+	if(m_readIndex + 1 < MaxBufferSize)
+		std::memcpy(reinterpret_cast<char*>(&size), m_buffer + m_readIndex, sizeof(size));
+	else
+	{
+		std::memcpy(reinterpret_cast<char*>(&size), m_buffer + m_readIndex, 1);
+		std::memcpy(reinterpret_cast<char*>(&size) + 1, m_buffer, 1);
+	}
 	return size;
 }
