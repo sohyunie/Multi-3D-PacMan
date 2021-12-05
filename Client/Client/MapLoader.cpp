@@ -13,7 +13,7 @@ MapLoader::MapLoader(char mapArray[][30])
     {
         for (int j = 0; j < MAP_SIZE; j++)
         {
-            int mapIndex = (int)mapArray[29-i][29-j] - 48;
+            int mapIndex = (int)mapArray[i][j] - 48;
 
             Vector3 position = Vector3(((j) * 7.5f - 35), 0, ((i) * 7.5f - 35));
             switch (mapIndex) {

@@ -53,8 +53,8 @@ void Server::LoadMap(const char* filename)
 			object.active = true;
 			object.row = (char)i;
 			object.col = (char)j;
-			object.x = ((float)(29 - j) * 7.5f) - 35;
-			object.z = ((float)(29 - i) * 7.5f) - 35;
+			object.x = (float)j * 7.5f;
+			object.z = (float)i * 7.5f;
 			object.boundingOffset = 1.0;
 
 			if (mapn == '0') {
@@ -70,13 +70,13 @@ void Server::LoadMap(const char* filename)
 				g_map.walls.push_back(object);
 			}
 			else if (mapn == '3') {			// PLAYER_POS
-				m_startGameData.x[player_id] = ((float)(29 - j) * 7.5) - 35;
-				m_startGameData.z[player_id++] = ((float)(29 - i) * 7.5) - 35;
+				m_startGameData.x[player_id] = (float)j * 7.5f;
+				m_startGameData.z[player_id++] = (float)i * 7.5f;
 			}
 			else if (mapn == '4') {			// DOOR
 				g_map.door.active = true;
-				g_map.door.x = (char)i;
-				g_map.door.z = (char)j;
+				g_map.door.x = (float)j * 7.5f;
+				g_map.door.z = (float)i * 7.5f;
 				g_map.door.type = ObjectType::DOOR;
 				g_map.door.boundingOffset = 1.0;
 			}
@@ -99,6 +99,7 @@ void Server::Update()
 	{
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
+		std::cout << g_timer.GetElapsedTime() << std::endl;
 		if (g_accum_time >= 0.016f)
 		{
 			CopySendMsgToAllClients();
@@ -168,7 +169,7 @@ void Server::SendAndRecv(int id)
 				unique_lock<mutex> timer_lock(g_timerLock);
 				g_timerCv.wait(timer_lock);
 			}
-			//std::cout << "[" << id << "] Tick!" << std::endl;
+			std::cout << "[" << id << "] Tick!" << std::endl;
 			g_clients[id].Recv();
 			g_clients[id].ProcessMessage();
 			g_clients[id].SendMsg();
@@ -196,7 +197,7 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 		m_player_info.id[i] = g_clients[i].m_id;
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
-		cout << ((m_player_info.x[0] + 35) / 7.5f) << ", " << ((m_player_info.z[0] + 35) / 7.5f) << "\n";
+		//cout << ((m_player_info.x[0] + 35) / 7.5f) << ", " << ((m_player_info.z[0] + 35) / 7.5f) << "\n";
 	}
 }
 

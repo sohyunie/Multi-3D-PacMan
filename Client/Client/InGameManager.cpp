@@ -610,7 +610,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 	if (dObject->isChangeCameraDir) {
 		dObject->accDir += this->deltaTime * this->speed;
 		dObject->dir = Lerp(this->DirToVec3(dObject->priorDirection), this->DirToVec3(dObject->progressDirection), dObject->accDir).GetGlmVec3();
-		cout << dObject->dir.x << ", " << dObject->dir.y << ", " << dObject->dir.z << endl;
+		//cout << dObject->dir.x << ", " << dObject->dir.y << ", " << dObject->dir.z << endl;
 		// 회전 중!
 		if (dObject->accDir > 1) { // 회전이 끝났을 때
 			//cout << "fin" << endl;

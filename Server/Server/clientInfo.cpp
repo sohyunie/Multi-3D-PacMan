@@ -88,7 +88,7 @@ bool ClientInfo::MapCollied(MapInfo& map)
 
 bool ClientInfo::IsCollied(int r, int c, start_game& s_game)
 {
-	if (s_game.mapinfo[29 - r][29 - c] == '2') {
+	if (s_game.mapinfo[r][c] == '2') {
 		return true;
 	}
 	return false;
@@ -139,78 +139,73 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	// 충돌하지 않을 경우 이동
 
 	bool collied = false;
-	float speed = 3 * elapsedTIme;
+	float speed = 10 * elapsedTIme;
 
-	float row1 = (m_pos_z + 35) / 7.5f;
-	float col1 = (m_pos_x + 35) / 7.5f;
-	int row = row1;
-	int col = col1;
-	float row_result = row1 - row;
-	float col_result = col1 - col;
-	if (row_result >= 0.5f)
+	float row = (m_pos_z) / 7.5f;
+	float col = (m_pos_x) / 7.5f;
+	float row_result = m_pos_z - row;
+	float col_result = m_pos_x - col;
+	/*if (row_result >= 0.5f)
 		row -= 1;
 	if (col_result >= 0.5f)
-		col -= 1;
+		col -= 1;*/
 
 	m_directionLock.lock();
 	Direction dir = m_direction;
 	m_directionLock.unlock();
 
+	std::cout << (int)dir << std::endl;
 	if (dir == Direction::UP)
 	{
 		collied = IsCollied(row + 1, col, s_game);
 		if (collied == false)
 			m_pos_z += speed;
-		if (collied == true) {
-			if(row_result >=0.5f)
-				m_pos_z = ((row+1)*7.5)-35;
-			else
-				m_pos_z = (row * 7.5) - 35;
-			pre_direction = Direction::UP;
-			m_direction = Direction::NONE;
-		}
+		//if (collied == true) {
+		//	/*if (row_result >= 0.5f)
+		//		m_pos_z = ((row + 1) * 7.5);
+		//	else*/
+		//	m_pos_z = (row * 7.5);
+		//	//m_direction = Direction::NONE;
+		//}
 	}
 	else if (dir == Direction::DOWN)
 	{
-		collied = IsCollied(row, col, s_game);
+		collied = IsCollied(row - 1, col, s_game);
 		if (collied == false)
 			m_pos_z -= speed;
-		if (collied == true) {
-			if (row_result >= 0.5f)
-				m_pos_z = ((row + 2) * 7.5) - 35;
-			else
-				m_pos_z = ((row+1) * 7.5) - 35;
-			pre_direction = Direction::DOWN;
-			m_direction = Direction::NONE;
-		}
+		//if (collied == true) {
+		//	/*if (row_result >= 0.5f)
+		//		m_pos_z = ((row + 2) * 7.5);
+		//	else*/
+		//	m_pos_z = ((row) * 7.5);
+		//	//m_direction = Direction::NONE;
+		//}
 	}
 	else if (dir == Direction::LEFT)
 	{
-		collied = IsCollied(row, col + 1, s_game);
+		collied = IsCollied(row, col - 1, s_game);
 		if (collied == false)
 			m_pos_x += speed;
-		if (collied == true) {
-			if (col_result >= 0.5f)
-				m_pos_x = ((col + 1) * 7.5) - 35;
-			else
-				m_pos_x = (col * 7.5) - 35;
-			pre_direction = Direction::LEFT;
-			m_direction = Direction::NONE;
-		}
+		//if (collied == true) {
+		//	/*if (col_result >= 0.5f)
+		//		m_pos_x = ((col + 1) * 7.5);
+		//	else*/
+		//		m_pos_x = (col * 7.5);
+		//	//m_direction = Direction::NONE;
+		//}
 	}
 	else if (dir == Direction::RIGHT)
 	{
-		collied = IsCollied(row, col, s_game);
+		collied = IsCollied(row, col+1, s_game);
 		if (collied == false)
 			m_pos_x -= speed;
-		if (collied == true) {
-			if (col_result >= 0.5f)
-				m_pos_x = ((col + 2) * 7.5) - 35;
-			else
-				m_pos_x = ((col+1) * 7.5) - 35;
-			pre_direction = Direction::RIGHT;
-			m_direction = Direction::NONE;
-		}
+		//if (collied == true) {
+		//	if (col_result >= 0.5f)
+		//		m_pos_x = ((col + 2) * 7.5);
+		//	else
+		//		m_pos_x = ((col + 1) * 7.5);
+		//	//m_direction = Direction::NONE;
+		//}
 	}
 }
 

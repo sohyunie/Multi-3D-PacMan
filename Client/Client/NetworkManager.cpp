@@ -26,8 +26,8 @@ void NetworkManager::Update()
             packets.Pop(reinterpret_cast<char*>(&player_info), sizeof(update_player_info));
             // 플레이어의 아이디에 따라 위치 갱신
             for (int i = 0; i < MaxClients; ++i) {
-                players[i].x = player_info.x[i];
-                players[i].z = player_info.z[i];
+                players[i].x = player_info.x[i] - 35;
+                players[i].z = player_info.z[i] - 35;
             }
             break;
         }
@@ -45,7 +45,7 @@ void NetworkManager::Update()
             {
                 object_status obj_info{};
                 packets.Pop(reinterpret_cast<char*>(&obj_info), sizeof(object_status));
-                // 오브젝트: 비드, 키 그리지 않기(active=false)
+                // 오브젝트: 비드, 키 그리지 않기(active=false)            
                 InGameManager::GetInstance().RecvUpdateObject(obj_info);
                 
                 // 문
@@ -122,9 +122,11 @@ void NetworkManager::Network()
         for (int i = 0; i < MaxClients; ++i) {
             players[i].id = game_info.id[i];
             players[i].type = game_info.playertype[i];
-            players[i].x = game_info.x[i];
-            players[i].z = game_info.z[i];
+            players[i].x = game_info.x[i] - 35;
+            players[i].z = game_info.z[i] - 35;
         }
+        std::cout << (players[0].x + 35) / 7.5f << " "
+            << (players[0].z + 35) / 7.5f << "\n";
 
         InGameManager::GetInstance().GameStart(game_info);
 
