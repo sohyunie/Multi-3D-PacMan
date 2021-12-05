@@ -29,5 +29,5 @@ public:
 	int temp_j = 0;
 
 	bool isChangeCameraDir = false;
-	Vector3 dir = Vector3(0,0,1);
+	Vector3 dir = Vector3(0,0,-1);
 };

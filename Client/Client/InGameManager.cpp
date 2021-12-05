@@ -464,19 +464,15 @@ void InGameManager::SetNewPlayerDirection(int dir)
 	if (dir == 1)
 	{
 		if (this->player->priorDirection == Direction::UP) {
-			cout << "UP to LEFT" << endl;
 			this->player->progressDirection = Direction::RIGHT;
 		}
 		else if (this->player->priorDirection == Direction::DOWN) {
-			cout << "DOWN to RIGHT" << endl;
 			this->player->progressDirection = Direction::LEFT;
 		}
 		else if (this->player->priorDirection == Direction::RIGHT) {
-			cout << "RIGHT to UP" << endl;
 			this->player->progressDirection = Direction::DOWN;
 		}
 		else if (this->player->priorDirection == Direction::LEFT) {
-			cout << "LEFT to DOWN" << endl;
 			this->player->progressDirection = Direction::UP;
 		}
 		this->player->isChangeCameraDir = true;
@@ -599,7 +595,7 @@ string InGameManager::GetBestRecord() { //[TODO] 계속 불리지 않도록 수정
 
 Vector3 Lerp(Vector3 value1, Vector3 value2, float amount)
 {
-	Vector3 newPos = Vector3(value1 + ((Vector3)(value2 - value1) * amount));
+	Vector3 newPos = Vector3(value1 + ((Vector3)(value2- value1) * amount));
 	//cout << newPos.x << "," << newPos.y << "," << newPos.z << "," << endl;
 	return newPos;
 }
@@ -609,7 +605,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 	// 회전 관련 코드
 	if (dObject->isChangeCameraDir) {
 		dObject->accDir += this->deltaTime * this->speed;
-		dObject->dir = Lerp(this->DirToVec3(dObject->priorDirection), this->DirToVec3(dObject->progressDirection), dObject->accDir).GetGlmVec3();
+		dObject->dir = -Lerp(this->DirToVec3(dObject->priorDirection), this->DirToVec3(dObject->progressDirection), dObject->accDir).GetGlmVec3();
 		//cout << dObject->dir.x << ", " << dObject->dir.y << ", " << dObject->dir.z << endl;
 		// 회전 중!
 		if (dObject->accDir > 1) { // 회전이 끝났을 때
