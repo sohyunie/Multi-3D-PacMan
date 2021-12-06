@@ -100,8 +100,9 @@ void Server::Update()
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
 		//std::cout << g_timer.GetElapsedTime() << std::endl;
-		if (g_accum_time >= 0.03f)
+		if (g_accum_time >= 0.0333f)
 		{
+			//std::cout << g_accum_time << std::endl;
 			CopySendMsgToAllClients();
 			g_timerCv.notify_all();
 			g_accum_time = 0.0f;
@@ -248,12 +249,14 @@ void Server::CopySendMsgToAllClients()
 	Message sendMsg{};
 	sendMsg.Push(reinterpret_cast<char*>(&m_player_info), sizeof(update_player_info));
 	sendMsg.Push(reinterpret_cast<char*>(&m_update_info), sizeof(update_status));
-	//cout << "object size: " << m_object_info.size() << std::endl;
 	sendMsg.Push(reinterpret_cast<char*>(m_object_info.data()), m_object_info.size() * sizeof(object_status));
 	m_object_info.clear();
 
-	for (ClientInfo& client : g_clients)
+	for (ClientInfo& client : g_clients) {
+		client.m_sendLock.lock();
 		client.m_sendMsg = sendMsg;
+		client.m_sendLock.unlock();
+	}
 }
 
 vector<object_status> Server::UpdateObjectStatus(int id)

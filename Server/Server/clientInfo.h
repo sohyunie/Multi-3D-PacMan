@@ -34,7 +34,7 @@ public:
 	std::chrono::high_resolution_clock::time_point hit_time;
 
 	Message m_sendMsg;
+	mutex m_sendLock;
 	mutex m_directionLock;
-	Direction pre_direction;
 	Direction m_direction;
 };

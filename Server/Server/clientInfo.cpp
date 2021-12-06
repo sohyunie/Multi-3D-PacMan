@@ -9,7 +9,6 @@ ClientInfo::ClientInfo()
 	m_boundingOffset(0.0f),
 	m_sendMsg({}),
 	m_direction(Direction::UP),
-	pre_direction(Direction::NONE),
 	m_active(false)
 {
 }
@@ -27,7 +26,9 @@ void ClientInfo::Init(SOCKET sck, int id)
 
 void ClientInfo::SendMsg()
 {
+	m_sendLock.lock();
 	Send(m_sendMsg);
+	m_sendLock.unlock();
 }
 
 Vector4 ClientInfo::GetBoundingBox()

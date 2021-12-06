@@ -27,7 +27,6 @@ enum class MsgType : char		// 메시지를 식별할 수 있는 메시지 형식
 {	
 	LOGIN_REQUEST,				// 로그인 요청
 	LOGIN_OK,							// 로그인 확인
-	PLAYER_JOIN,					// 플레이어 입장
 	START_GAME,					// 게임 시작
 	PLAYER_INPUT,					// 플레이어 키 입력
 	UPDATE_PLAYER_INFO,		// 플레이어 정보
@@ -83,13 +82,6 @@ struct Vector4				// 객체의 바운딩 박스 표현하기 위해 사용하는 vector4 구조체
 };
 
 #pragma pack(push, 1)
-struct player_join			// 플레이어가 추가되면 총 플레이어의 수를 보내어 대기 화면을 업데이트한다. 
-{
-	short size;
-	MsgType type;
-	char TotalPlayers;
-};
-
 struct start_game	// 게임을 시작하면, 클라이언트는 모든 플레이어의 위치정보와 타입, id를 저장한다.
 {
 	short size;
