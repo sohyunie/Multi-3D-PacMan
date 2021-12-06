@@ -122,7 +122,7 @@ void NetworkManager::Network()
         s_socket = Socket();       
         s_socket.Init();
         s_socket.Connect(SERVER_IP, SERVER_PORT);
-        isConnected = true;        
+        isConnected = true;   
 
         // ¸Ê Á¤º¸ ¹Þ±â.
         s_socket.Recv();

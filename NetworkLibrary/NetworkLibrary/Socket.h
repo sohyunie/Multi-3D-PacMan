@@ -17,7 +17,7 @@ public:
 	virtual ~Socket();
 
 	void Init();
-	void Bind(short ServerPort);														// 포트 번호로 소켓 바인딩
+	void Bind(short ServerPort);// 포트 번호로 소켓 바인딩
 	void Listen();																			// 접근하는 호스트 받기
 	void Connect(const char* ServerAddress, short ServerPort);		// 서버 주소로 연결 시도
 	SOCKET Accept();																	// 클라이언트 연결후 소켓 반환

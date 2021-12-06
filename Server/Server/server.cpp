@@ -100,7 +100,7 @@ void Server::Update()
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
 		//std::cout << g_timer.GetElapsedTime() << std::endl;
-		if (g_accum_time >= 0.1f)
+		if (g_accum_time >= 0.03f)
 		{
 			CopySendMsgToAllClients();
 			g_timerCv.notify_all();

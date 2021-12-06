@@ -58,5 +58,5 @@ private:
 	int m_taggerIndex = 0;
 	
 	const float m_offset = 7.5f;
-	const int maxClient = 1; // TEST
+	const int maxClient = 3; // TEST
 };

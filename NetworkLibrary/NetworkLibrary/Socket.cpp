@@ -37,6 +37,9 @@ void Socket::Init()
 	m_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (m_socket == INVALID_SOCKET)
 		throw Exception("socket failed");
+
+	char val = 1;
+	setsockopt(m_socket, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val));
 }
 
 void Socket::Bind(short ServerPort)

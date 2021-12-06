@@ -139,7 +139,7 @@ void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 	// 충돌하지 않을 경우 이동
 
 	bool collied = false;
-	float speed = 10 * elapsedTIme;
+	float speed = 8 * elapsedTIme;
 
 	int row = (m_pos_z) / 7.5f;
 	int col = (m_pos_x) / 7.5f;

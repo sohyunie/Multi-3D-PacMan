@@ -402,7 +402,7 @@ GLvoid InGameManager::DrawScene() {
 		Vector3 direction = newPlayerPos - prevPlayerPos;
 		if (fabs(direction.x) < 0.01f) direction.x = 0.0f;
 		if (fabs(direction.z) < 0.01f) direction.z = 0.0f;
-		Vector3 currentPlayerPos = prevPlayerPos + direction * 10.0f * deltaTime * 0.001f;
+		Vector3 currentPlayerPos = prevPlayerPos + direction * 6.0f * deltaTime * 0.001f;
 
 		this->player->SetPosition(currentPlayerPos);
 		this->player->DrawObject(s_program);
