@@ -87,9 +87,7 @@ void NetworkManager::SendPlayerInput()
     playerInput.x = players[myID].x;
     playerInput.z = players[myID].z;
 
-    //inputLock.lock();
     playerInput.input = last_input;
-    //inputLock.unlock();
 
     m_sendMsg.Push(reinterpret_cast<char*>(&playerInput), sizeof(playerInput));
     s_socket.Send(m_sendMsg);
@@ -106,9 +104,7 @@ PlayerInfo NetworkManager::GetPlayerInfo(int id)
 
 void NetworkManager::SetLastInput(char input)
 {
-    //inputLock.lock();
     last_input = input;
-   // inputLock.unlock();
 }
 
 void NetworkManager::Network()

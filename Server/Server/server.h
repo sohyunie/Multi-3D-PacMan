@@ -15,9 +15,8 @@ public:
 	void GameStart();
 	void InitializeStartGameInfo();
 
-	static void SendAndRecv(int id);
+	static void RecvAndSend(int id);
 	
-	void CreatePlayerJoinMsg();
 	void CreatePlayerInfoMsg(float elapsedTime);
 	void CreateUpdateStatusMsg();
 
@@ -28,10 +27,8 @@ public:
 	bool IsCollided(const Vector4& a, const Vector4& b);	
 
 public:
-	static mutex g_mapInfoLock;
 	static MapInfo g_map;
 
-	static const int MaxClients = 3;
 	static array<ClientInfo, MaxClients> g_clients;
 
 	static mutex g_timerLock;
@@ -56,7 +53,4 @@ private:
 	int m_countOfKeyAccquired = 0;
 
 	int m_taggerIndex = 0;
-	
-	const float m_offset = 7.5f;
-	const int maxClient = 3; // TEST
 };

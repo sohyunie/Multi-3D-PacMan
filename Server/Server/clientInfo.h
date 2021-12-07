@@ -14,8 +14,6 @@ public:
 	void SendMsg();
 
 	void ProcessMessage();
-	bool Collied(const Vector4& a, const Vector4& b);
-	bool MapCollied(MapInfo& map);
 	bool IsCollied(int x, int y, start_game& s_game);
 	
 	void ChangeDirection(player_input& p_input);
@@ -30,8 +28,6 @@ public:
 	float m_pos_z;
 	float m_boundingOffset;
 	bool m_active;
-
-	std::chrono::high_resolution_clock::time_point hit_time;
 
 	Message m_sendMsg;
 	mutex m_sendLock;

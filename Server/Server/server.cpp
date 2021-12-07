@@ -1,6 +1,5 @@
 #include "server.h"
 
-mutex Server::g_mapInfoLock;
 MapInfo Server::g_map;
 
 mutex Server::g_timerLock;
@@ -12,7 +11,7 @@ mutex Server::g_loopLock;
 condition_variable Server::g_loopCv;
 bool Server::g_loop = false;
 
-array<ClientInfo, Server::MaxClients> Server::g_clients;
+array<ClientInfo, MaxClients> Server::g_clients;
 
 Server::Server()
 {
@@ -88,7 +87,7 @@ void Server::LoadMap(const char* filename)
 
 void Server::Update()
 {
-	for (int i = 0; i < maxClient; i++)
+	for (int i = 0; i < MaxClients; i++)
 		AcceptNewPlayer(i);
 
 	GameStart();
@@ -124,7 +123,7 @@ void Server::GameStart()
 {
 	InitializeStartGameInfo();
 
-	for (int i = 0; i < maxClient; i++)
+	for (int i = 0; i < MaxClients; i++)
 	{
 		Message sendMsg{};
 		m_startGameData.my_id = i;
@@ -156,7 +155,7 @@ void Server::InitializeStartGameInfo()
 	m_startGameData.playertype[m_taggerIndex] = PlayerType::TAGGER;
 }
 
-void Server::SendAndRecv(int id)
+void Server::RecvAndSend(int id)
 {
 	try {
 		{
@@ -181,11 +180,6 @@ void Server::SendAndRecv(int id)
 		cout << "[" << id << "] " << ex.what() << endl;
 		return;
 	}
-}
-
-void Server::CreatePlayerJoinMsg()
-{
-
 }
 
 void Server::CreatePlayerInfoMsg(float elapsedTime)

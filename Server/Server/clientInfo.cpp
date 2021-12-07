@@ -63,30 +63,6 @@ void ClientInfo::ProcessMessage()
 	}
 }
 
-bool ClientInfo::Collied(const Vector4& a, const Vector4& b)
-{
-	if (a.MinX > b.MaxX || b.MinX > a.MaxX)
-		return false;
-	if (a.MinZ > b.MaxZ || b.MinZ > a.MaxZ)
-		return false;
-
-	return true;
-}
-
-bool ClientInfo::MapCollied(MapInfo& map)
-{
-	const Vector4& clientBB = GetBoundingBox();
-
-	for (ObjectInfo& wall : map.walls)
-	{
-		const Vector4& WallBB = wall.GetBoundingBox();
-		if (Collied(clientBB, WallBB)) {
-			return true;
-		}
-	}
-	return false;
-}
-
 bool ClientInfo::IsCollied(int r, int c, start_game& s_game)
 {
 	if (s_game.mapinfo[r][c] == '2') {
