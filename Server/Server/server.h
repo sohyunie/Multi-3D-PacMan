@@ -54,6 +54,7 @@ private:
 
 	start_game m_startGameData;
 	int m_countOfKeyAccquired = 0;
+	int m_deathCount = 0;
 
 	int m_taggerIndex = 0;
 	

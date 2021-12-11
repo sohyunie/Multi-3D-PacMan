@@ -206,7 +206,6 @@ void Server::CreateUpdateStatusMsg()
 	m_update_info.type = MsgType::UPDATE_STATUS;
 	m_update_info.win = WinStatus::NONE;
 
-	int deathCount = 0;
 	const Vector4& taggerBB = g_clients[m_taggerIndex].GetBoundingBox();
 	for (int i = 0; i < g_clients.size(); i++)
 	{
@@ -230,14 +229,14 @@ void Server::CreateUpdateStatusMsg()
 
 			if (g_clients[i].m_hp <= 0) {
 				g_clients[i].m_active = false;
-				deathCount += 1;
+				m_deathCount += 1;
 			}
 		}
 
 		m_update_info.player_active[i] = g_clients[i].m_active;
 	}
 
-	if (deathCount >= MaxClients)
+	if (m_deathCount >= MaxClients - 1)
 		m_update_info.win = WinStatus::TAGGER_WIN;
 
 	m_update_info.size = sizeof(update_status) + m_object_info.size() * sizeof(object_status);

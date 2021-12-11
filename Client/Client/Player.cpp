@@ -26,6 +26,8 @@ void Player::SetPlayerType(PlayerType type)
 }
 
 void Player::DrawObject(GLuint s_program) {
+	if (!this->isActive)
+		return;
 	glm::mat4 STR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 R = glm::mat4(1.0f); //--- rotation matrix
 	glm::mat4 T = glm::mat4(1.0f); //--- transformation matrix
