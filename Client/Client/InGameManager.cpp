@@ -532,6 +532,7 @@ void InGameManager::ChangeSpeed(float speed) {
 }
 
 void InGameManager::SetState(GAMESTATE state) {
+	cout << (int)state << endl;
 	this->state = state; 
 	switch (state) {
 	case GAMESTATE::CLEAR :
@@ -937,13 +938,18 @@ void InGameManager::RecvUpdateObject(object_status obj_info)
 	case ObjectType::WALL:
 		break;
 	case ObjectType::BEAD:
-		this->map->boardShape[obj_info.row][obj_info.col] = new StaticObject(this->map->boardShape[obj_info.row][obj_info.col]->GetPosition());
-		// this->DecreaseBeadNumber();
-		this->PlayingFxSound(SOUND_FILE_NAME_BEAD);
+		if (this->player->playerType == PlayerType::RUNNER)
+		{
+			this->map->boardShape[obj_info.row][obj_info.col] = new StaticObject(this->map->boardShape[obj_info.row][obj_info.col]->GetPosition());
+			// this->DecreaseBeadNumber();
+			this->PlayingFxSound(SOUND_FILE_NAME_BEAD);
+		}
 		break;
 	case ObjectType::POWERBEAD:
-		this->map->boardShape[obj_info.row][obj_info.col] = new StaticObject(this->map->boardShape[obj_info.row][obj_info.col]->GetPosition());
-		// this->key++;
+		if (this->player->playerType == PlayerType::RUNNER)
+		{
+			this->map->boardShape[obj_info.row][obj_info.col] = new StaticObject(this->map->boardShape[obj_info.row][obj_info.col]->GetPosition());
+		}
 		break;
 	case ObjectType::ROAD:
 		break;
@@ -954,6 +960,22 @@ void InGameManager::RecvUpdateStatus(update_status update_status)
 {
 	if (this->state == GAMESTATE::INGAME)
 	{
+		for (int i = 0; i < 3; i++)
+		{
+			Player* targetPlayer = this->GetPlayer(i);
+			if (this->GetPlayer(i)->playerType == PlayerType::RUNNER && update_status.player_active[i] == false)
+			{
+				if (targetPlayer->id == this->player->id) {
+					this->SetState(GAMESTATE::GAMEOVER);
+					return;
+				}
+				else
+				{
+					targetPlayer->isActive = false;
+				}
+			}
+		}
+
 		WinStatus winStatus = update_status.win;
 		if (winStatus == WinStatus::NONE)
 			return;
@@ -973,6 +995,20 @@ void InGameManager::RecvUpdateStatus(update_status update_status)
 				this->SetState(GAMESTATE::CLEAR);
 			else
 				this->SetState(GAMESTATE::GAMEOVER);
+		}
+	}
+}
+
+Player* InGameManager::GetPlayer(int id)
+{
+	if (this->player->id == id)
+		return this->player;
+	else
+	{
+		for (int i = 0; i < MaxClients - 1; i++)
+		{
+			if (this->otherPlayer[i]->id == id)
+				return this->otherPlayer[i];
 		}
 	}
 }

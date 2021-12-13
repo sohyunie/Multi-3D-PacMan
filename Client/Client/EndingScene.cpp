@@ -5,7 +5,6 @@
 EndingScene::EndingScene()
 {
 	this->objectType = ObjectType::TEXTURE;
-	this->type = TextureType::CLEAR;
 }
 
 void EndingScene::DrawTextureImage(GLuint s_program, TextureType type) {
@@ -49,6 +48,6 @@ void EndingScene::DrawTextureImage(GLuint s_program, TextureType type) {
 
 	glBindVertexArray(InGameManager::GetInstance().GetVAO(this->objectType));
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, InGameManager::GetInstance().GetTexture(this->type));
+	glBindTexture(GL_TEXTURE_2D, InGameManager::GetInstance().GetTexture(type));
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

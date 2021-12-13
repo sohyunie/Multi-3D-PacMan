@@ -19,6 +19,7 @@ public:
 	float deltaMove = 0.0f;
 	float hp = 100.0f;
 	int id = -1;
+	bool isActive = true;
 
 	PlayerType playerType;
 };
