@@ -98,10 +98,8 @@ void Server::Update()
 	{
 		g_timer.Tick();
 		g_accum_time += g_timer.GetElapsedTime();
-		//std::cout << g_timer.GetElapsedTime() << std::endl;
 		if (g_accum_time >= 0.0333f)
 		{
-			//std::cout << g_accum_time << std::endl;
 			CopySendMsgToAllClients();
 			g_timerCv.notify_all();
 			g_accum_time = 0.0f;
@@ -192,7 +190,6 @@ void Server::CreatePlayerInfoMsg(float elapsedTime)
 		m_player_info.id[i] = g_clients[i].m_id;
 		m_player_info.x[i] = g_clients[i].m_pos_x;
 		m_player_info.z[i] = g_clients[i].m_pos_z;
-		//cout << ((m_player_info.x[0]) / 7.5f) << ", " << ((m_player_info.z[0]) / 7.5f) << "\n";
 	}
 }
 
