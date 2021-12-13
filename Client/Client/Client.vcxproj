@@ -298,6 +298,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Standard.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)../NetworkLibrary/NetworkLibrary\</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -317,6 +318,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Standard.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)../NetworkLibrary/NetworkLibrary\</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -335,6 +337,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)../NetworkLibrary/NetworkLibrary\</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Standard.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -354,6 +357,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Standard.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)../NetworkLibrary/NetworkLibrary\</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

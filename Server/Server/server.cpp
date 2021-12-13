@@ -115,7 +115,7 @@ void Server::AcceptNewPlayer(int id)
 {
 	SOCKET new_client = m_listenSock.Accept();
 	g_clients[id].Init(new_client, id);
-	m_threads.emplace_back(SendAndRecv, id);
+	m_threads.emplace_back(RecvAndSend, id);
 	std::cout << "Accepted New Client[" << id << "]\n";
 }
 

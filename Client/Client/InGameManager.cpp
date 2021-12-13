@@ -962,7 +962,8 @@ void InGameManager::RecvUpdateStatus(update_status update_status)
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			Player* targetPlayer = this->GetPlayer(i);
+			Player* targetPlayer = nullptr;
+			targetPlayer = this->GetPlayer(i);
 			if (this->GetPlayer(i)->playerType == PlayerType::RUNNER && update_status.player_active[i] == false)
 			{
 				if (targetPlayer->id == this->player->id) {
