@@ -53,7 +53,6 @@ void ClientInfo::ProcessMessage()
 		{
 		case MsgType::PLAYER_INPUT:
 		{
-			//std::cout << "Received input message\n";
 			player_input pi{};
 			m_recvMsg.Pop(reinterpret_cast<char*>(&pi), sizeof(player_input));
 			ChangeDirection(pi);
@@ -110,11 +109,6 @@ void ClientInfo::ChangeDirection(player_input& p_input)
 
 void ClientInfo::SetNewPosition(start_game& s_game, float elapsedTIme)
 {
-	// 클라이언트에서 입력값을 계속 받아오고 있음
-	// 받을 때 마다 해당 방향에 충돌하는 물체 있는지 체크
-	// 충돌할 경우 이동하지 않고
-	// 충돌하지 않을 경우 이동
-
 	bool collied = false;
 	float speed = 8 * elapsedTIme;
 
